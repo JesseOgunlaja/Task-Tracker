@@ -5,6 +5,7 @@ import "./App.css";
 import bcrypt from "bcryptjs";
 const jsonServer = "https://json-server-4313.vercel.app/api";
 console.log(process.env)
+const API_KEY = "a;LN8*f](uUUuW?,}vG3YVnjhEn*?zC=XU9pnU.k"
 
 function App() {
   const newTaskTitle = useRef();
