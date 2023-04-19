@@ -3,6 +3,8 @@ import emailjs from "@emailjs/browser";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import bcrypt from 'bcryptjs'
+const jsonServer = "https://json-server-4313.vercel.app/api"
+const API_KEY = 123
 
 function App() {
   const newTaskTitle = useRef();
@@ -50,10 +52,11 @@ function App() {
     const currentTasks = [...tasks];
     currentTasks.splice(index, 1);
 
-    await fetch(`http://localhost:5000/Users/${userId}`, {
+    await fetch(`${jsonServer}/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
+        "x-api-key": API_KEY
       },
       body: JSON.stringify({
         tasks: currentTasks,
@@ -74,10 +77,11 @@ function App() {
       const currentTasks = [...tasks];
       currentTasks.push(newTask);
 
-      await fetch(`http://localhost:5000/Users/${userId}`, {
+      await fetch(`${jsonServer}/Users/${userId}`, {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
+          "x-api-key": API_KEY
         },
         body: JSON.stringify({
           tasks: currentTasks,
@@ -107,10 +111,11 @@ function App() {
 
     const currentTasks = [...tasks];
     currentTasks[editIndex.current] = updatedTask;
-    await fetch(`http://localhost:5000/Users/${userId}`, {
+    await fetch(`${jsonServer}/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
+        "x-api-key": API_KEY
       },
       body: JSON.stringify({
         tasks: currentTasks,
@@ -138,13 +143,23 @@ function App() {
   }, [user]);
 
   async function fetchTasks() {
-    const res = await fetch(`http://localhost:5000/Users/${userId}`);
+    const res = await fetch(`${jsonServer}/Users/${userId}`, {
+      methpd: "GET",
+      headers: {
+        "x-api-key": API_KEY
+      }
+    });
     const data = res.json();
     return data.then((res) => res.tasks);
   }
 
   async function fetchPeople() {
-    const res = await fetch(`http://localhost:5000/Users`);
+    const res = await fetch(`${jsonServer}/Users`, {
+      method: "GET",
+      headers: {
+        "x-api-key": API_KEY
+      }
+    });
     const data = res.json();
     return data;
   }
@@ -164,10 +179,11 @@ function App() {
       addUserPassword.current.type = "password";
       addUserEmail.current.type = "password";
       const hashedPassword = await bcrypt.hash(passwordBeingAdded, 10);
-      await fetch(`http://localhost:5000/Users`, {
+      await fetch(`${jsonServer}/Users`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
+          "x-api-key": API_KEY
         },
         body: JSON.stringify({
           name: nameBeingAdded,
@@ -199,8 +215,11 @@ function App() {
   }
 
   async function deleteAccount() {
-    await fetch(`http://localhost:5000/Users/${userId}`, {
+    await fetch(`${jsonServer}/Users/${userId}`, {
       method: "DELETE",
+      headers: {
+        "x-api-key": API_KEY
+      }
     });
     setPeople(await fetchPeople());
     signOut();
@@ -208,7 +227,12 @@ function App() {
 
   async function submitPassword() {
     let password = (
-      await (await fetch(`http://localhost:5000/Users/${userId}`)).json()
+      await (await fetch(`${jsonServer}/Users/${userId}`, {
+        method: 'GET',
+        headers: {
+          "x-api-key": API_KEY
+        }
+      })).json()
     ).password;
     if (await bcrypt.compare(passwordBeingAdded, password)) {
       passwordBox.current.type = "password";
@@ -224,16 +248,22 @@ function App() {
   }
 
   async function completeChangePassword() {
-    let password = (await (await fetch(`http://localhost:5000/Users/${userId}`)).json())
+    let password = (await (await fetch(`${jsonServer}/Users/${userId}`, {
+      method: 'GET',
+      headers: {
+        "x-api-key": API_KEY
+      }
+    })).json())
     .password
     oldPasswordBox.current.type = "password";
     newPasswordBox.current.type = "password";
     if (await bcrypt.compare(oldPassword, password)) {
       const hashedPassword = await bcrypt.hash(newPassword, 10)
-      await fetch(`http://localhost:5000/Users/${userId}`, {
+      await fetch(`${jsonServer}/Users/${userId}`, {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
+          "x-api-key": API_KEY
         },
         body: JSON.stringify({
           password: hashedPassword,
@@ -347,10 +377,11 @@ function App() {
 
   async function submitNewPassword() {
     const hashedPassword = await bcrypt.hash(passwordBeingReset,10)
-    await fetch(`http://localhost:5000/Users/${userId}`, {
+    await fetch(`${jsonServer}/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
+        "x-api-key": API_KEY
       },
       body: JSON.stringify({
         password: hashedPassword,
@@ -379,7 +410,12 @@ function App() {
   useEffect(() => {
     async function getEmail() {
       if(userId != undefined) {
-        setEmail((await (await fetch(`http://localhost:5000/Users/${userId}`)).json())
+        setEmail((await (await fetch(`${jsonServer}/Users/${userId}`, {
+          method: 'GET',
+          headers: {
+            "x-api-key": API_KEY
+          }
+        })).json())
         .email)
       }
     }
