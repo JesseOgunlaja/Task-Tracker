@@ -228,14 +228,15 @@ function App() {
     .password
     oldPasswordBox.current.type = "password";
     newPasswordBox.current.type = "password";
-    if (oldPassword === password) {
+    if (await bcrypt.compare(oldPassword, password)) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10)
       await fetch(`http://localhost:5000/Users/${userId}`, {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
         },
         body: JSON.stringify({
-          password: newPassword,
+          password: hashedPassword,
         }),
       });
       signOut();
@@ -345,13 +346,14 @@ function App() {
   }
 
   async function submitNewPassword() {
+    const hashedPassword = await bcrypt.hash(passwordBeingReset,10)
     await fetch(`http://localhost:5000/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
       },
       body: JSON.stringify({
-        password: passwordBeingReset,
+        password: hashedPassword,
       }),
     });
     signOut();

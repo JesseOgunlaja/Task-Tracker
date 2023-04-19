@@ -1,7 +1,7 @@
 {
   "Users": [
     {
-      "password": "Nicole1@",
+      "password": "$2a$10$W40ZxvjxqHSRWq0jUD2AGOU6KSpRfSLimXAVcPT.pe8i5RkLcl806",
       "name": "Jesse",
       "tasks": [
         {
@@ -16,7 +16,7 @@
     {
       "name": "Ivana",
       "email": "ivanaogu@gmail.com",
-      "password": "SunshineBoy123",
+      "password": "$2a$10$C7m1WFMJqc7p/U9O3S3r9ufYA8mUjG3vqfeRLEe.q8KKyHV11XvmC",
       "tasks": [
         {
           "task": "Revise Economics",
@@ -30,7 +30,7 @@
     {
       "name": "Nicole",
       "email": "nicoleogu@gmail.com",
-      "password": "Nicole1@",
+      "password": "$2a$10$jx/ultDq8yBnO2ID.CpEL.EcrsIE4BZZ1lAOW.VT5Mg0Wj6lfB0n.",
       "tasks": [
         {
           "task": "Revise for mocks",
@@ -42,7 +42,7 @@
       "id": 3
     },
     {
-      "password": "2580",
+      "password": "$2a$10$shXl3ApCG0LJGGwXKRQlTOLCBE04Wbpr1.208wvYC/XUFRW87Kr52",
       "email": "hopeogu@hotmail.com",
       "name": "Hope",
       "tasks": [
@@ -71,7 +71,7 @@
           "id": 2
         }
       ],
-      "password": "Bob",
+      "password": "$2a$10$JNr17zbNCakPzqZ.uz2P1O3TMENqT5iPX09GjYrF.ji6IQaWBQuM.",
       "id": 5
     }
   ]
