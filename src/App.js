@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import bcrypt from 'bcryptjs'
 const jsonServer = "https://json-server-4313.vercel.app/api"
-const API_KEY = process.env.API_KEY ? process.env.API_KEY : "a;LN8*f](uUUuW?,}vG3YVnjhEn*?zC=XU9pnU.k"
+const API_KEY = process.env.API_KEY
 
 function App() {
   const newTaskTitle = useRef();
