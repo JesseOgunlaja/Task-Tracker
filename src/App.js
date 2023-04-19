@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import bcrypt from "bcryptjs";
 const jsonServer = "https://json-server-4313.vercel.app/api";
-const API_KEY = process.env.API_KEY;
+const API_KEY = process.env.REACT_APP_API_KEY;
 
 function App() {
   const newTaskTitle = useRef();
@@ -19,9 +19,7 @@ function App() {
   const addUserEmail = useRef();
   const passwordBeingResetBox = useRef();
   const codeBeingInputtedBox = useRef();
-  
-  const [API_KEY,setAPI_KEY] = useState(process.env.API_KEY)
-  console.log(API_KEY);
+
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isAddingUser, setIsAddingUser] = useState(false);
