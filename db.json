@@ -1,0 +1,78 @@
+{
+  "Users": [
+    {
+      "password": "Nicole1@",
+      "name": "Jesse",
+      "tasks": [
+        {
+          "task": "Read books",
+          "date": "April 3rd",
+          "reminder": true
+        }
+      ],
+      "email": "jesseogunlaja@gmail.com",
+      "id": 1
+    },
+    {
+      "name": "Ivana",
+      "email": "ivanaogu@gmail.com",
+      "password": "SunshineBoy123",
+      "tasks": [
+        {
+          "task": "Revise Economics",
+          "date": "March 12th",
+          "reminder": false,
+          "id": 1
+        }
+      ],
+      "id": 2
+    },
+    {
+      "name": "Nicole",
+      "email": "nicoleogu@gmail.com",
+      "password": "Nicole1@",
+      "tasks": [
+        {
+          "task": "Revise for mocks",
+          "date": "March 14th",
+          "reminder": false,
+          "id": 1
+        }
+      ],
+      "id": 3
+    },
+    {
+      "password": "2580",
+      "email": "hopeogu@hotmail.com",
+      "name": "Hope",
+      "tasks": [
+        {
+          "task": "Work Meeting",
+          "date": "March 8th",
+          "reminder": true,
+          "id": 2
+        },
+        {
+          "task": "Check work emails",
+          "date": "Tommorow",
+          "reminder": true
+        }
+      ],
+      "id": 4
+    },
+    {
+      "name": "Nicholas",
+      "email": "nicogunlaja@aol.com",
+      "tasks": [
+        {
+          "task": "Finish analysing work sheet",
+          "date": "March 20th",
+          "reminder": false,
+          "id": 2
+        }
+      ],
+      "password": "Bob",
+      "id": 5
+    }
+  ]
+}
