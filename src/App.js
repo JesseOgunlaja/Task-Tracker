@@ -2,10 +2,10 @@ import { useEffect, useState, useRef } from "react";
 import emailjs from "@emailjs/browser";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
-import bcrypt from 'bcryptjs'
-const jsonServer = "https://json-server-4313.vercel.app/api"
-const API_KEY = process.env.API_KEY
-console.log(API_KEY)
+import bcrypt from "bcryptjs";
+const jsonServer = "https://json-server-4313.vercel.app/api";
+const API_KEY = process.env.API_KEY;
+console.log(API_KEY);
 
 function App() {
   const newTaskTitle = useRef();
@@ -40,7 +40,7 @@ function App() {
   const [verificationCode, setVerificationCode] = useState(
     Math.floor(Math.random() * 1000000000)
   );
-  const [email,setEmail] = useState("")
+  const [email, setEmail] = useState("");
   const [codeBeingInputted, setCodeBeingInputted] = useState("");
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [passwordBeingReset, setPasswordBeingReset] = useState("");
@@ -57,7 +57,7 @@ function App() {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
-        "x-api-key": API_KEY
+        "x-api-key": API_KEY,
       },
       body: JSON.stringify({
         tasks: currentTasks,
@@ -82,7 +82,7 @@ function App() {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
-          "x-api-key": API_KEY
+          "x-api-key": API_KEY,
         },
         body: JSON.stringify({
           tasks: currentTasks,
@@ -116,7 +116,7 @@ function App() {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
-        "x-api-key": API_KEY
+        "x-api-key": API_KEY,
       },
       body: JSON.stringify({
         tasks: currentTasks,
@@ -147,8 +147,8 @@ function App() {
     const res = await fetch(`${jsonServer}/Users/${userId}`, {
       methpd: "GET",
       headers: {
-        "x-api-key": API_KEY
-      }
+        "x-api-key": API_KEY,
+      },
     });
     const data = res.json();
     return data.then((res) => res.tasks);
@@ -158,8 +158,8 @@ function App() {
     const res = await fetch(`${jsonServer}/Users`, {
       method: "GET",
       headers: {
-        "x-api-key": API_KEY
-      }
+        "x-api-key": API_KEY,
+      },
     });
     const data = res.json();
     return data;
@@ -184,7 +184,7 @@ function App() {
         method: "POST",
         headers: {
           "Content-type": "application/json",
-          "x-api-key": API_KEY
+          "x-api-key": API_KEY,
         },
         body: JSON.stringify({
           name: nameBeingAdded,
@@ -219,8 +219,8 @@ function App() {
     await fetch(`${jsonServer}/Users/${userId}`, {
       method: "DELETE",
       headers: {
-        "x-api-key": API_KEY
-      }
+        "x-api-key": API_KEY,
+      },
     });
     setPeople(await fetchPeople());
     signOut();
@@ -228,12 +228,14 @@ function App() {
 
   async function submitPassword() {
     let password = (
-      await (await fetch(`${jsonServer}/Users/${userId}`, {
-        method: 'GET',
-        headers: {
-          "x-api-key": API_KEY
-        }
-      })).json()
+      await (
+        await fetch(`${jsonServer}/Users/${userId}`, {
+          method: "GET",
+          headers: {
+            "x-api-key": API_KEY,
+          },
+        })
+      ).json()
     ).password;
     if (await bcrypt.compare(passwordBeingAdded, password)) {
       passwordBox.current.type = "password";
@@ -249,22 +251,25 @@ function App() {
   }
 
   async function completeChangePassword() {
-    let password = (await (await fetch(`${jsonServer}/Users/${userId}`, {
-      method: 'GET',
-      headers: {
-        "x-api-key": API_KEY
-      }
-    })).json())
-    .password
+    let password = (
+      await (
+        await fetch(`${jsonServer}/Users/${userId}`, {
+          method: "GET",
+          headers: {
+            "x-api-key": API_KEY,
+          },
+        })
+      ).json()
+    ).password;
     oldPasswordBox.current.type = "password";
     newPasswordBox.current.type = "password";
     if (await bcrypt.compare(oldPassword, password)) {
-      const hashedPassword = await bcrypt.hash(newPassword, 10)
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
       await fetch(`${jsonServer}/Users/${userId}`, {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
-          "x-api-key": API_KEY
+          "x-api-key": API_KEY,
         },
         body: JSON.stringify({
           password: hashedPassword,
@@ -349,11 +354,11 @@ function App() {
     const formData = {
       code: verificationCode,
       user_name: user,
-      user_email: email
+      user_email: email,
     };
     setIsForgettingPassword(true);
     emailjs
-    .send(
+      .send(
         "service_qt8bik7",
         "template_938j99h",
         formData,
@@ -366,23 +371,23 @@ function App() {
         (error) => {
           console.log(error.text);
         }
-        );
-      }
-      
-      function submitVerificationCode() {
-        if (codeBeingInputted === verificationCode) {
+      );
+  }
+
+  function submitVerificationCode() {
+    if (codeBeingInputted === verificationCode) {
       setIsResettingPassword(true);
       setIsForgettingPassword(false);
     }
   }
 
   async function submitNewPassword() {
-    const hashedPassword = await bcrypt.hash(passwordBeingReset,10)
+    const hashedPassword = await bcrypt.hash(passwordBeingReset, 10);
     await fetch(`${jsonServer}/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
-        "x-api-key": API_KEY
+        "x-api-key": API_KEY,
       },
       body: JSON.stringify({
         password: hashedPassword,
@@ -399,30 +404,35 @@ function App() {
       setIsChangingPassword(false);
       setSignedIn(true);
     }
-    if(page === "addingUser") {
-      setIsAddingUser(false)
+    if (page === "addingUser") {
+      setIsAddingUser(false);
     }
-    if(page === "forgetPassword") {
-      setIsForgettingPassword(false)
-      setIsPuttingPassword(false)
+    if (page === "forgetPassword") {
+      setIsForgettingPassword(false);
+      setIsPuttingPassword(false);
     }
   }
 
   useEffect(() => {
     async function getEmail() {
-      if(userId != undefined) {
-        setEmail((await (await fetch(`${jsonServer}/Users/${userId}`, {
-          method: 'GET',
-          headers: {
-            "x-api-key": API_KEY
-          }
-        })).json())
-        .email)
+      if (userId != undefined) {
+        setEmail(
+          (
+            await (
+              await fetch(`${jsonServer}/Users/${userId}`, {
+                method: "GET",
+                headers: {
+                  "x-api-key": API_KEY,
+                },
+              })
+            ).json()
+          ).email
+        );
       }
     }
 
-    getEmail()
-  }, [userId,isForgettingPassword])
+    getEmail();
+  }, [userId, isForgettingPassword]);
 
   return (
     <Router>
@@ -672,12 +682,18 @@ function App() {
                                 <div>
                                   {isForgettingPassword ? (
                                     <div>
-                                      <div className="back" onClick={() => back("forgetPassword")}>
-                                        <div className="backTriangle">{'<'}</div>
+                                      <div
+                                        className="back"
+                                        onClick={() => back("forgetPassword")}
+                                      >
+                                        <div className="backTriangle">
+                                          {"<"}
+                                        </div>
                                         <div>Back</div>
                                       </div>
                                       <p>
-                                        We just sent a verification code to: {email}
+                                        We just sent a verification code to:{" "}
+                                        {email}
                                       </p>
                                       <br />
                                       <label>Code:</label>
