@@ -4,11 +4,11 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import bcrypt from "bcryptjs";
 const jsonServer = "https://json-server-4313.vercel.app/api";
-console.log(process.env.API_KEY)
+console.log(process.env.APIKEY)
 const API_KEY = "a;LN8*f](uUUuW?,}vG3YVnjhEn*?zC=XU9pnU.k"
 
 function App() {
-console.log(process.env.API_KEY)
+console.log(process.env.APIKEY)
   const newTaskTitle = useRef();
   const newTaskDate = useRef();
   const newTaskReminder = useRef();
