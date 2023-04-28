@@ -7,7 +7,10 @@ const jsonServer = "https://json-server-4313.vercel.app/api";
 
 function App() {
   const API_KEY = process.env.API_KEY;
-  console.log(API_KEY)
+  console.log(process.env.API_KEY)
+  console.log(process.env.APIKEY)
+  console.log(process.env.apikey)
+  console.log(process.env.api_key)
   const newTaskTitle = useRef();
   const newTaskDate = useRef();
   const newTaskReminder = useRef();
