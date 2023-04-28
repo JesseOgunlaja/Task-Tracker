@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { API_URL } from '../data';
+import { API_URL } from './data';
 import emailjs from "@emailjs/browser";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
