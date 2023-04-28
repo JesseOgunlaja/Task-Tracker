@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 const jsonServer = "https://json-server-4313.vercel.app/api";
 
 function App() {
-  const API_KEY = process.env.MY_API_KEY;
+  const API_KEY = process.env;
   const newTaskTitle = useRef();
   const newTaskDate = useRef();
   const newTaskReminder = useRef();
