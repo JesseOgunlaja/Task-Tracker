@@ -31,13 +31,13 @@ app.use(bodyParser.json());
 function apiKeyVerification(req, res, next) {
   const apiKey = req.headers['x-api-key'];
   if (!apiKey || apiKey !== process.env.REACT_APP_MY_API_KEY) {
-    return res.status(401).send("Unathourised" + apiKey);
+    return res.status(401).send("Unathourized " + apiKey);
   }
   next();
 }
 
 // Get all users
-app.get('/api/users', apiKeyVerification,  async (req, res) => {
+app.get('/api/users', apiKeyVerification, async (req, res) => {
   try {
     const users = await User.find();
     res.json(users);
@@ -115,5 +115,5 @@ async function getUser(req, res, next) {
 }
 
 app.listen(port, () => {
-  console.log(`Server started on port ${port}`)
+  console.log(`Server started`)
 });
