@@ -1,17 +1,11 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/server.js",
-      "use": "@vercel/node",
-      "config": {
-        "maxLambdaSize": "50mb",
-        "memory": 512
-      }
-    }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "api/server.js" },
-    { "src": "/(.*)", "dest": "/" }
-  ]
-}
+    "version": 2,
+    "builds": [
+      { "src": "api/server.js", "use": "@now/node-server" }
+    ],
+    "routes": [
+      { "src": "/api/(.*)", "dest": "api/server.js" },
+      { "src": "/(.*)", "dest": "/" }
+    ]
+  }
+  
