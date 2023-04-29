@@ -7,8 +7,7 @@
       "config": {
         "maxLambdaSize": "50mb",
         "memory": 512
-      },
-      "command": "node --max-old-space-size=4096 server.js"
+      }
     }
   ],
   "routes": [
