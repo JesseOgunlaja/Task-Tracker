@@ -1,11 +1,21 @@
 {
-    "version": 2,
-    "builds": [
-      { "src": "api/server.js", "use": "@now/node-server" }
-    ],
-    "routes": [
-      { "src": "/api/(.*)", "dest": "api/server.js" },
-      { "src": "/(.*)", "dest": "/" }
-    ]
-  }
-  
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/server.js",
+      "use": "@now/node-server",
+      "config": {
+        "maxLambdaSize": "50mb",
+        "memory": 512
+      },
+      "env": {
+        "MY_ENV_VAR": "hello world"
+      },
+      "command": "node --max-old-space-size=4096 server.js"
+    }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "api/server.js" },
+    { "src": "/(.*)", "dest": "/" }
+  ]
+}
