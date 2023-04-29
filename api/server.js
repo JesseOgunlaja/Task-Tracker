@@ -8,8 +8,8 @@ const port = process.env.PORT || 3000;
 mongoose.connect('mongodb+srv://Jesse677:Nicole123@cluster0.rz9ricb.mongodb.net/?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
+  // serverSelectionTimeoutMS: 5000,
+  // socketTimeoutMS: 45000,
 });
 
 const UserSchema = new mongoose.Schema({
@@ -29,7 +29,7 @@ app.use(bodyParser.json());
 
 // Middleware function to verify API key
 function apiKeyVerification(req, res, next) {
-  // const apiKey = req.headers['x-api-key'];
+  const apiKey = req.headers['x-api-key'];
   // if (!apiKey || apiKey !== "a;LN8*f](uUUuW?,}vG3YVnjhEn*?zC=XU9pnU.k") {
   //   return res.status(401).send("Unathourised");
   // }
