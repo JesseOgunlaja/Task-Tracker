@@ -158,7 +158,7 @@ function App() {
       mode: "no-cors",
       method: "GET",
       headers: {
-        "x-api-key": API_KEY,
+        // "x-api-key": API_KEY,
       },
     });
     const data = res.json();
