@@ -155,6 +155,7 @@ function App() {
 
   async function fetchPeople() {
     const res = await fetch(`${jsonServer}/Users`, {
+      "mode": "no-cors",
       method: "GET",
       headers: {
         "x-api-key": API_KEY,
