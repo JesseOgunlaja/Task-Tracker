@@ -37,7 +37,7 @@ function apiKeyVerification(req, res, next) {
 }
 
 // Get all users
-app.get('/api/users', apiKeyVerification, async (req, res) => {
+app.get('/api/users', async (req, res) => {
   try {
     const users = await User.find();
     res.json(users);
