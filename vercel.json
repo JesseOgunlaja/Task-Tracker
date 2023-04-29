@@ -3,7 +3,7 @@
   "builds": [
     {
       "src": "api/server.js",
-      "use": "@now/node-server",
+      "use": "@vercel/node",
       "config": {
         "maxLambdaSize": "50mb",
         "memory": 512
