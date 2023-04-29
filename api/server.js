@@ -115,5 +115,5 @@ async function getUser(req, res, next) {
 }
 
 app.listen(port, () => {
-  console.log(`Server has started on port ${port}`)
+  console.log(`Server started on port ${port}`)
 });
