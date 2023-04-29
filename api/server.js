@@ -31,7 +31,7 @@ app.use(bodyParser.json());
 function apiKeyVerification(req, res, next) {
   const apiKey = req.headers['x-api-key'];
   if (!apiKey || apiKey !== process.env.REACT_APP_MY_API_KEY) {
-    return res.status(401).send("Unathourised");
+    return res.status(401).send("Unathourised" + apiKey);
   }
   next();
 }
