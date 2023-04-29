@@ -30,7 +30,7 @@ app.use(bodyParser.json());
 // Middleware function to verify API key
 function apiKeyVerification(req, res, next) {
   const apiKey = req.headers['x-api-key'];
-  if (!apiKey || apiKey !== process.env.REACT_APP_MY_API_KEY) {
+  if (!apiKey || apiKey !== "hi") {
     return res.status(401).send("Unathourised");
   }
   next();
