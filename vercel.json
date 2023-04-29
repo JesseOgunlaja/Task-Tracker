@@ -1,7 +1,7 @@
 {
     "version": 2,
     "builds": [
-      { "src": "api/server.js", "use": "@now/node-server" }
+      { "src": "api/server.js", "use": "@vercel/ncc" }
     ],
     "routes": [
       { "src": "/api/(.*)", "dest": "api/server.js" },
