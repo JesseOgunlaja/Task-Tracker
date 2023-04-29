@@ -29,15 +29,15 @@ app.use(bodyParser.json());
 
 // Middleware function to verify API key
 function apiKeyVerification(req, res, next) {
-  // const apiKey = req.headers['x-api-key'];
-  // if (!apiKey || apiKey !== "a;LN8*f](uUUuW?,}vG3YVnjhEn*?zC=XU9pnU.k") {
-  //   return res.status(401).send("Unathourised");
-  // }
+  const apiKey = req.headers['x-api-key'];
+  if (!apiKey || apiKey !== process.env.REACT_APP_MY_API_KEY) {
+    return res.status(401).send("Unathourised");
+  }
   next();
 }
 
 // Get all users
-app.get('/api/users', async (req, res) => {
+app.get('/api/users', apiKeyVerification,  async (req, res) => {
   try {
     const users = await User.find();
     res.json(users);
