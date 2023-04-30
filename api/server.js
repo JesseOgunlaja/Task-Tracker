@@ -94,10 +94,13 @@ app.patch('/api/users/:id', apiKeyVerification, getUser, async (req, res) => {
 });
 
 // Delete a user
-app.delete('/api/users/:id', apiKeyVerification, getUser, async (req, res) => {
+app.delete('/api/users/:id', apiKeyVerification, async (req, res) => {
   try {
-    await res.user.delete()
-    res.json({ message: 'User deleted' });
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    if (deletedUser == null) {
+      return res.status(404).json({ message: 'Cannot find user' });
+    }
+    res.json({ message: 'User deleted', user: deletedUser });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
