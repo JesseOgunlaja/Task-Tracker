@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import bcrypt from "bcryptjs";
 const jsonServer = "https://task-tracker-4313.vercel.app/api";
+require("dotenv").config();
 
 function App() {
   const API_KEY = process.env.REACT_APP_MY_API_KEY;
