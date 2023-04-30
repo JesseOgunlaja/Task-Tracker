@@ -830,7 +830,6 @@ function App() {
                                     </button>
                                   </div>
                                   <div className="userButtons">
-                                    <Suspense fallback="...loading">
                                     {people.map((person) => (
                                       <button
                                         key={Math.random()}
@@ -842,7 +841,6 @@ function App() {
                                         {person.name}
                                       </button>
                                     ))}
-                                    </Suspense>
                                   </div>
                                 </>
                               )}
