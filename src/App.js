@@ -1,15 +1,12 @@
 import { useEffect, useState, useRef, Suspense } from "react";
 import emailjs from "@emailjs/browser";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-// require("dotenv").config();
 import "./App.css";
 import bcrypt from "bcryptjs";
 const jsonServer = "https://task-tracker-4313.vercel.app/api";
 
 function App() {
-  const API_KEY = process.env.API_KEY;
-  console.log(process.env)
-  console.log(API_KEY)
+  const API_KEY = process.env.REACT_APP_MY_API_KEY;
   const newTaskTitle = useRef();
   const newTaskDate = useRef();
   const newTaskReminder = useRef();
