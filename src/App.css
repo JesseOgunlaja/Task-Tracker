@@ -327,7 +327,7 @@ body {
   width: 27.5px;
   border-radius: 50%;
   background: rgb(0,140,255);
-  animation: loader-3-pulse 1.8s infinite ease-in-out;
+  animation: loader-3-pulse 1s infinite ease-in-out;
   top: 0;
 }
 
