@@ -178,7 +178,6 @@ function App() {
     ) {
       addUserPassword.current.type = "password";
       addUserEmail.current.type = "password";
-      const hashedPassword = await bcrypt.hash(passwordBeingAdded, 10);
       await fetch(`${jsonServer}/Users`, {
         method: "POST",
         headers: {
@@ -188,7 +187,7 @@ function App() {
         body: JSON.stringify({
           name: nameBeingAdded,
           tasks: [],
-          password: hashedPassword,
+          password: passwordBeingAdded,
           email: emailBeingAdded,
         }),
       });
