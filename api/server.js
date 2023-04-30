@@ -1,6 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+require('dotenv').config();
+
+const API_KEY = process.env.API_KEY || process.env.REACT_APP_MY_API_KEY
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -30,8 +33,8 @@ app.use(bodyParser.json());
 // Middleware function to verify API key
 function apiKeyVerification(req, res, next) {
   const apiKey = req.headers['x-api-key'];
-  if (!apiKey || apiKey !== process.env.REACT_APP_MY_API_KEY) {
-    return res.status(401).send("Unathourized      " + apiKey + "       "  + process.env.REACT_APP_MY_API_KEY);
+  if (!apiKey || apiKey !== API_KEY) {
+    return res.status(401).send("Unathourized      " + apiKey + "       "  + processAPI_KEY);
   }
   next();
 }
