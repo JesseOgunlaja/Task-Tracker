@@ -40,7 +40,7 @@ app.use(bodyParser.json());
 function apiKeyVerification(req, res, next) {
   const apiKey = req.headers["x-api-key"];
   if (!apiKey || apiKey !== API_KEY) {
-    return res.status(401).send("Unathourized");
+    return res.status(403).send("Unathourized");
   }
   next();
 }
