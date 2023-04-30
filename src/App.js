@@ -830,7 +830,6 @@ function App() {
                                     </button>
                                   </div>
                                   <div className="userButtons">
-                                    <Suspense fallback="loading...">
                                       {people ? (
                                         <>
                                           {people.map((person) => (
@@ -845,8 +844,11 @@ function App() {
                                             </button>
                                           ))}
                                         </>
-                                      ) : null}
-                                    </Suspense>
+                                      ) : (
+                                        <div>
+                                          loading...
+                                        </div>
+                                      )}
                                   </div>
                                 </>
                               )}
