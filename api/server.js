@@ -1,10 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-require("dotenv").config();
+// require("dotenv").config();
 const bcrypt = require("bcrypt");
 
-const API_KEY = process.env.API_KEY || process.env.REACT_APP_MY_API_KEY;
+const API_KEY = process.env.API_KEY;
 
 const app = express();
 const port = process.env.PORT || 3000;
