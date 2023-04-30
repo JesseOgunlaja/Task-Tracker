@@ -159,8 +159,8 @@ function App() {
       headers: {
         "x-api-key": API_KEY,
       },
-    }).catch(() => location.reload())
-    const data = res.json();
+    })
+    const data = res.json().catch(() => location.reload());
     return data;
   }
 
