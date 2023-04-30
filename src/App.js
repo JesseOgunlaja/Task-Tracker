@@ -19,7 +19,9 @@ function App() {
   const addUserEmail = useRef();
   const passwordBeingResetBox = useRef();
   const codeBeingInputtedBox = useRef();
+  const adminPasswordBox = useRef()
 
+  const [adminPasswordBeingAdded,setAdminPasswordBeingAdded] = useState("")
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isAddingUser, setIsAddingUser] = useState(false);
@@ -174,7 +176,8 @@ function App() {
     if (
       nameBeingAdded !== "" &&
       passwordBeingAdded !== "" &&
-      people.every((val) => val.name !== nameBeingAdded)
+      people.every((val) => val.name !== nameBeingAdded &&
+      adminPasswordBeingAdded === process.env.REACT_APP_ADMIN_PASSWORD)
     ) {
       addUserPassword.current.type = "password";
       addUserEmail.current.type = "password";
@@ -320,7 +323,7 @@ function App() {
       ) {
         completeChangePassword();
       }
-      if (isAddingUser && addUserPassword.current === document.activeElement) {
+      if (isAddingUser && adminPasswordBox.current === document.activeElement) {
         addUser();
       }
       if (
@@ -347,6 +350,9 @@ function App() {
     }
     if (password === "resetPassword") {
       passwordBeingResetBox.current.type = "text";
+    }
+    if(password === "adminPassword") {
+      adminPasswordBox.current.type = "text"
     }
   }
 
@@ -624,7 +630,7 @@ function App() {
                             className="addUserInput"
                             type="email"
                           />
-                          <label className="addUserName">Password:</label>
+                          <label className="addUserNamadminPassworde">Password:</label>
                           <input
                             ref={addUserPassword}
                             value={passwordBeingAdded}
@@ -637,6 +643,22 @@ function App() {
                           <div
                             className="showButton"
                             onClick={() => showPassword("newUserPassword")}
+                          >
+                            Show
+                          </div>
+                          <label className="addUserName">Admin Password:</label>
+                          <input
+                            ref={adminPasswordBox}
+                            value={adminPasswordBeingAdded}
+                            onChange={(e) =>
+                              setAdminPasswordBeingAdded(e.target.value)
+                            }
+                            className="addUserInput show"
+                            type="password"
+                          />
+                          <div
+                            className="showButton"
+                            onClick={() => showPassword("adminPassword")}
                           >
                             Show
                           </div>
