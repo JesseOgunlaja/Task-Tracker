@@ -11,8 +11,8 @@ const port = process.env.PORT || 3000;
 mongoose.connect('mongodb+srv://Jesse677:Nicole123@cluster0.rz9ricb.mongodb.net/?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
+  // serverSelectionTimeoutMS: 5000,
+  // socketTimeoutMS: 45000,
 });
 
 const UserSchema = new mongoose.Schema({
@@ -43,7 +43,7 @@ function apiKeyVerification(req, res, next) {
 app.get('/api/users', apiKeyVerification, async (req, res) => {
   try {
     const users = await User.find();
-    res.json(users);
+    res.status(200).json(users).send(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
