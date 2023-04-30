@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, Suspense } from "react";
 import emailjs from "@emailjs/browser";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-require("dotenv").config();
+// require("dotenv").config();
 import "./App.css";
 import bcrypt from "bcryptjs";
 const jsonServer = "https://task-tracker-4313.vercel.app/api";
