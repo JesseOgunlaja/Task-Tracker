@@ -1,7 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-// require("dotenv").config();
 const bcrypt = require("bcrypt");
 
 const API_KEY = process.env.API_KEY;
