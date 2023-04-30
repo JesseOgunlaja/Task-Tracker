@@ -831,21 +831,21 @@ function App() {
                                   </div>
                                   <div className="userButtons">
                                     <Suspense fallback="loading...">
-                                    {people !== null && (
-                                      <>
-                                        {people.map((person) => (
-                                          <button
-                                            key={Math.random()}
-                                            className="userButton"
-                                            onClick={() =>
-                                              signIn(person.name, person._id)
-                                            }
-                                          >
-                                            {person.name}
-                                          </button>
-                                        ))}
-                                      </>
-                                    )}
+                                      {people ? (
+                                        <>
+                                          {people.map((person) => (
+                                            <button
+                                              key={Math.random()}
+                                              className="userButton"
+                                              onClick={() =>
+                                                signIn(person.name, person._id)
+                                              }
+                                            >
+                                              {person.name}
+                                            </button>
+                                          ))}
+                                        </>
+                                      ) : null}
                                     </Suspense>
                                   </div>
                                 </>
