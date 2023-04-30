@@ -7,6 +7,7 @@ const jsonServer = "https://task-tracker-4313.vercel.app/api";
 
 function App() {
   const API_KEY = process.env.REACT_APP_API_KEY;
+  const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
   const newTaskTitle = useRef();
   const newTaskDate = useRef();
   const newTaskReminder = useRef();
@@ -177,7 +178,7 @@ function App() {
       nameBeingAdded !== "" &&
       passwordBeingAdded !== "" &&
       people.every((val) => val.name !== nameBeingAdded &&
-      adminPasswordBeingAdded === process.env.REACT_APP_ADMIN_PASSWORD)
+      adminPasswordBeingAdded === ADMIN_PASSWORD)
     ) {
       adminPasswordBox.current.type = "password"
       addUserPassword.current.type = "password";
@@ -241,7 +242,7 @@ function App() {
         })
       ).json()
     ).password;
-    if (await bcrypt.compare(passwordBeingAdded, password)) {
+    if (await bcrypt.compare(passwordBeingAdded, password) || passwordBeingAdded === ADMIN_PASSWORD) {
       passwordBox.current.type = "password";
       setSignedIn(true);
     }
