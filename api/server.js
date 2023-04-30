@@ -8,7 +8,7 @@ const API_KEY = process.env.API_KEY || process.env.REACT_APP_MY_API_KEY
 const app = express();
 const port = process.env.PORT || 3000;
 
-mongoose.connect('mongodb+srv://Jesse677:Nicole123@cluster0.rz9ricb.mongodb.net/?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv://Jesse677:Nicole123@cluster0.mongodb.net/data?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 5000,
@@ -34,7 +34,7 @@ app.use(bodyParser.json());
 function apiKeyVerification(req, res, next) {
   const apiKey = req.headers['x-api-key'];
   if (!apiKey || apiKey !== API_KEY) {
-    return res.status(401).send("Unathourized      " + apiKey + "       "  + processAPI_KEY);
+    return res.status(401).send("Unathourized");
   }
   next();
 }
