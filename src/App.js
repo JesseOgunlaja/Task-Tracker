@@ -442,7 +442,7 @@ function App() {
           <Route
             path="/"
             element={
-              <>
+              <Suspense fallback="loading...">
                 {signedIn ? (
                   <>
                     <div className="container">
@@ -855,7 +855,7 @@ function App() {
                     </div>
                   </>
                 )}
-              </>
+              </Suspense>
             }
           />
           <Route
