@@ -834,7 +834,7 @@ function App() {
                                         key={Math.random()}
                                         className="userButton"
                                         onClick={() =>
-                                          signIn(person.name, person.id)
+                                          signIn(person.name, person._id)
                                         }
                                       >
                                         {person.name}
