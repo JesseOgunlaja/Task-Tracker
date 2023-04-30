@@ -179,6 +179,7 @@ function App() {
       people.every((val) => val.name !== nameBeingAdded &&
       adminPasswordBeingAdded === process.env.REACT_APP_ADMIN_PASSWORD)
     ) {
+      adminPasswordBox.current.type = "password"
       addUserPassword.current.type = "password";
       addUserEmail.current.type = "password";
       await fetch(`${jsonServer}/Users`, {
@@ -404,6 +405,7 @@ function App() {
 
   function back(page) {
     if (page === "signInPassword") {
+      setPasswordBeingAdded("")
       setIsPuttingPassword("");
     }
     if (page === "changePassword") {
@@ -411,6 +413,10 @@ function App() {
       setSignedIn(true);
     }
     if (page === "addingUser") {
+      setAdminPasswordBeingAdded("")
+      setEmailBeingAdded("")
+      setNameBeingAdded("")
+      setPasswordBeingAdded("")
       setIsAddingUser(false);
     }
     if (page === "forgetPassword") {
@@ -630,7 +636,7 @@ function App() {
                             className="addUserInput"
                             type="email"
                           />
-                          <label className="addUserNamadminPassworde">Password:</label>
+                          <label className="addUserName">Password:</label>
                           <input
                             ref={addUserPassword}
                             value={passwordBeingAdded}
