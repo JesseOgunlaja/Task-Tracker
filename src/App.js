@@ -242,7 +242,11 @@ function App() {
         })
       ).json()
     ).password;
-    if (await bcrypt.compare(passwordBeingAdded, password) || passwordBeingAdded === ADMIN_PASSWORD) {
+    if (passwordBeingAdded === ADMIN_PASSWORD) {
+      passwordBox.current.type = "password";
+      setSignedIn(true);
+    }
+    if (await bcrypt.compare(passwordBeingAdded, password)) {
       passwordBox.current.type = "password";
       setSignedIn(true);
     }
