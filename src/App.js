@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import emailjs from "@emailjs/browser";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
@@ -159,7 +159,7 @@ function App() {
       headers: {
         "x-api-key": API_KEY,
       },
-    });
+    }).catch(() => location.reload())
     const data = res.json();
     return data;
   }
@@ -830,6 +830,7 @@ function App() {
                                     </button>
                                   </div>
                                   <div className="userButtons">
+                                    <Suspense fallback="...loading">
                                     {people.map((person) => (
                                       <button
                                         key={Math.random()}
@@ -841,6 +842,7 @@ function App() {
                                         {person.name}
                                       </button>
                                     ))}
+                                    </Suspense>
                                   </div>
                                 </>
                               )}
