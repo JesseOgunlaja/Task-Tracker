@@ -160,7 +160,7 @@ function App() {
         "x-api-key": API_KEY,
       },
     })
-    const data = await res.json().catch(() => location.reload());
+    const data = await res.json().catch(() => window.location.reload());
     return data;
   }
 
