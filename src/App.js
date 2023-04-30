@@ -197,6 +197,8 @@ function App() {
   }
 
   function signOut() {
+    setEmailBeingAdded("")
+    setPasswordBeingAdded("")
     setNewPassword("");
     setOldPassword("");
     setPasswordBeingReset("");
