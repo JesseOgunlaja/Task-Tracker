@@ -311,3 +311,41 @@ body {
 .addingUser {
   transform: translateX(750%);
 }
+
+.loader-3 {
+	height: 32px;
+	width: 105px;
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.pulse {
+  position: relative;
+  height: 27.5px;
+  width: 27.5px;
+  border-radius: 50%;
+  background: rgb(0,140,255);
+  animation: loader-3-pulse 1.8s infinite ease-in-out;
+  top: 0;
+}
+
+.pulse:nth-child(2) {
+  animation-delay: 0.16s;
+}
+
+.pulse:nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+@keyframes loader-3-pulse {
+	0%,
+	80%,
+	100% {
+		transform: scale(0);
+	}
+	40% {
+		transform: scale(1);
+	}
+}

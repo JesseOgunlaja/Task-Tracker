@@ -830,25 +830,29 @@ function App() {
                                     </button>
                                   </div>
                                   <div className="userButtons">
-                                      {people ? (
-                                        <>
-                                          {people.map((person) => (
-                                            <button
-                                              key={Math.random()}
-                                              className="userButton"
-                                              onClick={() =>
-                                                signIn(person.name, person._id)
-                                              }
-                                            >
-                                              {person.name}
-                                            </button>
-                                          ))}
-                                        </>
-                                      ) : (
-                                        <div>
-                                          loading...
+                                    {people ? (
+                                      <>
+                                        {people.map((person) => (
+                                          <button
+                                            key={Math.random()}
+                                            className="userButton"
+                                            onClick={() =>
+                                              signIn(person.name, person._id)
+                                            }
+                                          >
+                                            {person.name}
+                                          </button>
+                                        ))}
+                                      </>
+                                    ) : (
+                                      <div>
+                                        <div className="loader-3">
+                                          <div className="pulse"></div>
+                                          <div className="pulse"></div>
+                                          <div className="pulse"></div>
                                         </div>
-                                      )}
+                                      </div>
+                                    )}
                                   </div>
                                 </>
                               )}
