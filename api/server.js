@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 require('dotenv').config();
+import bcrypt from "bcryptjs";
+
 
 const API_KEY = process.env.API_KEY || process.env.REACT_APP_MY_API_KEY
 
@@ -16,9 +18,9 @@ mongoose.connect('mongodb+srv://Jesse677:Nicole123@cluster0.rz9ricb.mongodb.net/
 });
 
 const UserSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  name: { type: String, unique: true },
+  email: { type: String, unique: true },
+  password: { type: String },
   tasks: [{
     task: { type: String },
     date: { type: String },
@@ -59,7 +61,7 @@ app.post('/api/users', apiKeyVerification, async (req, res) => {
   const user = new User({
     name: req.body.name,
     email: req.body.email,
-    password: req.body.password,
+    password: await bcrypt.hash(req.body.password, 10),
     tasks: req.body.tasks
   });
   try {
