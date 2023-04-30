@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const bcrypt = require("bcrypt")
 
-
 const API_KEY = process.env.API_KEY || process.env.REACT_APP_MY_API_KEY
 
 const app = express();
@@ -18,9 +17,9 @@ mongoose.connect('mongodb+srv://Jesse677:Nicole123@cluster0.rz9ricb.mongodb.net/
 });
 
 const UserSchema = new mongoose.Schema({
-  name: { type: String, unique: true },
-  email: { type: String, unique: true },
-  password: { type: String },
+  name: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
   tasks: [{
     task: { type: String },
     date: { type: String },
