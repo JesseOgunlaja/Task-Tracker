@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 require('dotenv').config();
-import bcrypt from "bcryptjs";
+const bcrypt = require("bcrypt")
 
 
 const API_KEY = process.env.API_KEY || process.env.REACT_APP_MY_API_KEY
