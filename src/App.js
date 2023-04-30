@@ -26,7 +26,7 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [user, setUser] = useState("");
   const [signedIn, setSignedIn] = useState(false);
-  const [people, setPeople] = useState([]);
+  const [people, setPeople] = useState(null);
   const [nameBeingAdded, setNameBeingAdded] = useState("");
   const [userId, setUserId] = useState();
   const [isPuttingPassword, setIsPuttingPassword] = useState(false);
@@ -159,7 +159,7 @@ function App() {
       headers: {
         "x-api-key": API_KEY,
       },
-    })
+    });
     const data = await res.json().catch(() => window.location.reload());
     return data;
   }
@@ -197,8 +197,8 @@ function App() {
   }
 
   function signOut() {
-    setEmailBeingAdded("")
-    setPasswordBeingAdded("")
+    setEmailBeingAdded("");
+    setPasswordBeingAdded("");
     setNewPassword("");
     setOldPassword("");
     setPasswordBeingReset("");
@@ -442,7 +442,7 @@ function App() {
           <Route
             path="/"
             element={
-              <Suspense fallback="loading...">
+              <>
                 {signedIn ? (
                   <>
                     <div className="container">
@@ -830,17 +830,23 @@ function App() {
                                     </button>
                                   </div>
                                   <div className="userButtons">
-                                    {people.map((person) => (
-                                      <button
-                                        key={Math.random()}
-                                        className="userButton"
-                                        onClick={() =>
-                                          signIn(person.name, person._id)
-                                        }
-                                      >
-                                        {person.name}
-                                      </button>
-                                    ))}
+                                    <Suspense fallback="loading...">
+                                    {people !== null && (
+                                      <>
+                                        {people.map((person) => (
+                                          <button
+                                            key={Math.random()}
+                                            className="userButton"
+                                            onClick={() =>
+                                              signIn(person.name, person._id)
+                                            }
+                                          >
+                                            {person.name}
+                                          </button>
+                                        ))}
+                                      </>
+                                    )}
+                                    </Suspense>
                                   </div>
                                 </>
                               )}
@@ -855,7 +861,7 @@ function App() {
                     </div>
                   </>
                 )}
-              </Suspense>
+              </>
             }
           />
           <Route
