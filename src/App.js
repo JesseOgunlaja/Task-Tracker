@@ -54,7 +54,7 @@ function App() {
 
   function signInUsername() {
     people.forEach((person) => {
-      if(person.name === username) {
+      if(person.name.toUpperCase() === username.toUpperCase()) {
         signIn(person.name,person._id)
       }
     })
@@ -186,7 +186,7 @@ function App() {
     if (
       nameBeingAdded !== "" &&
       passwordBeingAdded !== "" &&
-      people.every((val) => val.name !== nameBeingAdded &&
+      people.every((val) => val.name.toUpperCase() !== nameBeingAdded.toUpperCase() &&
       adminPasswordBeingAdded === ADMIN_PASSWORD)
     ) {
       adminPasswordBox.current.type = "password"
@@ -211,6 +211,7 @@ function App() {
   }
 
   function signOut() {
+    setUsername("")
     setEmailBeingAdded("");
     setPasswordBeingAdded("");
     setNewPassword("");
