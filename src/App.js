@@ -12,8 +12,6 @@ function App() {
   const parsedKey = CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY);
   const stringKey = CryptoJS.enc.Base64.stringify(parsedKey);
   const API_KEY = CryptoJS.AES.encrypt(process.env.REACT_APP_API_KEY, stringKey).toString()
-  console.log(ENCRYPTION_KEY)
-  console.log(API_KEY)
   const newTaskTitle = useRef();
   const newTaskDate = useRef();
   const newTaskReminder = useRef();
