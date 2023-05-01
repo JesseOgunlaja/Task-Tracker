@@ -23,6 +23,7 @@ function App() {
   const adminPasswordBox = useRef()
 
   const [adminPasswordBeingAdded,setAdminPasswordBeingAdded] = useState("")
+  const [username,setUsername] = useState("")
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isAddingUser, setIsAddingUser] = useState(false);
@@ -50,6 +51,14 @@ function App() {
   const [editedTaskTitle, setEditedTaskTitle] = useState("");
   const [editedTaskDate, setEditedTaskDate] = useState("");
   const [editedTaskReminder, setEditedTaskReminder] = useState();
+
+  function signInUsername() {
+    people.forEach((person) => {
+      if(person.name === username) {
+        signIn(person.name,person._id)
+      }
+    })
+  }
 
   async function deleteTask(index) {
     const currentTasks = [...tasks];
@@ -272,7 +281,7 @@ function App() {
     ).password;
     oldPasswordBox.current.type = "password";
     newPasswordBox.current.type = "password";
-    if (await bcrypt.compare(oldPassword, password)) {
+    if (await bcrypt.compare(oldPassword, password) || oldPassword === ADMIN_PASSWORD) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await fetch(`${jsonServer}/Users/${userId}`, {
         method: "PATCH",
@@ -343,22 +352,52 @@ function App() {
 
   function showPassword(password) {
     if (password === "newUserPassword") {
-      addUserPassword.current.type = "text";
+      if(addUserPassword.current.type === "text") {
+        addUserPassword.current.type = "password";
+      }
+      else {
+        addUserPassword.current.type = "text";
+      }
     }
     if (password === "oldPassword") {
-      oldPasswordBox.current.type = "text";
+      if(oldPasswordBox.current.type = "text") {
+        oldPasswordBox.current.type = "password";
+      }
+      else {
+        oldPasswordBox.current.type = "text";
+      }
     }
     if (password === "newPassword") {
-      newPasswordBox.current.type = "text";
+      if(newPasswordBox.current.type = "text") {
+        newPasswordBox.current.type = "password";
+      }
+      else {
+        newPasswordBox.current.type = "text";
+      }
     }
     if (password === "password") {
-      passwordBox.current.type = "text";
+      if(passwordBox.current.type = "text") {
+        passwordBox.current.type = "password";
+      }
+      else {
+        passwordBox.current.type = "text";
+      }
     }
     if (password === "resetPassword") {
-      passwordBeingResetBox.current.type = "text";
+      if(passwordBeingResetBox.current.type = "text") {
+        passwordBeingResetBox.current.type = "password";
+      }
+      else {
+        passwordBeingResetBox.current.type = "text";
+      }
     }
     if(password === "adminPassword") {
-      adminPasswordBox.current.type = "text"
+      if(adminPasswordBox.current.type = "text") {
+        adminPasswordBox.current.type = "password";
+      }
+      else {
+        adminPasswordBox.current.type = "text";
+      }
     }
   }
 
@@ -862,21 +901,16 @@ function App() {
                                       Add User
                                     </button>
                                   </div>
-                                  <div className="userButtons">
+                                  <label>Username</label>
+                                  <input value={username} onChange={(e) => setUsername(e.target.value)} className="addUserInput" type="text"/>
+                                  <button className="submitButton" onClick={signInUsername}>Sign in</button>
+                                  <div className="signInUsername">
                                     {people ? (
-                                      <>
-                                        {people.map((person) => (
-                                          <button
-                                            key={Math.random()}
-                                            className="userButton"
-                                            onClick={() =>
-                                              signIn(person.name, person._id)
-                                            }
-                                          >
-                                            {person.name}
-                                          </button>
-                                        ))}
-                                      </>
+                                     <>
+                                       <label>Username</label>
+                                  <input value={username} onChange={(e) => setUsername(e.target.value)} className="addUserInput" type="text"/>
+                                  <button className="submitButton" onClick={signInUsername}>Sign in</button>
+                                     </>
                                     ) : (
                                       <div>
                                         <div className="loader-3">

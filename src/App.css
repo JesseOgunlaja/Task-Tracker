@@ -159,13 +159,10 @@ body {
   text-align: center;
 }
 
-.userButtons {
+.signInUsername {
   margin-top: 10px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  flex-direction: column;
-  gap: 10px;
 }
 
 .userButton {
