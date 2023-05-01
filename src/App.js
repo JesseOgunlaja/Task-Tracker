@@ -3,7 +3,7 @@ import emailjs from "@emailjs/browser";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import bcrypt from "bcryptjs";
-const jsonServer = "https://task-tracker-4313.vercel.app/api";
+const api = "https://task-tracker-4313.vercel.app/api";
 
 function App() {
   const API_KEY = process.env.REACT_APP_API_KEY;
@@ -48,24 +48,26 @@ function App() {
   const [codeBeingInputted, setCodeBeingInputted] = useState("");
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [passwordBeingReset, setPasswordBeingReset] = useState("");
-
   const [editedTaskTitle, setEditedTaskTitle] = useState("");
   const [editedTaskDate, setEditedTaskDate] = useState("");
   const [editedTaskReminder, setEditedTaskReminder] = useState();
+  const [incorrectUsername,setIncorrectUsername] = useState(false)
 
   function signInUsername() {
     people.forEach((person) => {
       if (person.name.toUpperCase() === username.toUpperCase()) {
         signIn(person.name, person._id);
+        return;
       }
     });
+    setIncorrectUsername(true)
   }
 
   async function deleteTask(index) {
     const currentTasks = [...tasks];
     currentTasks.splice(index, 1);
 
-    await fetch(`${jsonServer}/Users/${userId}`, {
+    await fetch(`${api}/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -90,7 +92,7 @@ function App() {
       const currentTasks = [...tasks];
       currentTasks.push(newTask);
 
-      await fetch(`${jsonServer}/Users/${userId}`, {
+      await fetch(`${api}/Users/${userId}`, {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
@@ -124,7 +126,7 @@ function App() {
 
     const currentTasks = [...tasks];
     currentTasks[editIndex.current] = updatedTask;
-    await fetch(`${jsonServer}/Users/${userId}`, {
+    await fetch(`${api}/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -156,7 +158,7 @@ function App() {
   }, [user]);
 
   async function fetchTasks() {
-    const res = await fetch(`${jsonServer}/Users/${userId}`, {
+    const res = await fetch(`${api}/Users/${userId}`, {
       methpd: "GET",
       headers: {
         "x-api-key": API_KEY,
@@ -167,7 +169,7 @@ function App() {
   }
 
   async function fetchPeople() {
-    const res = await fetch(`${jsonServer}/Users`, {
+    const res = await fetch(`${api}/Users`, {
       method: "GET",
       headers: {
         "x-api-key": API_KEY,
@@ -196,7 +198,7 @@ function App() {
       adminPasswordBox.current.type = "password";
       addUserPassword.current.type = "password";
       addUserEmail.current.type = "password";
-      await fetch(`${jsonServer}/Users`, {
+      await fetch(`${api}/Users`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -215,6 +217,7 @@ function App() {
   }
 
   function signOut() {
+    setIncorrectUsername("")
     setUsername("");
     setEmailBeingAdded("");
     setPasswordBeingAdded("");
@@ -235,7 +238,7 @@ function App() {
   }
 
   async function deleteAccount() {
-    await fetch(`${jsonServer}/Users/${userId}`, {
+    await fetch(`${api}/Users/${userId}`, {
       method: "DELETE",
       headers: {
         "x-api-key": API_KEY,
@@ -248,7 +251,7 @@ function App() {
   async function submitPassword() {
     let password = (
       await (
-        await fetch(`${jsonServer}/Users/${userId}`, {
+        await fetch(`${api}/Users/${userId}`, {
           method: "GET",
           headers: {
             "x-api-key": API_KEY,
@@ -276,7 +279,7 @@ function App() {
   async function completeChangePassword() {
     let password = (
       await (
-        await fetch(`${jsonServer}/Users/${userId}`, {
+        await fetch(`${api}/Users/${userId}`, {
           method: "GET",
           headers: {
             "x-api-key": API_KEY,
@@ -291,7 +294,7 @@ function App() {
       oldPassword === ADMIN_PASSWORD
     ) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      await fetch(`${jsonServer}/Users/${userId}`, {
+      await fetch(`${api}/Users/${userId}`, {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
@@ -439,7 +442,7 @@ function App() {
 
   async function submitNewPassword() {
     const hashedPassword = await bcrypt.hash(passwordBeingReset, 10);
-    await fetch(`${jsonServer}/Users/${userId}`, {
+    await fetch(`${api}/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -480,7 +483,7 @@ function App() {
         setEmail(
           (
             await (
-              await fetch(`${jsonServer}/Users/${userId}`, {
+              await fetch(`${api}/Users/${userId}`, {
                 method: "GET",
                 headers: {
                   "x-api-key": API_KEY,
@@ -925,6 +928,11 @@ function App() {
                                         >
                                           Sign in
                                         </button>
+                                        {incorrectUsername && (
+                                          <div className="incorrectUsername">
+                                            <p>Incorrect username</p>
+                                          </div>
+                                        )}
                                       </div>
                                     ) : (
                                       <div className="loadingBox">
