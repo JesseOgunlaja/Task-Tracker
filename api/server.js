@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+import CryptoJS from 'crypto-js';
 
 const API_KEY = process.env.API_KEY;
 
@@ -36,9 +37,11 @@ const User = mongoose.model("User", UserSchema);
 app.use(bodyParser.json());
 
 // Middleware function to verify API key
-async function apiKeyVerification(req, res, next) {
+function apiKeyVerification(req, res, next) {
   const apiKey = req.headers["x-api-key"];
-  if (!apiKey || await bcrypt.compare(API_KEY,apiKey) === false) {
+  const bytes = CryptoJS.AES.decrypt(apiKey, process.env.ENCRYPTION_KEY);
+  const decryptedKey = bytes.toString(CryptoJS.enc.Utf8);
+  if (!apiKey || decryptedKey !== API_KEY) {
     return res.status(403).send("Unathourized");
   }
   next();

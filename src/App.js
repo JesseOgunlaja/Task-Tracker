@@ -3,11 +3,13 @@ import emailjs from "@emailjs/browser";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import bcrypt from "bcryptjs";
+import CryptoJS from 'crypto-js';
 const api = "https://task-tracker-4313.vercel.app/api";
 
 function App() {
-  const API_KEY = process.env.REACT_APP_API_KEY;
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
+  const ENCRYPTION_KEY = CryptoJS.enc.Utf8.parse(process.env.REACT_APP_ENCRYPTION_KEY);
+  const API_KEY = CryptoJS.AES.encrypt(process.env.REACT_APP_API_KEY, ENCRYPTION_KEY).toString();
   const newTaskTitle = useRef();
   const newTaskDate = useRef();
   const newTaskReminder = useRef();
@@ -170,11 +172,10 @@ function App() {
   }
 
   async function fetchPeople() {
-    const hashedApi = await bcrypt.hash(API_KEY,10)
     const res = await fetch(`${api}/Users`, {
       method: "GET",
       headers: {
-        "x-api-key": hashedApi,
+        "x-api-key": API_KEY,
       },
     });
     const data = await res.json().catch(() => window.location.reload());
