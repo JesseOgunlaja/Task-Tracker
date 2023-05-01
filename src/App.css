@@ -251,7 +251,7 @@ body {
   font-size: 20px;
   background: green;
   cursor: pointer;
-  padding: 5px;
+  padding: 10px;
   margin-top: 10px;
 }
 
@@ -360,9 +360,7 @@ body {
   display: inline;
 }
 
-.incorrectUsername p::before {
-  content: "";
-  height: 10px;
-  width: 10px;
-  background: red;
+.line {
+  display: flex;
+  justify-content: space-between;
 }

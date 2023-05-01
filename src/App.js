@@ -51,7 +51,8 @@ function App() {
   const [editedTaskTitle, setEditedTaskTitle] = useState("");
   const [editedTaskDate, setEditedTaskDate] = useState("");
   const [editedTaskReminder, setEditedTaskReminder] = useState();
-  const [incorrectUsername,setIncorrectUsername] = useState(false)
+  const [incorrectUsername, setIncorrectUsername] = useState(false);
+  const [incorrectPassword, setIncorrectPassword] = useState(false);
 
   function signInUsername() {
     people.forEach((person) => {
@@ -60,7 +61,7 @@ function App() {
         return;
       }
     });
-    setIncorrectUsername(true)
+    setIncorrectUsername(true);
   }
 
   async function deleteTask(index) {
@@ -217,7 +218,8 @@ function App() {
   }
 
   function signOut() {
-    setIncorrectUsername("")
+    setIncorrectPassword("")
+    setIncorrectUsername("");
     setUsername("");
     setEmailBeingAdded("");
     setPasswordBeingAdded("");
@@ -262,11 +264,14 @@ function App() {
     if (passwordBeingAdded === ADMIN_PASSWORD) {
       passwordBox.current.type = "password";
       setSignedIn(true);
+      return;
     }
     if (await bcrypt.compare(passwordBeingAdded, password)) {
       passwordBox.current.type = "password";
       setSignedIn(true);
+      return;
     }
+    setIncorrectPassword(true);
   }
 
   function changePassword() {
@@ -459,6 +464,8 @@ function App() {
     if (page === "signInPassword") {
       setPasswordBeingAdded("");
       setIsPuttingPassword("");
+      setIncorrectUsername(false);
+      setIncorrectPassword("")
     }
     if (page === "changePassword") {
       setIsChangingPassword(false);
@@ -470,6 +477,7 @@ function App() {
       setNameBeingAdded("");
       setPasswordBeingAdded("");
       setIsAddingUser(false);
+      setIncorrectUsername(false);
     }
     if (page === "forgetPassword") {
       setIsForgettingPassword(false);
@@ -826,14 +834,31 @@ function App() {
                                         className="submitPassword"
                                         onClick={submitPassword}
                                       >
-                                        Sign In
+                                        Sign in
                                       </button>
-                                      <div
-                                        className="forgotPassword"
-                                        onClick={() => forgotPassword()}
-                                      >
-                                        Forgot Password?
-                                      </div>
+                                      {incorrectPassword ? (
+                                        <div className="line">
+                                          <div
+                                            style={{ display: "inline" }}
+                                            className="incorrectUsername"
+                                          >
+                                            <p>Incorrect password</p>
+                                          </div>
+                                          <div
+                                            className="forgotPassword"
+                                            onClick={() => forgotPassword()}
+                                          >
+                                            Forgot Password?
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div
+                                          className="forgotPassword"
+                                          onClick={() => forgotPassword()}
+                                        >
+                                          Forgot Password?
+                                        </div>
+                                      )}
                                     </>
                                   )}
                                 </div>
@@ -923,7 +948,7 @@ function App() {
                                           type="text"
                                         />
                                         <button
-                                          className="submitButton"
+                                          className="submitPassword"
                                           onClick={signInUsername}
                                         >
                                           Sign in
