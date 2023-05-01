@@ -9,7 +9,11 @@ const api = "https://task-tracker-4313.vercel.app/api";
 function App() {
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
   const ENCRYPTION_KEY = CryptoJS.enc.Utf8.parse(process.env.REACT_APP_ENCRYPTION_KEY);
+  console.log(ENCRYPTION_KEY)
   const API_KEY = CryptoJS.AES.encrypt(process.env.REACT_APP_API_KEY, ENCRYPTION_KEY).toString();
+  console.log(API_KEY)
+  console.log(process.env.REACT_APP_API_KEY)
+  console.log(process.env.REACT_APP_ENCRYPTION_KEY)
   const newTaskTitle = useRef();
   const newTaskDate = useRef();
   const newTaskReminder = useRef();
