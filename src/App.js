@@ -903,13 +903,13 @@ function App() {
                                   </div>
                                   <div className="signInUsername">
                                     {people ? (
-                                     <>
+                                     <div className="">
                                        <label>Username</label>
                                   <input value={username} onChange={(e) => setUsername(e.target.value)} className="addUserInput" type="text"/>
                                   <button className="submitButton" onClick={signInUsername}>Sign in</button>
-                                     </>
+                                     </div>
                                     ) : (
-                                      <div>
+                                      <div className="loadingBox">
                                         <div className="loader-3">
                                           <div className="pulse"></div>
                                           <div className="pulse"></div>
