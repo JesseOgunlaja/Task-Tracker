@@ -466,6 +466,7 @@ function App() {
       setIsPuttingPassword("");
       setIncorrectUsername(false);
       setIncorrectPassword("")
+      setUsername("")
     }
     if (page === "changePassword") {
       setIsChangingPassword(false);
