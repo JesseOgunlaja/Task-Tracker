@@ -170,10 +170,11 @@ function App() {
   }
 
   async function fetchPeople() {
+    const hashedApi = await bcrypt.hash(API_KEY,10)
     const res = await fetch(`${api}/Users`, {
       method: "GET",
       headers: {
-        "x-api-key": bcrypt.hash(API_KEY,10),
+        "x-api-key": hashedApi,
       },
     });
     const data = await res.json().catch(() => window.location.reload());
