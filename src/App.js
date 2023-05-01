@@ -901,9 +901,6 @@ function App() {
                                       Add User
                                     </button>
                                   </div>
-                                  <label>Username</label>
-                                  <input value={username} onChange={(e) => setUsername(e.target.value)} className="addUserInput" type="text"/>
-                                  <button className="submitButton" onClick={signInUsername}>Sign in</button>
                                   <div className="signInUsername">
                                     {people ? (
                                      <>
