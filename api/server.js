@@ -38,12 +38,12 @@ app.use(bodyParser.json());
 
 // Middleware function to verify API key
 function apiKeyVerification(req, res, next) {
+  const apiKey = req.headers["x-api-key"];
   const userAgent = req.headers["user-agent"]
   const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
   const parsedKey = CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY);
   const stringKey = CryptoJS.enc.Base64.stringify(parsedKey);
-  if(userAgent === "https://task-tracker-4313.vercel.app") {
-    const apiKey = req.headers["x-api-key"];
+  if(userAgent === "https://task-tracker-4313.vercel.app" && userAgent != undefined) {
     const decryptedKey = CryptoJS.AES.decrypt(apiKey, stringKey).toString(CryptoJS.enc.Utf8);
     if (!apiKey || decryptedKey !== API_KEY) {
       return res.status(403).send("Unathourized");
@@ -51,7 +51,7 @@ function apiKeyVerification(req, res, next) {
     next();
   }
   else {
-    const apiKey = CryptoJS.AES.encrypt(API_KEY, stringKey).toString()
+    const encryptedKey = CryptoJS.AES.encrypt(apiKey, stringKey).toString()
     const decryptedKey = CryptoJS.AES.decrypt(apiKey, stringKey).toString(CryptoJS.enc.Utf8);
     if (!apiKey || decryptedKey !== API_KEY) {
       return res.status(403).send("Unathourized");
