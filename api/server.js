@@ -38,7 +38,7 @@ app.use(bodyParser.json());
 // Middleware function to verify API key
 function apiKeyVerification(req, res, next) {
   const apiKey = req.headers["x-api-key"];
-  if (!apiKey || apiKey !== API_KEY) {
+  if (!apiKey || bcrypt.compare(API_KEY,apiKey)) {
     return res.status(403).send("Unathourized");
   }
   next();

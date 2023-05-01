@@ -173,7 +173,7 @@ function App() {
     const res = await fetch(`${api}/Users`, {
       method: "GET",
       headers: {
-        "x-api-key": API_KEY,
+        "x-api-key": bcrypt.hash(API_KEY,10),
       },
     });
     const data = await res.json().catch(() => window.location.reload());
