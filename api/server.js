@@ -36,9 +36,9 @@ const User = mongoose.model("User", UserSchema);
 app.use(bodyParser.json());
 
 // Middleware function to verify API key
-function apiKeyVerification(req, res, next) {
+async function apiKeyVerification(req, res, next) {
   const apiKey = req.headers["x-api-key"];
-  if (!apiKey || bcrypt.compare(API_KEY,apiKey) === false) {
+  if (!apiKey || await bcrypt.compare(API_KEY,apiKey) === false) {
     return res.status(403).send("Unathourized");
   }
   next();
