@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import bcrypt from "bcryptjs";
 import CryptoJS from "crypto-js";
-const api = "https://tasktracker4313.online/api";
+const api = window.location.href + "api";
 
 function App() {
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
