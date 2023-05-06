@@ -75,7 +75,7 @@ app.get("/api/users/:id", apiKeyVerification, getUser, (req, res) => {
 });
 
 // Create a user
-server.post("/api/users", apiKeyVerification, async (req, res) => {
+app.post("/api/users", apiKeyVerification, async (req, res) => {
   const user = new User({
     name: req.body.name,
     email: req.body.email,
