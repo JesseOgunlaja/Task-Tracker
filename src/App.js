@@ -184,7 +184,10 @@ function App() {
       },
     });
     const data = await res.json().catch(() => window.location.reload());
-    const authToken = localStorage.getItem("authToken");
+    const authToken = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("authToken="))
+      ?.split("=")[1];
     if (authToken) {
       setUserId(authToken);
       const res2 = await fetch(`${api}/Users/${userId}`, {
@@ -239,7 +242,7 @@ function App() {
 
   function signOut() {
     setIncorrectPassword("");
-    localStorage.removeItem("authToken");
+    deleteCookie('authToken');
     setIncorrectUsername("");
     setUsername("");
     setEmailBeingAdded("");
@@ -290,6 +293,7 @@ function App() {
     if (await bcrypt.compare(passwordBeingAdded, password)) {
       passwordBox.current.type = "password";
       localStorage.setItem("authToken", userId);
+      document.cookie = `authToken=${userId}; path=/`;
       setSignedIn(true);
       return;
     }
@@ -528,6 +532,10 @@ function App() {
 
     getEmail();
   }, [userId, isForgettingPassword]);
+
+  function deleteCookie(cookieName) {
+    document.cookie = cookieName + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  }
 
   return (
     <Router>
