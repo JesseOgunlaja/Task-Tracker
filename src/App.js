@@ -184,16 +184,14 @@ function App() {
     const authToken = localStorage.getItem('authToken');
     if(authToken) {
       setUserId(authToken)
-      setUser((
-        await (
-          await fetch(`${api}/Users/${userId}`, {
-            method: "GET",
-            headers: {
-              "x-api-key": API_KEY,
-            },
-          })
-        ).json()
-      ).name)
+      const res2 = await fetch(`${api}/Users/${userId}`, {
+        method: "GET",
+        headers: {
+          "x-api-key": API_KEY,
+        },
+      })
+      const data2 = res.json().catch(() => window.location.reload())
+      setUser(data)
       setSignedIn(true)
     }
     return data;
