@@ -14,7 +14,7 @@ const options = {
   cert: process.env.REACT_APP_CERT,
   ca: process.env.REACT_APP_BUNDLE,
   key: process.env.REACT_APP_KEY,
-  host: "https://tasktracker4313.online",
+  host: "tasktracker4313.online",
 };
 
 const server = https.createServer(options, app);
