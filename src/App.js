@@ -12,9 +12,9 @@ function App() {
   const ENCRYPTION_SESSION_1 = process.env.REACT_APP_ENCRYPTION_SESSION_1;
   const ENCRYPTION_SESSION_2 = process.env.REACT_APP_ENCRYPTION_SESSION_2;
   const parsedSessionKey1 = CryptoJS.enc.Utf8.parse(ENCRYPTION_SESSION_1);
-  const stringSessionKey1 = CryptoJS.enc.Utf8.parse(parsedSessionKey1);
+  const stringSessionKey1 = CryptoJS.enc.Utf8.stringify(parsedSessionKey1);
   const parsedSessionKey2 = CryptoJS.enc.Utf8.parse(ENCRYPTION_SESSION_2);
-  const stringSessionKey2 = CryptoJS.enc.Utf8.parse(parsedSessionKey2);
+  const stringSessionKey2 = CryptoJS.enc.Utf8.stringify(parsedSessionKey2);
   const parsedKey = CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY);
   const stringKey = CryptoJS.enc.Base64.stringify(parsedKey);
   const API_KEY = CryptoJS.AES.encrypt(
