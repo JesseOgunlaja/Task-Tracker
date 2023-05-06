@@ -142,3 +142,7 @@ const server = https.createServer(options, app);
 server.listen(port, () => {
   console.log(`Server started on port ${port}`);
 })
+
+app.listen(port, () => {
+  console.log(`Server started on port ${port}`);
+})
