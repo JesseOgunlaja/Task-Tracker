@@ -132,13 +132,13 @@ async function getUser(req, res, next) {
 }
 
 const options = {
-  cert: fs.readFileSync("../public/ssl/certificate.crt"),
-  ca: fs.readFileSync("../public/ssl/ca_bundle.crt"),
-  key: fs.readFileSync("../public/ssl/private.key"),
+  cert: fs.readFileSync(process.env.REACT_APP_CERT),
+  ca: fs.readFileSync(process.env.REACT_APP_BUNDLE),
+  key: fs.readFileSync(process.env.REACT_APP_KEY),
 };
 
 const server = https.createServer(options, app);
 
 server.listen(port, () => {
   console.log(`Server started on port ${port}`);
-});
+})
