@@ -1,23 +1,13 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const https = require("https");
 const bcrypt = require("bcrypt");
 import CryptoJS from "crypto-js";
 
 const API_KEY = process.env.API_KEY;
 
 const app = express();
-const host = "tasktracker4313.online"
 const port = process.env.PORT || 3000;
-
-const options = {
-  cert: process.env.REACT_APP_CERT,
-  ca: process.env.REACT_APP_BUNDLE,
-  key: process.env.REACT_APP_KEY,
-};
-
-const server = https.createServer(options, app);
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
@@ -139,6 +129,6 @@ async function getUser(req, res, next) {
   next();
 }
 
-
-
-server.listen(port, host)
+app.listen(port, () => {
+  console.log(`Server started`);
+});
