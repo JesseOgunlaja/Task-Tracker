@@ -1,6 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const fs = require("fs");
+const https = require("https");
 const bcrypt = require("bcrypt");
 import CryptoJS from "crypto-js";
 
@@ -129,6 +131,14 @@ async function getUser(req, res, next) {
   next();
 }
 
-app.listen(port, () => {
-  console.log(`Server started`);
+const options = {
+  cert: fs.readFileSync("../public/ssl/certificate.crt"),
+  ca: fs.readFileSync("../public/ssl/ca_bundle.crt"),
+  key: fs.readFileSync("../public/ssl/private.key"),
+};
+
+const server = https.createServer(options, app);
+
+server.listen(port, () => {
+  console.log(`Server started on port ${port}`);
 });
