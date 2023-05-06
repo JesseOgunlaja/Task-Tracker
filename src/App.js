@@ -208,6 +208,12 @@ function App() {
           "x-api-key": API_KEY,
         },
       });
+      res2.then(response => {
+        if(response.message === "Cannot find user") {
+          signOut()
+          return data;
+        }
+      })
       const data2 = res2.json().catch(() => window.location.reload());
       setUser(data2);
       setSignedIn(true);

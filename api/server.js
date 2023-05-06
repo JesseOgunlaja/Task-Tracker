@@ -123,7 +123,7 @@ async function getUser(req, res, next) {
       return res.status(404).json({ message: "Cannot find user" });
     }
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(404).json({ message: "Cannot find user" });
   }
   res.user = user;
   next();
