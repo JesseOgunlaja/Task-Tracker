@@ -181,6 +181,21 @@ function App() {
       },
     });
     const data = await res.json().catch(() => window.location.reload());
+    const authToken = localStorage.getItem('authToken');
+    if(authToken) {
+      setUserId(authToken)
+      setUser((
+        await (
+          await fetch(`${api}/Users/${userId}`, {
+            method: "GET",
+            headers: {
+              "x-api-key": API_KEY,
+            },
+          })
+        ).json()
+      ).name)
+      setSignedIn(true)
+    }
     return data;
   }
 
@@ -272,6 +287,7 @@ function App() {
     }
     if (await bcrypt.compare(passwordBeingAdded, password)) {
       passwordBox.current.type = "password";
+      localStorage.setItem('authToken', userId);
       setSignedIn(true);
       return;
     }
