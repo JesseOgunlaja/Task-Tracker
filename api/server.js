@@ -3,11 +3,21 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 import CryptoJS from "crypto-js";
+const https = require("https");
 
 const API_KEY = process.env.API_KEY;
 
-const app = express();
+const host = "tasktracker4313.online";
 const port = process.env.PORT || 3000;
+
+const options = {
+  cert: fs.readFileSync("../public/ssl/certificate.crt"),
+  ca: fs.readFileSync("../public/ssl/ca_bundle.crt"),
+  key: fs.readFileSync("../public/ssl/private.key"),
+};
+
+const app = express();
+const httpsServer = https.createServer(options, app);
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
@@ -129,6 +139,4 @@ async function getUser(req, res, next) {
   next();
 }
 
-app.listen(port, () => {
-  console.log(`Server started`);
-});
+httpsServer.listen(port, host)
