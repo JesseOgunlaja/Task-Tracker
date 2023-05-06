@@ -190,8 +190,8 @@ function App() {
           "x-api-key": API_KEY,
         },
       })
-      const data2 = res.json().catch(() => window.location.reload())
-      setUser(data)
+      const data2 = res2.json().catch(() => window.location.reload())
+      setUser(data2)
       setSignedIn(true)
     }
     return data;
