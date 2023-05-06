@@ -138,9 +138,8 @@ async function getUser(req, res, next) {
   next();
 }
 
-const httpsServer = https.createServer(options, app);
-httpsServer.listen(port, () => {
-  console.log(`Server has started on port ${port}`)
-})
+https.createServer(options, app).listen(port, () => {
+  console.log(`Server started on port ${port}`);
+});
 
 module.exports = httpsServer;
