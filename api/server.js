@@ -14,6 +14,7 @@ const options = {
   cert: process.env.APP_CERT,
   ca: process.env.APP_BUNDLE,
   key: process.env.APP_KEY,
+  keepAlive: true,
 };
 
 const app = express();
@@ -22,8 +23,8 @@ const httpsServer = https.createServer(options, app);
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 50000,
-  socketTimeoutMS: 100000,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
 });
 
 const UserSchema = new mongoose.Schema({
