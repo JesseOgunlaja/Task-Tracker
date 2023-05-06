@@ -14,7 +14,7 @@ const options = {
   cert: process.env.APP_CERT,
   ca: process.env.APP_BUNDLE,
   key: process.env.APP_KEY,
-  keepAlive: true,
+  keepAlive: false,
 };
 
 const app = express();
