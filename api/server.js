@@ -20,6 +20,7 @@ function apiKeyVerification(req, res, next) {
   if (!apiKey || decryptedKey !== API_KEY) {
     return res.status(403).send("Unauthorized");
   }
+  hideApiKeyHeader()
   next();
 }
 
@@ -51,7 +52,6 @@ function hideApiKeyHeader(req, res, next) {
   const User = mongoose.model("User", UserSchema);
 
   app.use(bodyParser.json())
-  app.use(hideApiKeyHeader)
 // Get all users
 app.get("/api/users", apiKeyVerification, async (req, res) => {
   try {
