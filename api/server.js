@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const CryptoJS = require("crypto-js");
-const { greenlock } = require("greenlock-express")
+const greenlock = require("greenlock-express").create;
 
 const API_KEY = process.env.API_KEY;
 
