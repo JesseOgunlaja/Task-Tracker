@@ -292,7 +292,6 @@ function App() {
     }
     if (await bcrypt.compare(passwordBeingAdded, password)) {
       passwordBox.current.type = "password";
-      localStorage.setItem("authToken", userId);
       document.cookie = `authToken=${userId}; path=/`;
       setSignedIn(true);
       return;
