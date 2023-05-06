@@ -209,9 +209,9 @@ function App() {
         },
       });
       const resData = await res2.json()
-      if (res2.status === 404 && data.message === "Cannot find user") {
+      if (resData.message === "Cannot find user") {
         signOut();
-        return data
+        return data;
       }
       const data2 = await res2.json().catch(() => window.location.reload());
       setUser(data2.name);
