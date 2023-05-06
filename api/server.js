@@ -11,6 +11,14 @@ const API_KEY = process.env.API_KEY;
 const app = express();
 const port = process.env.PORT || 3000;
 
+const options = {
+  cert: process.env.REACT_APP_CERT,
+  ca: process.env.REACT_APP_BUNDLE,
+  key: process.env.REACT_APP_KEY,
+};
+
+const server = https.createServer(options, app);
+
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -33,7 +41,7 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", UserSchema);
 
-app.use(bodyParser.json());
+server.use(bodyParser.json());
 
 // Middleware function to verify API key
 function apiKeyVerification(req, res, next) {
@@ -51,7 +59,7 @@ function apiKeyVerification(req, res, next) {
 }
 
 // Get all users
-app.get("/api/users", apiKeyVerification, async (req, res) => {
+server.get("/api/users", apiKeyVerification, async (req, res) => {
   try {
     const users = await User.find();
     res.status(200).json(users);
@@ -61,12 +69,12 @@ app.get("/api/users", apiKeyVerification, async (req, res) => {
 });
 
 // Get one user
-app.get("/api/users/:id", apiKeyVerification, getUser, (req, res) => {
+server.get("/api/users/:id", apiKeyVerification, getUser, (req, res) => {
   res.json(res.user);
 });
 
 // Create a user
-app.post("/api/users", apiKeyVerification, async (req, res) => {
+server.post("/api/users", apiKeyVerification, async (req, res) => {
   const user = new User({
     name: req.body.name,
     email: req.body.email,
@@ -82,7 +90,7 @@ app.post("/api/users", apiKeyVerification, async (req, res) => {
 });
 
 // Update a user
-app.patch("/api/users/:id", apiKeyVerification, getUser, async (req, res) => {
+server.patch("/api/users/:id", apiKeyVerification, getUser, async (req, res) => {
   if (req.body.name != null) {
     res.user.name = req.body.name;
   }
@@ -104,7 +112,7 @@ app.patch("/api/users/:id", apiKeyVerification, getUser, async (req, res) => {
 });
 
 // Delete a user
-app.delete("/api/users/:id", apiKeyVerification, async (req, res) => {
+server.delete("/api/users/:id", apiKeyVerification, async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (deletedUser == null) {
@@ -131,18 +139,8 @@ async function getUser(req, res, next) {
   next();
 }
 
-const options = {
-  cert: process.env.REACT_APP_CERT,
-  ca: process.env.REACT_APP_BUNDLE,
-  key: process.env.REACT_APP_KEY,
-};
 
-const server = https.createServer(options, app);
 
 server.listen(port, () => {
-  console.log(`Server started on port ${port}`);
-})
-
-app.listen(port, () => {
   console.log(`Server started on port ${port}`);
 })
