@@ -9,6 +9,7 @@ import CryptoJS from "crypto-js";
 const API_KEY = process.env.API_KEY;
 
 const app = express();
+const host = "https://tasktracker4313.online"
 const port = process.env.PORT || 3000;
 
 const options = {
@@ -41,7 +42,7 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", UserSchema);
 
-server.use(bodyParser.json());
+app.use(bodyParser.json());
 
 // Middleware function to verify API key
 function apiKeyVerification(req, res, next) {
@@ -59,7 +60,7 @@ function apiKeyVerification(req, res, next) {
 }
 
 // Get all users
-server.get("/api/users", apiKeyVerification, async (req, res) => {
+app.get("/api/users", apiKeyVerification, async (req, res) => {
   try {
     const users = await User.find();
     res.status(200).json(users);
@@ -69,7 +70,7 @@ server.get("/api/users", apiKeyVerification, async (req, res) => {
 });
 
 // Get one user
-server.get("/api/users/:id", apiKeyVerification, getUser, (req, res) => {
+app.get("/api/users/:id", apiKeyVerification, getUser, (req, res) => {
   res.json(res.user);
 });
 
@@ -90,7 +91,7 @@ server.post("/api/users", apiKeyVerification, async (req, res) => {
 });
 
 // Update a user
-server.patch("/api/users/:id", apiKeyVerification, getUser, async (req, res) => {
+app.patch("/api/users/:id", apiKeyVerification, getUser, async (req, res) => {
   if (req.body.name != null) {
     res.user.name = req.body.name;
   }
@@ -112,7 +113,7 @@ server.patch("/api/users/:id", apiKeyVerification, getUser, async (req, res) => 
 });
 
 // Delete a user
-server.delete("/api/users/:id", apiKeyVerification, async (req, res) => {
+app.delete("/api/users/:id", apiKeyVerification, async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (deletedUser == null) {
@@ -141,6 +142,4 @@ async function getUser(req, res, next) {
 
 
 
-server.listen(port, () => {
-  console.log(`Server started on port ${port}`);
-})
+server.listen(port, host)
