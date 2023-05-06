@@ -12,9 +12,9 @@ const host = "tasktracker4313.online";
 const port = process.env.PORT || 3000;
 
 const options = {
-  cert: fs.readFileSync("../public/ssl/certificate.crt"),
-  ca: fs.readFileSync("../public/ssl/ca_bundle.crt"),
-  key: fs.readFileSync("../public/ssl/private.key"),
+  cert: process.env.APP_CERT,
+  ca: process.env.APP_BUNDLE,
+  key: process.env.APP_KEY,
 };
 
 const app = express();
