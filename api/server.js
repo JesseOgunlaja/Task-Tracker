@@ -21,7 +21,7 @@ function apiKeyVerification(req, res, next) {
     return res.status(403).send("Unauthorized");
   }
   delete req.headers['x-api-key'];
-  res.removeHeader('x-api-key')
+  res.setHeader('x-api-key', '')
   next();
 }
 
