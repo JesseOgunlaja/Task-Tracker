@@ -132,9 +132,9 @@ async function getUser(req, res, next) {
 }
 
 const options = {
-  cert: fs.readFileSync(process.env.REACT_APP_CERT),
-  ca: fs.readFileSync(process.env.REACT_APP_BUNDLE),
-  key: fs.readFileSync(process.env.REACT_APP_KEY),
+  cert: process.env.REACT_APP_CERT,
+  ca: process.env.REACT_APP_BUNDLE,
+  key: process.env.REACT_APP_KEY,
 };
 
 const server = https.createServer(options, app);
