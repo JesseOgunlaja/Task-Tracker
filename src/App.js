@@ -3,7 +3,7 @@ import emailjs from "@emailjs/browser";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import bcrypt from "bcryptjs";
-import CryptoJS from 'crypto-js';
+import CryptoJS from "crypto-js";
 const api = "https://task-tracker-4313.vercel.app/api";
 
 function App() {
@@ -11,7 +11,10 @@ function App() {
   const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
   const parsedKey = CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY);
   const stringKey = CryptoJS.enc.Base64.stringify(parsedKey);
-  const API_KEY = CryptoJS.AES.encrypt(process.env.REACT_APP_API_KEY, stringKey).toString()
+  const API_KEY = CryptoJS.AES.encrypt(
+    process.env.REACT_APP_API_KEY,
+    stringKey
+  ).toString();
   const newTaskTitle = useRef();
   const newTaskDate = useRef();
   const newTaskReminder = useRef();
@@ -32,7 +35,7 @@ function App() {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isAddingUser, setIsAddingUser] = useState(false);
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState(null);
   const [user, setUser] = useState("");
   const [signedIn, setSignedIn] = useState(false);
   const [people, setPeople] = useState(null);
@@ -181,18 +184,18 @@ function App() {
       },
     });
     const data = await res.json().catch(() => window.location.reload());
-    const authToken = localStorage.getItem('authToken');
-    if(authToken) {
-      setUserId(authToken)
+    const authToken = localStorage.getItem("authToken");
+    if (authToken) {
+      setUserId(authToken);
       const res2 = await fetch(`${api}/Users/${userId}`, {
         method: "GET",
         headers: {
           "x-api-key": API_KEY,
         },
-      })
-      const data2 = res2.json().catch(() => window.location.reload())
-      setUser(data2)
-      setSignedIn(true)
+      });
+      const data2 = res2.json().catch(() => window.location.reload());
+      setUser(data2);
+      setSignedIn(true);
     }
     return data;
   }
@@ -235,7 +238,8 @@ function App() {
   }
 
   function signOut() {
-    setIncorrectPassword("")
+    setIncorrectPassword("");
+    localStorage.removeItem("authToken");
     setIncorrectUsername("");
     setUsername("");
     setEmailBeingAdded("");
@@ -285,7 +289,7 @@ function App() {
     }
     if (await bcrypt.compare(passwordBeingAdded, password)) {
       passwordBox.current.type = "password";
-      localStorage.setItem('authToken', userId);
+      localStorage.setItem("authToken", userId);
       setSignedIn(true);
       return;
     }
@@ -483,8 +487,8 @@ function App() {
       setPasswordBeingAdded("");
       setIsPuttingPassword("");
       setIncorrectUsername(false);
-      setIncorrectPassword("")
-      setUsername("")
+      setIncorrectPassword("");
+      setUsername("");
     }
     if (page === "changePassword") {
       setIsChangingPassword(false);
@@ -635,31 +639,45 @@ function App() {
                           </button>
                         </div>
                       ) : null}
-                      {tasks.length !== 0 ? (
-                        tasks.map((task, index) => (
-                          <div
-                            key={Math.random()}
-                            className={task.reminder ? "task reminder" : "task"}
-                          >
-                            <p className="taskName">{task.task}</p>
-                            <p className="taskDate">{task.date}</p>
-                            <div
-                              onClick={() => deleteTask(index)}
-                              className="deleteButton"
-                            >
-                              <hr className="line1" />
-                              <hr className="line2" />
-                            </div>
-                            <button
-                              className="button green edit-button"
-                              onClick={() => edit(index)}
-                            >
-                              Edit
-                            </button>
-                          </div>
-                        ))
+                      {tasks != null ? (
+                        <>
+                          {tasks.length !== 0 ? (
+                            tasks.map((task, index) => (
+                              <div
+                                key={Math.random()}
+                                className={
+                                  task.reminder ? "task reminder" : "task"
+                                }
+                              >
+                                <p className="taskName">{task.task}</p>
+                                <p className="taskDate">{task.date}</p>
+                                <div
+                                  onClick={() => deleteTask(index)}
+                                  className="deleteButton"
+                                >
+                                  <hr className="line1" />
+                                  <hr className="line2" />
+                                </div>
+                                <button
+                                  className="button green edit-button"
+                                  onClick={() => edit(index)}
+                                >
+                                  Edit
+                                </button>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="noTasks">No tasks</p>
+                          )}
+                        </>
                       ) : (
-                        <p className="noTasks">No tasks</p>
+                        <div className="loadingBox">
+                          <div className="loader-3">
+                            <div className="pulse"></div>
+                            <div className="pulse"></div>
+                            <div className="pulse"></div>
+                          </div>
+                        </div>
                       )}
                       <div className="signOutButtons">
                         <button
