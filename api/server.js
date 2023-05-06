@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const CryptoJS = require("crypto-js");
+import CryptoJS from "crypto-js";
 const https = require("https");
 
 const API_KEY = process.env.API_KEY;
