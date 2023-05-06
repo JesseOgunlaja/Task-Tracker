@@ -208,11 +208,10 @@ function App() {
           "x-api-key": API_KEY,
         },
       });
-      // const resData = await res2.json()
-      // if (resData.message === "Cannot find user") {
-      //   signOut();
-      //   return data;
-      // }
+      if(res2.status === 404) {
+        signOut()
+        return data;
+      }
       const data2 = await res2.json().catch(() => window.location.reload());
       setUser(data2.name);
       setSignedIn(true);
