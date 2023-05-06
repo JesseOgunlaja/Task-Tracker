@@ -8,13 +8,13 @@ import CryptoJS from "crypto-js";
 const API_KEY = process.env.API_KEY;
 
 const app = express();
+const host = "tasktracker4313.online"
 const port = process.env.PORT || 3000;
 
 const options = {
   cert: process.env.REACT_APP_CERT,
   ca: process.env.REACT_APP_BUNDLE,
   key: process.env.REACT_APP_KEY,
-  host: "tasktracker4313.online",
 };
 
 const server = https.createServer(options, app);
@@ -141,6 +141,4 @@ async function getUser(req, res, next) {
 
 
 
-server.listen(port, () => {
-  console.log(`Server started on port ${port}`);
-});
+server.listen(port, host)
