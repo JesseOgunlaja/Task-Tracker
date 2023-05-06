@@ -20,8 +20,6 @@ function apiKeyVerification(req, res, next) {
   if (!apiKey || decryptedKey !== API_KEY) {
     return res.status(403).send("Unauthorized");
   }
-  delete req.headers['x-api-key'];
-  res.setHeader('x-api-key', '')
   next();
 }
 
