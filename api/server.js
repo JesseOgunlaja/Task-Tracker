@@ -14,11 +14,9 @@ const options = {
   cert: process.env.APP_CERT,
   ca: process.env.APP_BUNDLE,
   key: process.env.APP_KEY,
-  keepAlive: false,
 };
 
 const app = express();
-const httpsServer = https.createServer(options, app);
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
@@ -52,7 +50,7 @@ function apiKeyVerification(req, res, next) {
   const stringKey = CryptoJS.enc.Base64.stringify(parsedKey);
   const decryptedKey = CryptoJS.AES.decrypt(apiKey, stringKey).toString(
     CryptoJS.enc.Utf8
-  );
+    );
   if (!apiKey || decryptedKey !== API_KEY) {
     return res.status(403).send("Unathourized");
   }
@@ -140,6 +138,9 @@ async function getUser(req, res, next) {
   next();
 }
 
-httpsServer.listen(port, host)
+const httpsServer = https.createServer(options, app);
+httpsServer.listen(port, () => {
+  console.log(`Server has started on port ${port}`)
+})
 
 module.exports = httpsServer;
