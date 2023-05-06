@@ -2,13 +2,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const fs = require("fs")
 import CryptoJS from "crypto-js";
 const https = require("https");
 
 const API_KEY = process.env.API_KEY;
 
-const host = "tasktracker4313.online";
+const host = "0.0.0.0";
 const port = process.env.PORT || 3000;
 
 const options = {
