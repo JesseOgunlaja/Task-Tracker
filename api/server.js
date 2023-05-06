@@ -2,22 +2,19 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-import CryptoJS from 'crypto-js';
+import CryptoJS from "crypto-js";
 
 const API_KEY = process.env.API_KEY;
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-mongoose.connect(
-  process.env.MONGODB_URI,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 45000,
-  }
-);
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+});
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
@@ -39,25 +36,16 @@ app.use(bodyParser.json());
 // Middleware function to verify API key
 function apiKeyVerification(req, res, next) {
   const apiKey = req.headers["x-api-key"];
-  const referer = req.headers.referer
   const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
   const parsedKey = CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY);
   const stringKey = CryptoJS.enc.Base64.stringify(parsedKey);
-  if(referer === "https://task-tracker-4313.vercel.app/") {
-    const decryptedKey = CryptoJS.AES.decrypt(apiKey, stringKey).toString(CryptoJS.enc.Utf8);
-    if (!apiKey || decryptedKey !== API_KEY) {
-      return res.status(403).send("Unathourized");
-    }
-    next();
+  const decryptedKey = CryptoJS.AES.decrypt(apiKey, stringKey).toString(
+    CryptoJS.enc.Utf8
+  );
+  if (!apiKey || decryptedKey !== API_KEY) {
+    return res.status(403).send("Unathourized");
   }
-  else {
-    const encryptedKey = CryptoJS.AES.encrypt(apiKey, stringKey).toString()
-    const decryptedKey = CryptoJS.AES.decrypt(encryptedKey, stringKey).toString(CryptoJS.enc.Utf8);
-    if (!apiKey || decryptedKey !== API_KEY) {
-      return res.status(403).send("Unathourized");
-    }
-    next();
-  }
+  next();
 }
 
 // Get all users

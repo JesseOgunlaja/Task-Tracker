@@ -9,6 +9,12 @@ const api = "https://task-tracker-4313.vercel.app/api";
 function App() {
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
   const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
+  const ENCRYPTION_SESSION_1 = process.env.REACT_APP_ENCRYPTION_SESSION_1;
+  const ENCRYPTION_SESSION_2 = process.env.REACT_APP_ENCRYPTION_SESSION_2;
+  const parsedSessionKey1 = CryptoJS.enc.Utf8.parse(ENCRYPTION_SESSION_1);
+  const stringSessionKey1 = CryptoJS.enc.Utf8.parse(ENCRYPTION_SESSION_1);
+  const parsedSessionKey2 = CryptoJS.enc.Utf8.parse(ENCRYPTION_SESSION_2);
+  const stringSessionKey2 = CryptoJS.enc.Utf8.parse(ENCRYPTION_SESSION_2);
   const parsedKey = CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY);
   const stringKey = CryptoJS.enc.Base64.stringify(parsedKey);
   const API_KEY = CryptoJS.AES.encrypt(
@@ -189,7 +195,13 @@ function App() {
       .find((row) => row.startsWith("authToken="))
       ?.split("=")[1];
     if (authToken) {
-      setUserId(authToken);
+      const decrypt1 = CryptoJS.AES.decrypt(authToken, stringSessionKey1).toString(
+        CryptoJS.enc.Utf8
+      );
+      const decrypt2 = CryptoJS.AES.decrypt(decrypt1, stringSessionKey2).toString(
+        CryptoJS.enc.Utf8
+      );
+      setUserId(decrypt2);
       const res2 = await fetch(`${api}/Users/${userId}`, {
         method: "GET",
         headers: {
@@ -292,7 +304,15 @@ function App() {
     }
     if (await bcrypt.compare(passwordBeingAdded, password)) {
       passwordBox.current.type = "password";
-      document.cookie = `authToken=${userId}; path=/`;
+      const FIRST_ENCRYPTION = CryptoJS.AES.encrypt(
+        userId,
+        stringSessionKey1
+      ).toString();
+      const SECOND_ENCRYPTION = CryptoJS.AES.encrypt(
+        FIRST_ENCRYPTION,
+        stringSessionKey2
+      ).toString();      
+      document.cookie = `authToken=${SECOND_ENCRYPTION}; path=/`;
       setSignedIn(true);
       return;
     }
