@@ -3,29 +3,11 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const CryptoJS = require("crypto-js");
-const { create } = require("greenlock-express");
 
 const API_KEY = process.env.API_KEY;
 
 const app = express();
 const port = process.env.PORT || 80;
-
-
-const lex = create({
-  server: "https://acme-v02.api.letsencrypt.org/directory",
-  email: "jesseogunlaja@gmail.com", // replace with your email
-  agreeTos: true,
-  approveDomains: ["tasktracker4313.online"], // replace with your domain
-  app: app,
-});
-
-lex
-  .greenlock
-  .init()
-  .ready(() => {
-    console.log('Greenlock initialized and ready');
-  });
-
 
 function apiKeyVerification(req, res, next) {
   const apiKey = req.headers["x-api-key"];
@@ -144,6 +126,9 @@ async function getUser(req, res, next) {
   res.user = user;
   next();
 }
+
 app.listen(port, () => {
   console.log(`Server started`);
 })
+
+

@@ -1,0 +1,1 @@
+{"manager":{"configFile":"./greenlock.json","module":"@greenlock/manager"},"configDir":"./greenlock.d"}
