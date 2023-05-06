@@ -22,8 +22,6 @@ const httpsServer = https.createServer(options, app);
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
 });
 
 const UserSchema = new mongoose.Schema({
