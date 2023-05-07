@@ -10,9 +10,6 @@ const app = express();
 const port = process.env.PORT || 80;
 
 function apiKeyVerification(req, res, next) {
-  if (!apiKey || decryptedKey !== API_KEY) {
-    return res.status(403).send("Unauthorized");
-  }
   const authorizationHeader = req.headers["authorization"];
   if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
     return res.status(403).send("Unauthorized");
