@@ -34,7 +34,7 @@ const proxyOptions = {
 
 const proxy = createProxyMiddleware(proxyOptions);
 app.use(apiKeyVerification)
-app.use("/api",proxy);
+app.use("/api/Users",proxy);
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
