@@ -186,7 +186,7 @@ function App() {
     const res = await fetch(`/api/Users`, {
       method: "GET",
       headers: {
-        "x-api-key": API_KEY,
+        "x-api-key": "HI",
       },
     });
     const data = await res.json()

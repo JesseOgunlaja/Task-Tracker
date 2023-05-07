@@ -32,7 +32,7 @@ const proxyMiddleware = createProxyMiddleware({
   },
   onProxyReq(proxyReq, req, res) {
     // Modify the request headers to hide the API key
-    proxyReq.setHeader("x-api-key", ""); // Remove or modify this line if necessary
+    proxyReq.setHeader("x-api-key", API_KEY); // Remove or modify this line if necessary
   },
 });
 
