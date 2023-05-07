@@ -31,6 +31,7 @@ const proxyMiddleware = createProxyMiddleware({
     "^/api": "/",
   },
   onProxyReq(proxyReq, req, res) {
+    res.setHeader("x-api-key", API_KEY);
     proxyReq.setHeader("x-api-key", API_KEY);
   },
 });
