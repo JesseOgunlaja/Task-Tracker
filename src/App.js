@@ -81,7 +81,7 @@ function App() {
     const currentTasks = [...tasks];
     currentTasks.splice(index, 1);
 
-    await fetch(`/api/Users`, {
+    await fetch(`${api}/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -183,7 +183,7 @@ function App() {
   }
 
   async function fetchPeople() {
-    const res = await fetch(`${api}/Users`, {
+    const res = await fetch(`/api/Users`, {
       method: "GET",
       headers: {
         "x-api-key": API_KEY,
