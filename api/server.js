@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const CryptoJS = require("crypto-js");
+const { createProxyMiddleware } = require("http-proxy-middleware");
 
 const API_KEY = process.env.API_KEY;
 
@@ -22,6 +23,21 @@ function apiKeyVerification(req, res, next) {
   }
   next();
 }
+
+const proxyMiddleware = createProxyMiddleware({
+  target: "https://tasktracker4313.online/api", // Replace with your target API URL
+  changeOrigin: true,
+  pathRewrite: {
+    "^/api": "/", // Rewrite the path to remove "/api" prefix
+  },
+  onProxyReq(proxyReq, req, res) {
+    // Modify the request headers to hide the API key
+    proxyReq.setHeader("x-api-key", ""); // Remove or modify this line if necessary
+  },
+});
+
+// Use the proxy middleware for all API requests
+app.use("/api", apiKeyVerification, proxyMiddleware);
 
   mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
@@ -47,7 +63,7 @@ function apiKeyVerification(req, res, next) {
 
   app.use(bodyParser.json())
 // Get all users
-app.get("/api/users", apiKeyVerification, async (req, res) => {
+app.get("/api/users", async (req, res) => {
   try {
     const users = await User.find();
     res.status(200).json(users);
@@ -57,12 +73,12 @@ app.get("/api/users", apiKeyVerification, async (req, res) => {
 });
 
 // Get one user
-app.get("/api/users/:id", apiKeyVerification, getUser, (req, res) => {
+app.get("/api/users/:id", getUser, (req, res) => {
   res.json(res.user);
 });
 
 // Create a user
-app.post("/api/users", apiKeyVerification, async (req, res) => {
+app.post("/api/users", async (req, res) => {
   const user = new User({
     name: req.body.name,
     email: req.body.email,
@@ -78,7 +94,7 @@ app.post("/api/users", apiKeyVerification, async (req, res) => {
 });
 
 // Update a user
-app.patch("/api/users/:id", apiKeyVerification, getUser, async (req, res) => {
+app.patch("/api/users/:id", getUser, async (req, res) => {
   if (req.body.name != null) {
     res.user.name = req.body.name;
   }
@@ -100,7 +116,7 @@ app.patch("/api/users/:id", apiKeyVerification, getUser, async (req, res) => {
 });
 
 // Delete a user
-app.delete("/api/users/:id", apiKeyVerification, async (req, res) => {
+app.delete("/api/users/:id", async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (deletedUser == null) {

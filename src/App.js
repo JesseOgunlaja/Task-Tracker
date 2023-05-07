@@ -81,7 +81,7 @@ function App() {
     const currentTasks = [...tasks];
     currentTasks.splice(index, 1);
 
-    await fetch(`${api}/Users/${userId}`, {
+    await fetch(`/api/Users`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
