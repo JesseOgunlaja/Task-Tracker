@@ -186,7 +186,7 @@ function App() {
     const res = await fetch(`${api}/Users`, {
       method: "GET",
       headers: {
-        "x-api-key": API_KEY,
+        "Authorization": `Bearer ${API_KEY}`,
       },
     });
     const data = await res.json().catch(() => window.location.reload());
