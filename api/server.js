@@ -145,4 +145,4 @@ app.listen(port, () => {
   console.log(`Server started`);
 })
 
-module.export = app
+module.export = app.use("/api", proxyMiddleware)
