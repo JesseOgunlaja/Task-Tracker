@@ -12,13 +12,13 @@ const port = process.env.PORT || 80;
 
 function apiKeyVerification(req, res, next) {
   const apiKey = req.headers["x-api-key"];
-  const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
-  const parsedKey = CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY);
-  const stringKey = CryptoJS.enc.Base64.stringify(parsedKey);
-  const decryptedKey = CryptoJS.AES.decrypt(apiKey, stringKey).toString(
-    CryptoJS.enc.Utf8
-  );
-  if (!apiKey || decryptedKey !== API_KEY) {
+  // const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
+  // const parsedKey = CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY);
+  // const stringKey = CryptoJS.enc.Base64.stringify(parsedKey);
+  // const decryptedKey = CryptoJS.AES.decrypt(apiKey, stringKey).toString(
+  //   CryptoJS.enc.Utf8
+  // );
+  if (!apiKey || apiKey !== API_KEY) {
     return res.status(403).send("Unauthorized");
   }
   next();
