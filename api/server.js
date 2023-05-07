@@ -16,10 +16,10 @@ function apiKeyVerification(req, res, next) {
   // const parsedKey = CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY);
   // const stringKey = CryptoJS.enc.Base64.stringify(parsedKey);
   // const decryptedKey = CryptoJS.AES.decrypt(apiKey, stringKey).toString(
-  //   CryptoJS.enc.Utf8
-  // );
-  if (!apiKey || apiKey !== API_KEY) {
-    return res.status(403).send(apiKey);
+    //   CryptoJS.enc.Utf8
+    // );
+    if (!apiKey || apiKey !== API_KEY) {
+      return res.status(403).send(apiKey);
   }
   next();
 }
@@ -36,11 +36,12 @@ const proxyOptions = {
 };
 
 const proxy = createProxyMiddleware('/api', proxyOptions);
+app.use(proxy);
 
 mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 5000,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000,
     socketTimeoutMS: 45000,
   });
 
@@ -141,7 +142,6 @@ async function getUser(req, res, next) {
   next();
 }
 
-app.use(proxy);
 
 app.listen(port, () => {
   console.log(`Server started`);
