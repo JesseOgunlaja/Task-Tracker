@@ -25,7 +25,7 @@ function apiKeyVerification(req, res, next) {
 }
 
 const proxyMiddleware = createProxyMiddleware({
-  target: "https://tasktracker4313.online", // Replace with your target API URL
+  target: "https://tasktracker4313.online/api", // Replace with your target API URL
   changeOrigin: true,
   onProxyReq(proxyReq, req, res) {
     // Modify the request headers to hide the API key
