@@ -24,18 +24,8 @@ function apiKeyVerification(req, res, next) {
   next();
 }
 
-app.use('/api', createProxyMiddleware({
-  target: 'https://tasktracker4313.online/api',
-  changeOrigin: true,
-  onProxyReq(req,res) {
-    req.setHeader("x-api-key", API_KEY)
-  },
-  headers: {
-    'x-api-key': API_KEY
-  }
-}));
 
-  mongoose.connect(process.env.MONGODB_URI, {
+mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     serverSelectionTimeoutMS: 5000,
@@ -56,9 +46,9 @@ app.use('/api', createProxyMiddleware({
   });
 
   const User = mongoose.model("User", UserSchema);
-
+  
   app.use(bodyParser.json())
-// Get all users
+  // Get all users
 app.get("/api/users",apiKeyVerification, async (req, res) => {
   try {
     const users = await User.find();
@@ -138,6 +128,17 @@ async function getUser(req, res, next) {
   res.user = user;
   next();
 }
+
+app.use('/api', createProxyMiddleware({
+  target: 'https://tasktracker4313.online/api',
+  changeOrigin: true,
+  onProxyReq(req,res) {
+    req.setHeader("x-api-key", API_KEY)
+  },
+  headers: {
+    'x-api-key': API_KEY
+  }
+}));
 
 app.listen(port, () => {
   console.log(`Server started`);
