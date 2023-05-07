@@ -27,14 +27,15 @@ function apiKeyVerification(req, res, next) {
 const proxyMiddleware = createProxyMiddleware({
   target: "https://tasktracker4313.online/api", // Replace with your target API URL
   changeOrigin: true,
+  pathRewrite: {
+    "^/api": "/",
+  },
   onProxyReq(proxyReq, req, res) {
-    // Modify the request headers to hide the API key
-    proxyReq.setHeader("x-api-key", "hi"); // Remove or modify this line if necessary
+    proxyReq.setHeader("x-api-key", "hi");
   },
 });
 
-// Use the proxy middleware for all API requests
-app.use("/api", apiKeyVerification);
+app.use("/api", apiKeyVerification, proxyMiddleware);
 
   mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
@@ -144,4 +145,4 @@ app.listen(port, () => {
   console.log(`Server started`);
 })
 
-module.export = app.use("/api",proxyMiddleware)
+module.export = app
