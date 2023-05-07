@@ -32,21 +32,23 @@ const proxy = createProxyMiddleware({
   },
 });
 
+app.use('/api', proxy);
+app.use(apiKeyVerification)
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-});
+    socketTimeoutMS: 45000,
+  });
 
-const UserSchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  tasks: [
-    {
-      task: { type: String },
+  const UserSchema = new mongoose.Schema({
+    name: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    tasks: [
+      {
+        task: { type: String },
         date: { type: String },
         reminder: { type: Boolean },
       },
@@ -57,22 +59,22 @@ const UserSchema = new mongoose.Schema({
   
   app.use(bodyParser.json())
   // Get all users
-  app.get("/api/users",apiKeyVerification, async (req, res) => {
-    try {
-      const users = await User.find();
-      res.status(200).json(users);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  });
+app.get("/api/users", async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 // Get one user
-app.get("/api/users/:id",apiKeyVerification, getUser, (req, res) => {
+app.get("/api/users/:id", getUser, (req, res) => {
   res.json(res.user);
 });
 
 // Create a user
-app.post("/api/users",apiKeyVerification, async (req, res) => {
+app.post("/api/users", async (req, res) => {
   const user = new User({
     name: req.body.name,
     email: req.body.email,
@@ -88,7 +90,7 @@ app.post("/api/users",apiKeyVerification, async (req, res) => {
 });
 
 // Update a user
-app.patch("/api/users/:id",apiKeyVerification, getUser, async (req, res) => {
+app.patch("/api/users/:id", getUser, async (req, res) => {
   if (req.body.name != null) {
     res.user.name = req.body.name;
   }
@@ -110,7 +112,7 @@ app.patch("/api/users/:id",apiKeyVerification, getUser, async (req, res) => {
 });
 
 // Delete a user
-app.delete("/api/users/:id",apiKeyVerification, async (req, res) => {
+app.delete("/api/users/:id", async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (deletedUser == null) {
@@ -137,7 +139,6 @@ async function getUser(req, res, next) {
   next();
 }
 
-app.use('/api', proxy);
 
 app.listen(port, () => {
   console.log(`Server started`);
