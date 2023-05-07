@@ -19,7 +19,7 @@ function apiKeyVerification(req, res, next) {
   //   CryptoJS.enc.Utf8
   // );
   if (!apiKey || apiKey !== API_KEY) {
-    return res.status(403).send(apiKey, res.headers["x-api-key"]);
+    return res.status(403).send(apiKey);
   }
   next();
 }
@@ -35,7 +35,7 @@ const proxyMiddleware = createProxyMiddleware({
   },
 });
 
-app.use("/api", apiKeyVerification, proxyMiddleware);
+app.use("/api", apiKeyVerification);
 
   mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
