@@ -25,7 +25,7 @@ function apiKeyVerification(req, res, next) {
 }
 
 const proxyOptions = {
-  target: 'http://tasktracker4313.online/api', // The URL of the server you want to proxy
+  target: 'http://tasktracker4313.online', // The URL of the server you want to proxy
   changeOrigin: true, // Needed for virtual hosted sites
   onProxyReq: (proxyReq, req, res) => {
     proxyReq.setHeader('x-api-key', API_KEY);
