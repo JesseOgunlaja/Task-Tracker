@@ -28,11 +28,8 @@ const proxyOptions = {
   target: 'http://tasktracker4313.online/api', // The URL of the server you want to proxy
   changeOrigin: true, // Needed for virtual hosted sites
   onProxyReq: (proxyReq, req, res) => {
-    proxyReq.setHeader('x-api-key', API_KEY); // Change the header value
-  },
-  onProxyRes: (proxyRes, req, res) => {
-    proxyRes.headers['x-api-key'] = API_KEY
-  },
+    proxyReq.setHeader('x-api-key', API_KEY);
+  }
 };
 
 const proxy = createProxyMiddleware('/api', proxyOptions);
