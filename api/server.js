@@ -34,7 +34,8 @@ const proxyMiddleware = createProxyMiddleware({
 });
 
 // Use the proxy middleware for all API requests
-app.use("/api", apiKeyVerification, proxyMiddleware);
+app.use("/api",proxyMiddleware)
+app.use("/api", apiKeyVerification);
 
   mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
