@@ -29,7 +29,7 @@ const proxy = createProxyMiddleware({
   changeOrigin: true,
 
   onProxyReq(proxyReq, req, res) {
-    delete proxyReq.headers['x-api-key'];
+    proxyReq.setHeader("x-api-key", "");
   },
 });
 
