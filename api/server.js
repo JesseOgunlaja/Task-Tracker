@@ -26,9 +26,12 @@ function apiKeyVerification(req, res, next) {
 
 app.use("/api", apiKeyVerification);
 
-app.use('/api/users', createProxyMiddleware({
-  target: 'https://tasktracker4313.online',
+app.use('/api', createProxyMiddleware({
+  target: 'https://tasktracker4313.online/api',
   changeOrigin: true,
+  onProxyReq(req,res) {
+    req.setHeader("x-api-key", API_KEY)
+  },
   headers: {
     'x-api-key': API_KEY
   }
