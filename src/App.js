@@ -184,7 +184,10 @@ function App() {
 
   async function fetchPeople() {
     const res = await fetch(`/api/Users`, {
-      method: "GET"
+      method: "GET",
+      headers: {
+        "x-api-key": process.env.API_KEY,
+      },
     });
     const data = await res.json()
     const authToken = document.cookie
