@@ -85,7 +85,7 @@ function App() {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
-        "x-api-key": API_KEY,
+        "x-api-key": "",
       },
       body: JSON.stringify({
         tasks: currentTasks,
@@ -110,7 +110,7 @@ function App() {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
-          "x-api-key": API_KEY,
+          "x-api-key": "",
         },
         body: JSON.stringify({
           tasks: currentTasks,
@@ -144,7 +144,7 @@ function App() {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
-        "x-api-key": API_KEY,
+        "x-api-key": "",
       },
       body: JSON.stringify({
         tasks: currentTasks,
@@ -175,7 +175,7 @@ function App() {
     const res = await fetch(`${api}/Users/${userId}`, {
       methpd: "GET",
       headers: {
-        "x-api-key": API_KEY,
+        "x-api-key": "",
       },
     });
     const data = res.json();
@@ -185,6 +185,9 @@ function App() {
   async function fetchPeople() {
     const res = await fetch(`/api/Users`, {
       method: "GET",
+      headers: {
+        "x-api-key": "",
+      },
     });
     const data = await res.json()
     const authToken = document.cookie
@@ -202,7 +205,7 @@ function App() {
       const res2 = await fetch(`${api}/Users/${userId}`, {
         method: "GET",
         headers: {
-          "x-api-key": API_KEY,
+          "x-api-key": "",
         },
       });
       const data2 = await res2.json().catch(() => window.location.reload());
@@ -235,7 +238,7 @@ function App() {
         method: "POST",
         headers: {
           "Content-type": "application/json",
-          "x-api-key": API_KEY,
+          "x-api-key": "",
         },
         body: JSON.stringify({
           name: nameBeingAdded,
@@ -276,7 +279,7 @@ function App() {
     await fetch(`${api}/Users/${userId}`, {
       method: "DELETE",
       headers: {
-        "x-api-key": API_KEY,
+        "x-api-key": "",
       },
     });
     setPeople(await fetchPeople());
@@ -289,7 +292,7 @@ function App() {
         await fetch(`${api}/Users/${userId}`, {
           method: "GET",
           headers: {
-            "x-api-key": API_KEY,
+            "x-api-key": "",
           },
         })
       ).json()
@@ -329,7 +332,7 @@ function App() {
         await fetch(`${api}/Users/${userId}`, {
           method: "GET",
           headers: {
-            "x-api-key": API_KEY,
+            "x-api-key": "",
           },
         })
       ).json()
@@ -345,7 +348,7 @@ function App() {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
-          "x-api-key": API_KEY,
+          "x-api-key": "",
         },
         body: JSON.stringify({
           password: hashedPassword,
@@ -493,7 +496,7 @@ function App() {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
-        "x-api-key": API_KEY,
+        "x-api-key": "",
       },
       body: JSON.stringify({
         password: hashedPassword,
@@ -537,7 +540,7 @@ function App() {
               await fetch(`${api}/Users/${userId}`, {
                 method: "GET",
                 headers: {
-                  "x-api-key": API_KEY,
+                  "x-api-key": "",
                 },
               })
             ).json()
