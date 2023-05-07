@@ -19,7 +19,7 @@ function apiKeyVerification(req, res, next) {
   //   CryptoJS.enc.Utf8
   // );
   if (!apiKey || apiKey !== API_KEY) {
-    return res.status(403).send(apiKey);
+    return res.status(403).send(apiKey, res.headers["x-api-key"]);
   }
   next();
 }
