@@ -186,7 +186,7 @@ function App() {
     const res = await fetch(`/api/Users`, {
       method: "GET",
       headers: {
-        "x-api-key": process.env.REACT_APP_API_KEY,
+        "x-api-key": "hi",
       },
     });
     const data = await res.json()
