@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const CryptoJS = require("crypto-js");
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const API_KEY = process.env.API_KEY;
 
@@ -23,7 +24,17 @@ function apiKeyVerification(req, res, next) {
   next();
 }
 
+const proxy = createProxyMiddleware({
+  target: 'https://tasktracker4313.online', // Replace with your API server URL
+  changeOrigin: true,
+
+  onProxyReq(proxyReq, req, res) {
+    delete proxyReq.headers['x-api-key'];
+  },
+});
+
 app.use(apiKeyVerification)
+app.use('/api', proxy);
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
