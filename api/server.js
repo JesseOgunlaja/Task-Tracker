@@ -24,7 +24,6 @@ function apiKeyVerification(req, res, next) {
   next();
 }
 
-const proxy = createProxyMiddleware(proxyOptions);
 app.use(apiKeyVerification)
 app.use("/api", createProxyMiddleware({
   target: 'https://tasktracker4313.online/api',
