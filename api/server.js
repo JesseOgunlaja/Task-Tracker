@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const CryptoJS = require("crypto-js");
-const { createProxyMiddleware } = require('http-proxy-middleware');
+const { createProxyMiddleware } = require("http-proxy-middleware");
 
 const API_KEY = process.env.API_KEY;
 
@@ -16,49 +16,51 @@ function apiKeyVerification(req, res, next) {
   // const parsedKey = CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY);
   // const stringKey = CryptoJS.enc.Base64.stringify(parsedKey);
   // const decryptedKey = CryptoJS.AES.decrypt(apiKey, stringKey).toString(
-    //   CryptoJS.enc.Utf8
-    // );
-    if (!apiKey || apiKey !== API_KEY && req.hostname !== "tasktracker4313.online") {
+  //   CryptoJS.enc.Utf8
+  // );
+  if (req.hostname !== "tasktracker4313.online") {
+    if (!apiKey || apiKey !== API_KEY) {
       return res.status(403).send(apiKey);
+    }
   }
   next();
 }
 
 const proxy = createProxyMiddleware({
-  target: 'https://tasktracker4313.online', // Replace with your API server URL
+  target: "https://tasktracker4313.online", // Replace with your API server URL
   changeOrigin: true,
   onProxyRes(proxyRes, req, res) {
-    proxyRes.headers['x-added'] = process.env.API_KEY
-  }
+    proxyRes.headers["x-added"] = process.env.API_KEY;
+  },
 });
 
-// app.use(apiKeyVerification)
-app.use('/api', proxy);
+app.use(apiKeyVerification);
+app.use("/api", proxy);
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 45000,
-  });
+  socketTimeoutMS: 45000,
+});
 
-  const UserSchema = new mongoose.Schema({
-    name: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    tasks: [
-      {
-        task: { type: String },
-        date: { type: String },
-        reminder: { type: Boolean },
-      },
-    ],
-  });
+const UserSchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  tasks: [
+    {
+      task: { type: String },
+      date: { type: String },
+      reminder: { type: Boolean },
+    },
+  ],
+});
 
-  const User = mongoose.model("User", UserSchema);
-  
-  app.use(bodyParser.json())
-  // Get all users
+const User = mongoose.model("User", UserSchema);
+
+app.use(bodyParser.json());
+// Get all users
 app.get("/api/users", async (req, res) => {
   try {
     const users = await User.find();
@@ -139,7 +141,6 @@ async function getUser(req, res, next) {
   next();
 }
 
-
 app.listen(port, () => {
   console.log(`Server started`);
-})
+});
