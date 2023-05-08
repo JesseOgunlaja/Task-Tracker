@@ -24,16 +24,14 @@ function apiKeyVerification(req, res, next) {
   next();
 }
 
-const proxy = createProxyMiddleware({
-  target: "https://tasktracker4313.online", // Replace with your API server URL
-  changeOrigin: true,
-  onProxyReq(proxyReq, req, res) {
-    // proxyReq.setHeader("x-api-key", process.env.API_KEY);
-  },
-});
-
-// app.use(apiKeyVerification);
-app.use("/api/Users", proxy);
+app.use(apiKeyVerification);
+app.use(
+  '/api/Users',
+  createProxyMiddleware({
+    target: 'https://tasktracker4313.online',
+    changeOrigin: true,
+  })
+);
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
