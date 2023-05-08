@@ -18,7 +18,7 @@ function apiKeyVerification(req, res, next) {
   // const decryptedKey = CryptoJS.AES.decrypt(apiKey, stringKey).toString(
   //   CryptoJS.enc.Utf8
   // );
-  if (!apiKey || apiKey !== "") {
+  if (!apiKey || apiKey !== "hi") {
     return res.status(403).send(apiKey);
   }
   next();
