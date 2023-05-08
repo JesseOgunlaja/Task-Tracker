@@ -3,7 +3,6 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const CryptoJS = require("crypto-js");
 
 const API_KEY = process.env.API_KEY;
 const SECRET_KEY = process.env.ENCRYPTION_KEY

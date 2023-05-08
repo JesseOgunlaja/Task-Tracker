@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import bcrypt from "bcryptjs";
 import CryptoJS from "crypto-js";
-import { Jwt } from "jsonwebtoken";
+const jwt = require("jsonwebtoken");
 const api = window.location.href + "api";
 
 function App() {
@@ -184,7 +184,7 @@ function App() {
   }
 
   async function fetchPeople() {
-    const token = Jwt.sign({ apiKey: process.env.API_KEY }, ENCRYPTION_KEY);
+    const token = jwt.sign({ apiKey: process.env.API_KEY }, ENCRYPTION_KEY);
     const res = await fetch(`/api/Users`, {
       method: "GET",
       headers: {
