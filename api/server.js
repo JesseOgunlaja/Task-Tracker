@@ -16,7 +16,7 @@ function apiKeyVerification(req, res, next) {
     return res.status(403).send(apiKey);
   }
   next();
-}apiKeyVerification,
+}
 
 app.use(
   '/api/Users',
