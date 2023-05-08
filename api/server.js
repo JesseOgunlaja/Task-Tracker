@@ -19,19 +19,17 @@ function apiKeyVerification(req, res, next) {
 }
 
 app.use(
-  '/api/Users',
+  "/api/Users",
+  apiKeyVerification,
   createProxyMiddleware({
-    target: 'https://tasktracker4313.online',
+    target: "https://tasktracker4313.online",
     changeOrigin: true,
     headers: {
-      'x-api-key': API_KEY, // Replace 'YOUR_API_KEY' with your actual API key
-    },
-    onProxyReq(proxyReq, req, res) {
-      proxyReq.setHeader("x-api-key", API_KEY)
-      apiKeyVerification(req, res, () => {});
+      "x-api-key": API_KEY,
     },
   })
-  );
+);
+
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
