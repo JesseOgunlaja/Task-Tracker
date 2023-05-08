@@ -18,23 +18,23 @@ function apiKeyVerification(req, res, next) {
   // const decryptedKey = CryptoJS.AES.decrypt(apiKey, stringKey).toString(
   //   CryptoJS.enc.Utf8
   // );
-  if (!apiKey || apiKey !== "hi") {
+  if (!apiKey || apiKey !== API_KEY) {
     return res.status(403).send(apiKey);
   }
   next();
 }
 
-app.use(apiKeyVerification);
 app.use(
   '/api/Users',
   createProxyMiddleware({
     target: 'https://tasktracker4313.online',
     changeOrigin: true,
     headers: {
-      'x-api-key': 'YOUR_API_KEY', // Replace 'YOUR_API_KEY' with your actual API key
+      'x-api-key': API_KEY, // Replace 'YOUR_API_KEY' with your actual API key
     },
   })
-);
+  );
+  app.use(apiKeyVerification);
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
