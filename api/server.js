@@ -29,7 +29,7 @@ const proxy = createProxyMiddleware({
   changeOrigin: true,
   onProxyReq(proxyReq, req, res) {
     if(req.hostname === "tasktracker4313.online") {
-      req.setHeader("x-api-key", "hi")
+      res.setHeader("x-api-key", "hi")
       proxyReq.setHeader("x-api-key", "hi")
     }
   },
