@@ -2,34 +2,33 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const CryptoJS = require("crypto-js");
-const { createProxyMiddleware } = require("http-proxy-middleware");
 
 const API_KEY = process.env.API_KEY;
+const SECRET_KEY = process.env.ENCRYPTION_KEY
 
 const app = express();
 const port = process.env.PORT || 80;
 
-function apiKeyVerification(req, res, next) {
-  const apiKey = req.headers["x-api-key"];
-  if (!apiKey || apiKey !== API_KEY) {
-    return res.status(403).send(apiKey);
+function jwtVerification(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1]; // Extract the token from the Authorization header
+
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized" });
   }
-  next();
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    req.apiKey = decoded.apiKey;
+    next();
+  } catch (error) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
 }
 
-app.use(
-  "/api/Users",
-  apiKeyVerification,
-  createProxyMiddleware({
-    target: "https://tasktracker4313.online",
-    changeOrigin: true,
-    headers: {
-      "x-api-key": API_KEY,
-    },
-  })
-);
-
+app.use(jwtVerification)
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
@@ -55,7 +54,7 @@ const User = mongoose.model("User", UserSchema);
 
 app.use(bodyParser.json());
 // Get all users
-app.get("/api/users",apiKeyVerification, async (req, res) => {
+app.get("/api/users", async (req, res) => {
   try {
     const users = await User.find();
     res.status(200).json(users);
@@ -65,12 +64,12 @@ app.get("/api/users",apiKeyVerification, async (req, res) => {
 });
 
 // Get one user
-app.get("/api/users/:id",apiKeyVerification, getUser, (req, res) => {
+app.get("/api/users/:id", getUser, (req, res) => {
   res.json(res.user);
 });
 
 // Create a user
-app.post("/api/users",apiKeyVerification, async (req, res) => {
+app.post("/api/users", async (req, res) => {
   const user = new User({
     name: req.body.name,
     email: req.body.email,
@@ -86,7 +85,7 @@ app.post("/api/users",apiKeyVerification, async (req, res) => {
 });
 
 // Update a user
-app.patch("/api/users/:id",apiKeyVerification, getUser, async (req, res) => {
+app.patch("/api/users/:id", getUser, async (req, res) => {
   if (req.body.name != null) {
     res.user.name = req.body.name;
   }
@@ -108,7 +107,7 @@ app.patch("/api/users/:id",apiKeyVerification, getUser, async (req, res) => {
 });
 
 // Delete a user
-app.delete("/api/users/:id",apiKeyVerification, async (req, res) => {
+app.delete("/api/users/:id", async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (deletedUser == null) {
