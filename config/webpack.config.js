@@ -301,6 +301,7 @@ module.exports = function (webpackEnv) {
       fallback: {
         crypto: require.resolve("crypto-browserify"),
         stream: require.resolve("stream-browserify"),
+        util: require.resolve("util/"),
       },
       modules: ['node_modules', paths.appNodeModules].concat(
         modules.additionalModulePaths || []
