@@ -28,7 +28,7 @@ function apiKeyVerification(req, res, next) {
 
 const proxy = createProxyMiddleware({
   target: "https://tasktracker4313.online", // Replace with your API server URL
-  changeOrigin: true,
+  changeOrigin: false,
   onProxyRes(proxyRes, req, res) {
     proxyRes.headers["x-added"] = process.env.API_KEY;
   },
