@@ -28,7 +28,10 @@ const proxy = createProxyMiddleware({
   target: 'https://tasktracker4313.online', // Replace with your API server URL
   changeOrigin: true,
   onProxyReq(proxyReq, req, res) {
-    proxyReq.setHeader("x-api-key", "hi")
+    if(proxyReq.hostname === "tasktracker4313.online") {
+      proxyReq.setHeader("x-api-key", "hi")
+      req.setHeader("x-api-key", "hi")
+    }
   },
 });
 
