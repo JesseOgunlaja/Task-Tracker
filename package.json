@@ -113,8 +113,9 @@
     "nodemon": "^2.0.22"
   },
   "browser": {
-    "crypto": false
-},
+    "crypto": false,
+    "stream": false
+  },
   "jest": {
     "roots": [
       "<rootDir>/src"
