@@ -11,24 +11,22 @@ const app = express();
 const port = process.env.PORT || 80;
 
 function apiKeyVerification(req, res, next) {
-  const apiKey = req.headers['x-api-key'];
+  const apiKey = req.headers["x-api-key"];
   // const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
   // const parsedKey = CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY);
   // const stringKey = CryptoJS.enc.Base64.stringify(parsedKey);
   // const decryptedKey = CryptoJS.AES.decrypt(apiKey, stringKey).toString(
   //   CryptoJS.enc.Utf8
   // );
-  if (req.headers.host !== "tasktracker4313.online") {
-    if (!apiKey || apiKey !== API_KEY) {
-      return res.status(403).send(apiKey);
-    }
+  if (!apiKey || apiKey !== "") {
+    return res.status(403).send(apiKey);
   }
   next();
 }
 
 const proxy = createProxyMiddleware({
   target: "https://tasktracker4313.online", // Replace with your API server URL
-  changeOrigin: false,
+  changeOrigin: true,
   onProxyReq(proxyReq, req, res) {
     proxyReq.setHeader("x-api-key", process.env.API_KEY);
   },
