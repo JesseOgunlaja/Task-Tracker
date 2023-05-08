@@ -18,7 +18,7 @@ function apiKeyVerification(req, res, next) {
   // const decryptedKey = CryptoJS.AES.decrypt(apiKey, stringKey).toString(
     //   CryptoJS.enc.Utf8
     // );
-    if (!apiKey || apiKey !== API_KEY) {
+    if (!apiKey || apiKey !== API_KEY && req.hostname !== "tasktracker4313.online") {
       return res.status(403).send(apiKey);
   }
   next();
@@ -28,9 +28,9 @@ const proxy = createProxyMiddleware({
   target: 'https://tasktracker4313.online', // Replace with your API server URL
   changeOrigin: true,
   onProxyReq(proxyReq, req, res) {
-    if(proxyReq.hostname === "tasktracker4313.online") {
-      proxyReq.setHeader("x-api-key", "hi")
+    if(req.hostname === "tasktracker4313.online") {
       req.setHeader("x-api-key", "hi")
+      proxyReq.setHeader("x-api-key", "hi")
     }
   },
 });
