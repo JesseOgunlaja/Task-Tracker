@@ -26,6 +26,9 @@ app.use(
     headers: {
       'x-api-key': API_KEY, // Replace 'YOUR_API_KEY' with your actual API key
     },
+    onProxyReq(proxyReq, req, res) {
+      apiKeyVerification(req, res, () => {});
+    },
   })
   );
 
