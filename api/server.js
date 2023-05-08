@@ -12,17 +12,11 @@ const port = process.env.PORT || 80;
 
 function apiKeyVerification(req, res, next) {
   const apiKey = req.headers["x-api-key"];
-  // const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
-  // const parsedKey = CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY);
-  // const stringKey = CryptoJS.enc.Base64.stringify(parsedKey);
-  // const decryptedKey = CryptoJS.AES.decrypt(apiKey, stringKey).toString(
-  //   CryptoJS.enc.Utf8
-  // );
   if (!apiKey || apiKey !== API_KEY) {
     return res.status(403).send(apiKey);
   }
   next();
-}
+}apiKeyVerification,
 
 app.use(
   '/api/Users',
@@ -34,7 +28,6 @@ app.use(
     },
   })
   );
-  app.use(apiKeyVerification);
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
@@ -60,7 +53,7 @@ const User = mongoose.model("User", UserSchema);
 
 app.use(bodyParser.json());
 // Get all users
-app.get("/api/users", async (req, res) => {
+app.get("/api/users",apiKeyVerification, async (req, res) => {
   try {
     const users = await User.find();
     res.status(200).json(users);
@@ -70,12 +63,12 @@ app.get("/api/users", async (req, res) => {
 });
 
 // Get one user
-app.get("/api/users/:id", getUser, (req, res) => {
+app.get("/api/users/:id",apiKeyVerification, getUser, (req, res) => {
   res.json(res.user);
 });
 
 // Create a user
-app.post("/api/users", async (req, res) => {
+app.post("/api/users",apiKeyVerification, async (req, res) => {
   const user = new User({
     name: req.body.name,
     email: req.body.email,
@@ -91,7 +84,7 @@ app.post("/api/users", async (req, res) => {
 });
 
 // Update a user
-app.patch("/api/users/:id", getUser, async (req, res) => {
+app.patch("/api/users/:id",apiKeyVerification, getUser, async (req, res) => {
   if (req.body.name != null) {
     res.user.name = req.body.name;
   }
@@ -113,7 +106,7 @@ app.patch("/api/users/:id", getUser, async (req, res) => {
 });
 
 // Delete a user
-app.delete("/api/users/:id", async (req, res) => {
+app.delete("/api/users/:id",apiKeyVerification, async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (deletedUser == null) {
