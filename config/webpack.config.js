@@ -293,12 +293,6 @@ module.exports = function (webpackEnv) {
       ],
     },
     resolve: {
-      fallback: {
-        "crypto": require.resolve("crypto-browserify"),
-        util: require.resolve("util/"),
-        stream: require.resolve("stream-browserify"),
-        buffer: require.resolve("buffer")
-      },
       // This allows you to set a fallback for where webpack should look for modules.
       // We placed these paths second because we want `node_modules` to "win"
       // if there are any conflicts. This matches Node resolution mechanism.
@@ -332,9 +326,6 @@ module.exports = function (webpackEnv) {
         // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
         // please link the files into your node_modules/ and let module-resolution kick in.
         // Make sure your source files are compiled, as they will not be processed in any way.
-        new webpack.ProvidePlugin({
-          process: 'process/browser',
-        }),
         new ModuleScopePlugin(paths.appSrc, [
           paths.appPackageJson,
           reactRefreshRuntimeEntry,
