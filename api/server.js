@@ -8,6 +8,8 @@ const cookieParser = require('cookie-parser');
 const API_KEY = process.env.API_KEY;
 const SECRET_KEY = process.env.ENCRYPTION_KEY
 
+app.use(cookieParser());
+
 const app = express();
 const port = process.env.PORT || 80;
 
@@ -33,6 +35,11 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", UserSchema);
 
+
+// Use the middleware globally for all requests
+
+app.use(bodyParser.json());
+
 const checkApiKeyMiddleware = (req, res, next) => {
   const apiKeyCookie = req.cookies.APIKEY;
   
@@ -45,10 +52,8 @@ const checkApiKeyMiddleware = (req, res, next) => {
   }
 };
 
-// Use the middleware globally for all requests
-app.use(checkApiKeyMiddleware);
 
-app.use(bodyParser.json());
+app.use(checkApiKeyMiddleware);
 // Get all users
 app.get("/api/users", async (req, res) => {
   try {
