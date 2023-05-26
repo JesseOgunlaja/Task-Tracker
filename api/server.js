@@ -2,7 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const CryptoJS = require("crypto-js");
 
 const API_KEY = process.env.API_KEY;
@@ -20,7 +19,7 @@ function jwtVerification(req, res, next) {
   }
 
   try {
-    const decoded = jwt.verify(token, SECRET_KEY);
+    const decoded = API_KEY
     req.apiKey = decoded.apiKey;
     next();
   } catch (error) {
