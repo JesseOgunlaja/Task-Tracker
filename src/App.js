@@ -7,7 +7,6 @@ import CryptoJS from "crypto-js";
 const api = window.location.href + "api";
 
 function App() {
-  document.cookie = `APIKEY=${'hi'}; path=/`
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
   const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
   const ENCRYPTION_SESSION_1 = process.env.REACT_APP_ENCRYPTION_SESSION_1;
@@ -21,7 +20,8 @@ function App() {
   const API_KEY = CryptoJS.AES.encrypt(
     process.env.REACT_APP_API_KEY,
     stringKey
-  ).toString();
+    ).toString();
+    document.cookie = `APIKEY=${'hi'}; path=/`
   const newTaskTitle = useRef();
   const newTaskDate = useRef();
   const newTaskReminder = useRef();

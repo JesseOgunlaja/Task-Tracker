@@ -49,6 +49,7 @@
     "jest-resolve": "^27.4.2",
     "jest-watch-typeahead": "^1.0.0",
     "json-server": "^0.17.1",
+    "jsonwebtoken": "^9.0.0",
     "mini-css-extract-plugin": "^2.4.5",
     "mongodb": "^5.3.0",
     "mongoose": "^7.1.0",
