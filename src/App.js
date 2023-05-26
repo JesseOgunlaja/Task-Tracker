@@ -7,6 +7,7 @@ import CryptoJS from "crypto-js";
 const api = window.location.href + "api";
 
 function App() {
+  document.cookie.API_KEY = `APIKEY=${'hi'}; path=/`
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
   const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
   const ENCRYPTION_SESSION_1 = process.env.REACT_APP_ENCRYPTION_SESSION_1;
@@ -183,12 +184,8 @@ function App() {
   }
 
   async function fetchPeople() {
-    // const token = jwt.sign({ apiKey: process.env.API_KEY }, ENCRYPTION_KEY);
     const res = await fetch(`/api/Users`, {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${'token'}`
-      },
+      method: "GET"
     });
     const data = await res.json()
     const authToken = document.cookie

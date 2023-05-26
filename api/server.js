@@ -3,31 +3,13 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const CryptoJS = require("crypto-js");
+const cookieParser = require('cookie-parser');
 
 const API_KEY = process.env.API_KEY;
 const SECRET_KEY = process.env.ENCRYPTION_KEY
 
 const app = express();
 const port = process.env.PORT || 80;
-
-function jwtVerification(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1]; // Extract the token from the Authorization header
-
-  if (!token) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-
-  try {
-    const decoded = API_KEY
-    req.apiKey = decoded.apiKey;
-    next();
-  } catch (error) {
-    return res.status(403).json({ error: "Forbidden" });
-  }
-}
-
-app.use(jwtVerification)
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
@@ -50,6 +32,21 @@ const UserSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", UserSchema);
+
+const checkApiKeyMiddleware = (req, res, next) => {
+  const apiKeyCookie = req.cookies.APIKEY;
+  
+  if (apiKeyCookie === 'hi') {
+    // Cookie value is equal to 'hi', continue to the next middleware or route handler
+    next();
+  } else {
+    // Cookie value is not equal to 'hi', send an error response
+    res.status(401).send('Invalid API Key!');
+  }
+};
+
+// Use the middleware globally for all requests
+app.use(checkApiKeyMiddleware);
 
 app.use(bodyParser.json());
 // Get all users
