@@ -294,7 +294,8 @@ module.exports = function (webpackEnv) {
     },
     resolve: {
       fallback: {
-        "crypto": require.resolve("crypto-browserify")
+        "crypto": require.resolve("crypto-browserify"),
+        util: require.resolve("util/")
       },
       // This allows you to set a fallback for where webpack should look for modules.
       // We placed these paths second because we want `node_modules` to "win"
