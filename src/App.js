@@ -22,7 +22,6 @@ function App() {
     process.env.REACT_APP_API_KEY,
     stringKey
   ).toString();
-  document.cookie = `APIKEY=${"hi"}; path=/`;
   const newTaskTitle = useRef();
   const newTaskDate = useRef();
   const newTaskReminder = useRef();
@@ -193,9 +192,7 @@ function App() {
     const token = jwt.jws.JWS.sign('HS256', sHeader, sPayload, SECRET_KEY)
     const res = await fetch(`/api/Users`, {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      credentials: "include"
     });
     const data = await res.json();
     const authToken = document.cookie

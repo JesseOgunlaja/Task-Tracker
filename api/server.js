@@ -14,7 +14,7 @@ const app = express();
 const port = process.env.PORT || 80;
 
 const authenticateJWT = (req, res, next) => {
-  const token = req.header('Authorization')?.split(' ')[1];
+  const token = req.cookies.token;
 
   if (!token) {
     return res.status(401).json({ message: 'Access denied. No token provided.' });
@@ -22,10 +22,9 @@ const authenticateJWT = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    if(decoded === API_KEY) {
+    if (decoded.apiKey === API_KEY) {
       next();
-    }
-    else {
+    } else {
       return res.status(401).json({ message: 'Invalid token.' });
     }
   } catch (error) {
@@ -59,10 +58,15 @@ const User = mongoose.model("User", UserSchema);
 
 // Use the middleware globally for all requests
 
+app.use(cookieParser());
 app.use(bodyParser.json());
 
 // Get all users
 app.get("/api/users",authenticateJWT, async (req, res) => {
+  const token = jwt.sign({ apiKey: API_KEY }, SECRET_KEY);
+
+  res.cookie('token', token, { httpOnly: true });
+
   try {
     const users = await User.find();
     res.status(200).json(users);
