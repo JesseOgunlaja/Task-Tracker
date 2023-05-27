@@ -356,8 +356,8 @@ function App() {
   }
 
   async function signOut() {
-    setIncorrectPassword("");
     deleteCookie("authToken");
+    setIncorrectPassword("");
     setIncorrectUsername("");
     setUsername("");
     setEmailBeingAdded("");
