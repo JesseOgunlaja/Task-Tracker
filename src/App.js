@@ -236,7 +236,7 @@ function App() {
         authorization: `Bearer ${token}`,
       },
     });
-    const data = await res.json();
+    const data = await res.json().catch(() => window.location.reload());;
     const authToken = document.cookie
       .split("; ")
       .find((row) => row.startsWith("authToken="))
