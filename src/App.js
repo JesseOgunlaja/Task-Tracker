@@ -5,7 +5,7 @@ import "./App.css";
 import bcrypt from "bcryptjs";
 import CryptoJS from "crypto-js";
 const api = window.location.href + "api";
-const jwt = require('jwt-decode');
+const jwt = require("jsrsasign");
 
 function App() {
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
@@ -21,8 +21,8 @@ function App() {
   const API_KEY = CryptoJS.AES.encrypt(
     process.env.REACT_APP_API_KEY,
     stringKey
-    ).toString();
-    document.cookie = `APIKEY=${'hi'}; path=/`
+  ).toString();
+  document.cookie = `APIKEY=${"hi"}; path=/`;
   const newTaskTitle = useRef();
   const newTaskDate = useRef();
   const newTaskReminder = useRef();
@@ -185,25 +185,32 @@ function App() {
   }
 
   async function fetchPeople() {
-    const token = jwt.sign(process.env.REACT_APP_API_KEY,ENCRYPTION_KEY)
+    const SECRET_KEY = ENCRYPTION_KEY
+    const payload = process.env.REACT_APP_API_KEY
+    const header = { alg: "HS256", typ: "JWT" };
+    const sHeader = JSON.stringify(header);
+    const sPayload = JSON.stringify(payload);
+    const token = jwt.jws.JWS.sign('HS256', sHeader, sPayload, SECRET_KEY)
     const res = await fetch(`/api/Users`, {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${'token'}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
-    const data = await res.json()
+    const data = await res.json();
     const authToken = document.cookie
       .split("; ")
       .find((row) => row.startsWith("authToken="))
       ?.split("=")[1];
     if (authToken) {
-      const decrypt1 = CryptoJS.AES.decrypt(authToken, stringSessionKey1).toString(
-        CryptoJS.enc.Utf8
-      );
-      const decrypt2 = CryptoJS.AES.decrypt(decrypt1, stringSessionKey2).toString(
-        CryptoJS.enc.Utf8
-      );
+      const decrypt1 = CryptoJS.AES.decrypt(
+        authToken,
+        stringSessionKey1
+      ).toString(CryptoJS.enc.Utf8);
+      const decrypt2 = CryptoJS.AES.decrypt(
+        decrypt1,
+        stringSessionKey2
+      ).toString(CryptoJS.enc.Utf8);
       setUserId(decrypt2);
       const res2 = await fetch(`${api}/Users/${userId}`, {
         method: "GET",
@@ -257,7 +264,7 @@ function App() {
 
   function signOut() {
     setIncorrectPassword("");
-    deleteCookie('authToken');
+    deleteCookie("authToken");
     setIncorrectUsername("");
     setUsername("");
     setEmailBeingAdded("");
@@ -314,7 +321,7 @@ function App() {
       const SECOND_ENCRYPTION = CryptoJS.AES.encrypt(
         FIRST_ENCRYPTION,
         stringSessionKey2
-      ).toString();      
+      ).toString();
       document.cookie = `authToken=${SECOND_ENCRYPTION}; path=/`;
       setSignedIn(true);
       return;
@@ -556,7 +563,8 @@ function App() {
   }, [userId, isForgettingPassword]);
 
   function deleteCookie(cookieName) {
-    document.cookie = cookieName + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie =
+      cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   }
 
   return (
