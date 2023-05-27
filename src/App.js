@@ -278,6 +278,12 @@ function App() {
             authorization: `Bearer ${token}`,
           },
         });
+        
+        if(userId != undefined) {
+          const data = await res.json();
+          setUser(data.name);
+          setSignedIn(true);
+        }
 
         if (!res.ok) {
           if (res.status === 401) {
@@ -301,7 +307,11 @@ function App() {
   }
 
   useEffect(() => {
-    checkIfSignedIn();
+    async function awaitFunction() {
+      await checkIfSignedIn();
+    }
+
+    awaitFunction()
   }, []);
 
   async function signIn(person, id) {
