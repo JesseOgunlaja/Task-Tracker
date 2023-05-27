@@ -271,6 +271,9 @@ function App() {
           authorization: `Bearer ${token}`,
         },
       });
+      if(!res2.ok) {
+        window.location.reload()
+      }
       const data2 = await res2.json().catch(() => window.location.reload());
       setUser(data2.name);
       setSignedIn(true);
