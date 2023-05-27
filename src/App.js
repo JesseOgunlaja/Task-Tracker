@@ -279,15 +279,15 @@ function App() {
           },
         });
 
+        const data = await res.json();
+          setUser(data.name);
+          setSignedIn(true);
+          setTasks(await fetchTasks())
+
         if (!res.ok) {
           if (res.status === 401) {
             throw new Error("API KEY");
           }
-        } else {
-          const data = await res.json();
-          setUser(data.name);
-          setSignedIn(true);
-          setTasks(await fetchTasks())
         }
       } catch (error) {
         if (error.message === "API KEY") {
