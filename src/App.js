@@ -277,7 +277,7 @@ function App() {
           if(res2.status === 401) {
             throw new Error("API KEY")
           }
-          if(res2.status === 404) {
+          if(res2.status === 404 && userId != undefined) {
             throw new Error("Cannot Find User")
           }
         }
