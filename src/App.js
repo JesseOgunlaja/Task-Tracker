@@ -222,7 +222,7 @@ function App() {
 
   async function fetchPeople() {
     const SECRET_KEY = ENCRYPTION_KEY;
-    const payload = {
+    let payload = {
       apiKey: process.env.REACT_APP_API_KEY,
       exp: Math.floor(Date.now() / 1000) + INTERVAL,
     };
@@ -251,21 +251,20 @@ function App() {
         stringSessionKey2
       ).toString(CryptoJS.enc.Utf8);
       setUserId(decrypt2);
+      payload = {
+        apiKey: process.env.REACT_APP_API_KEY,
+        exp: Math.floor(Date.now() / 1000) + INTERVAL,
+      };
       token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-      try {
-        const res2 = await fetch(`${api}/Users/${userId}`, {
-          method: "GET",
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        });
-        const data2 = await res2.json()
-        setUser(data2.name);
-        setSignedIn(true);
-      }
-      catch {
-        window.location.reload()
-      }
+      const res2 = await fetch(`${api}/Users/${userId}`, {
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+      const data2 = await res2.json().catch(() => window.location.reload());
+      setUser(data2.name);
+      setSignedIn(true);
     }
     return data;
   }
