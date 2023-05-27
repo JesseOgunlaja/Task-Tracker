@@ -229,7 +229,7 @@ function App() {
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
-    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+    let token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     const res = await fetch(`/api/Users`, {
       method: "GET",
       headers: {
@@ -251,6 +251,7 @@ function App() {
         stringSessionKey2
       ).toString(CryptoJS.enc.Utf8);
       setUserId(decrypt2);
+      token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
       const res2 = await fetch(`${api}/Users/${userId}`, {
         method: "GET",
         headers: {
@@ -812,7 +813,7 @@ function App() {
                         </>
                       ) : (
                         <div className="loadingBox">
-                          <p>Tasks</p>
+                          <p>Loading Tasks</p>
                           <div className="loader-3">
                             <div className="pulse"></div>
                             <div className="pulse"></div>
