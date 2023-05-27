@@ -671,7 +671,6 @@ function App() {
 
   return (
     <div className="app">
-      <>
         {signedIn ? (
           <>
             <div className="container">
@@ -1103,7 +1102,6 @@ function App() {
             </div>
           </>
         )}
-      </>
     </div>
   );
 }
