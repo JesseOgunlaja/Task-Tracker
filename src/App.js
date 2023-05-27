@@ -271,17 +271,33 @@ function App() {
       const sHeader = JSON.stringify(header);
       const sPayload = JSON.stringify(payload);
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-      const res = await fetch(`${api}/Users/${userId}`, {
-        method: "GET",
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      });
+      try {
+        const res = await fetch(`${api}/Users/${userId}`, {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        });
 
-      const data = await res.json();
-      setUser(await data.name);
-      setSignedIn(true);
-      setTasks(await data.tasks);
+        const data = await res.json();
+          setUser(data.name);
+          setSignedIn(true);
+          setTasks(data.tasks)
+
+        if (!res.ok) {
+          if (res.status === 401) {
+            throw new Error("API KEY");
+          }
+        }
+      } catch (error) {
+        if (error.message === "API KEY") {
+          window.location.reload();
+        }
+        if (error.message === "Cannot Find User") {
+          deleteCookie("authToken");
+          window.location.reload();
+        }
+      }
     }
   }
 
@@ -290,7 +306,7 @@ function App() {
       await checkIfSignedIn();
     }
 
-    awaitFunction();
+    awaitFunction()
   }, []);
 
   async function signIn(person, id) {
@@ -339,7 +355,7 @@ function App() {
     }
   }
 
-  function signOut() {
+  async function signOut() {
     setIncorrectPassword("");
     deleteCookie("authToken");
     setIncorrectUsername("");
@@ -360,6 +376,7 @@ function App() {
     setIsEditing(false);
     setIsPuttingPassword(false);
     setSignedIn(false);
+    setPeople(await fetchPeople())
   }
 
   async function deleteAccount() {
