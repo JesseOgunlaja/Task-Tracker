@@ -187,12 +187,13 @@ function App() {
     const SECRET_KEY = ENCRYPTION_KEY
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + 100000
+      exp: Math.floor(Date.now() / 1000) + 10
     };
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign('HS256', sHeader, sPayload, SECRET_KEY)
+    document.cookie = `token=${token};path=/`
     const res = await fetch(`/api/Users`, {
       method: "GET",
       credentials: "include"
