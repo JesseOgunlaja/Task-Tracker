@@ -42,7 +42,6 @@ const User = mongoose.model("User", UserSchema);
 app.use(cookieParser());
 app.use(bodyParser.json());
 
-// Get all users
 const authenticateJWT = (req, res, next) => {
   const token = req.cookies.token;
 
@@ -67,12 +66,10 @@ const createCookie = (req, res, next) => {
   const token = jwt.sign({ apiKey: API_KEY }, SECRET_KEY);
   
   res.cookie('token', token, { httpOnly: true });
-  next()
-}
+  next();
+};
 
-app.get("/api/users",createCookie,authenticateJWT, async (req, res) => {
-  
-  
+app.get("/api/users", authenticateJWT, createCookie, async (req, res) => {
   try {
     const users = await User.find();
     res.status(200).json(users);

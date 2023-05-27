@@ -192,7 +192,10 @@ function App() {
     const token = jwt.jws.JWS.sign('HS256', sHeader, sPayload, SECRET_KEY)
     const res = await fetch(`/api/Users`, {
       method: "GET",
-      credentials: "include"
+      credentials: "include",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
     });
     const data = await res.json();
     const authToken = document.cookie
