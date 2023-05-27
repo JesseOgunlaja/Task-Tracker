@@ -228,7 +228,7 @@ function App() {
     };
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
-    const sPayload = JSON.stringify(payload);
+    let sPayload = JSON.stringify(payload);
     let token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     const res = await fetch(`/api/Users`, {
       method: "GET",
@@ -255,6 +255,7 @@ function App() {
         apiKey: process.env.REACT_APP_API_KEY,
         exp: Math.floor(Date.now() / 1000) + INTERVAL,
       };
+      sPayload = JSON.stringify(payload);
       token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
       const res2 = await fetch(`${api}/Users/${userId}`, {
         method: "GET",
