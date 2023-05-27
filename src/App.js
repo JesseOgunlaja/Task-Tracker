@@ -274,12 +274,7 @@ function App() {
         })
 
         if(!res2.ok) {
-          if(res2.statues === 401) {
-            throw new Error("API KEY")
-          }
-          if(res2.statues === 404 && typeof userId === "string") {
-            throw new Error("Cannot Find User")
-          }
+          throw new Error("")
         }
         else {
           const data2 = await res2.json().catch(() => window.location.reload());
@@ -287,13 +282,8 @@ function App() {
       setSignedIn(true);
         }
       }
-      catch (error) {
-        if(error === "API KEY") {
-          window.location.reload()
-        }
-        if(error === "Cannot Find User") {
-          deleteCookie("authToken")
-        }
+      catch {
+        window.location.reload()
       }
       
     }
