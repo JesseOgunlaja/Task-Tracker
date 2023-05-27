@@ -8,7 +8,7 @@ const api = window.location.href + "api";
 const jwt = require("jsrsasign");
 
 function App() {
-  const INTERVAL = 1;
+  const INTERVAL = 1
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
   const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
   const ENCRYPTION_SESSION_1 = process.env.REACT_APP_ENCRYPTION_SESSION_1;
@@ -236,7 +236,7 @@ function App() {
         authorization: `Bearer ${token}`,
       },
     });
-    const data = await res.json().catch(() => window.location.reload());
+    const data = await res.json().catch(() => window.location.reload());;
     const authToken = document.cookie
       .split("; ")
       .find((row) => row.startsWith("authToken="))
@@ -670,439 +670,498 @@ function App() {
   }
 
   return (
-    <div className="app">
-        {signedIn ? (
-          <>
-            <div className="container">
-              <div className="header">
-                <h1 className="title">Task Tracker</h1>
-                <button
-                  className={isAdding ? "button red" : "button green"}
-                  onClick={() => isEditing === false && setIsAdding(!isAdding)}
-                >
-                  {isAdding ? "Close" : "Add"}
-                </button>
-              </div>
-              {isAdding || isEditing ? (
-                <div className={isAdding ? "addTask" : "editTask"}>
-                  <label
-                    className={isAdding ? "addTaskLabel" : "editTaskLabel"}
-                    htmlFor="task"
-                  >
-                    Task
-                  </label>
-                  <input
-                    autoComplete="off"
-                    ref={isAdding ? newTaskTitle : null}
-                    className={isAdding ? "addTaskInput" : "editTaskInput"}
-                    value={isEditing ? editedTaskTitle : undefined}
-                    onChange={(e) =>
-                      isEditing && setEditedTaskTitle(e.target.value)
-                    }
-                    type="text"
-                    placeholder={isAdding ? "Doctors Appoinment" : null}
-                    id="task"
-                  />
-                  <label
-                    className={isAdding ? "addTaskLabel" : "editTaskLabel"}
-                    htmlFor="day"
-                  >
-                    Time
-                  </label>
-                  <input
-                    autoComplete="off"
-                    ref={isAdding ? newTaskDate : null}
-                    type="text"
-                    value={isEditing ? editedTaskDate : undefined}
-                    onChange={(e) =>
-                      isEditing && setEditedTaskDate(e.target.value)
-                    }
-                    className={isAdding ? "addTaskInput" : "editTaskInput"}
-                    placeholder={isAdding ? "February 6th" : null}
-                    id="day"
-                  />
-                  <div
-                    className={
-                      isAdding ? "addTaskReminder" : "editTaskReminder"
-                    }
-                  >
-                    <label
-                      htmlFor="reminder"
-                      className={isAdding ? "addTaskLabel" : "editTaskLabel"}
-                    >
-                      Reminder
-                    </label>
-                    <input
-                      ref={isAdding ? newTaskReminder : null}
-                      className="reminderCheckbox"
-                      id="reminder"
-                      type="checkbox"
-                      checked={isEditing ? editedTaskReminder : null}
-                      onChange={(e) =>
-                        isEditing && setEditedTaskReminder(e.target.checked)
-                      }
-                    />
-                  </div>
-                  {isEditing && (
-                    <button
-                      className="red cancel-button"
-                      onClick={() => setIsEditing(false)}
-                    >
-                      Cancel
-                    </button>
-                  )}
-                  <button
-                    onClick={() => (isAdding ? addTask() : editTask())}
-                    className="saveTask"
-                  >
-                    Save Task
-                  </button>
-                </div>
-              ) : null}
-              {tasks != null ? (
-                <>
-                  {tasks.length !== 0 ? (
-                    tasks.map((task, index) => (
-                      <div
-                        key={Math.random()}
-                        className={task.reminder ? "task reminder" : "task"}
-                      >
-                        <p className="taskName">{task.task}</p>
-                        <p className="taskDate">{task.date}</p>
-                        <div
-                          onClick={() => deleteTask(index)}
-                          className="deleteButton"
-                        >
-                          <hr className="line1" />
-                          <hr className="line2" />
-                        </div>
+    <Router>
+      {/* Makes it possible to use Routes */}
+      <div className="app">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                {signedIn ? (
+                  <>
+                    <div className="container">
+                      <div className="header">
+                        <h1 className="title">Task Tracker</h1>
                         <button
-                          className="button green edit-button"
-                          onClick={() => edit(index)}
+                          className={isAdding ? "button red" : "button green"}
+                          onClick={() =>
+                            isEditing === false && setIsAdding(!isAdding)
+                          }
                         >
-                          Edit
+                          {isAdding ? "Close" : "Add"}
                         </button>
                       </div>
-                    ))
-                  ) : (
-                    <p className="noTasks">No tasks</p>
-                  )}
-                </>
-              ) : (
-                <div className="loadingBox">
-                  <p>Tasks loading</p>
-                  <div className="loader-3">
-                    <div className="pulse"></div>
-                    <div className="pulse"></div>
-                    <div className="pulse"></div>
-                  </div>
-                </div>
-              )}
-              <div className="signOutButtons">
-                <button className="signOutButton" onClick={changePassword}>
-                  Change Password
-                </button>
-                <button className="signOutButton red" onClick={deleteAccount}>
-                  Delete Account
-                </button>
-                <button className="signOutButton green" onClick={signOut}>
-                  Sign Out
-                </button>
-              </div>
-              <footer className="footer">
-                <Link to="/about">About</Link>
-              </footer>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="container">
-              {isAddingUser ? (
-                <div className="addUser">
-                  <div
-                    className="back addingUser"
-                    onClick={() => back("addingUser")}
-                  >
-                    <div className="backTriangle">{"<"}</div>
-                    <div>Back</div>
-                  </div>
-                  <label className="addUserName">Name:</label>
-                  <input
-                    ref={addUserName}
-                    value={nameBeingAdded}
-                    onChange={(e) => setNameBeingAdded(e.target.value)}
-                    className="addUserInput"
-                    type="text"
-                  />
-                  <label className="addUserName">Email:</label>
-                  <input
-                    ref={addUserEmail}
-                    value={emailBeingAdded}
-                    onChange={(e) => setEmailBeingAdded(e.target.value)}
-                    className="addUserInput"
-                    type="email"
-                  />
-                  <label className="addUserName">Password:</label>
-                  <input
-                    ref={addUserPassword}
-                    value={passwordBeingAdded}
-                    onChange={(e) => setPasswordBeingAdded(e.target.value)}
-                    className="addUserInput show"
-                    type="password"
-                  />
-                  <div
-                    className="showButton"
-                    onClick={() => showPassword("newUserPassword")}
-                  >
-                    Show
-                  </div>
-                  <label className="addUserName">Admin Password:</label>
-                  <input
-                    ref={adminPasswordBox}
-                    value={adminPasswordBeingAdded}
-                    onChange={(e) => setAdminPasswordBeingAdded(e.target.value)}
-                    className="addUserInput show"
-                    type="password"
-                  />
-                  <div
-                    className="showButton"
-                    onClick={() => showPassword("adminPassword")}
-                  >
-                    Show
-                  </div>
-                  <button onClick={addUser} className="signOutButton wide">
-                    Add
-                  </button>
-                </div>
-              ) : (
-                <>
-                  {isPuttingPassword ? (
-                    <div>
-                      {isResettingPassword ? (
-                        <div>
-                          <label>New Password</label>
-                          <input
-                            className="addUserInput show"
-                            type="password"
-                            value={passwordBeingReset}
-                            ref={passwordBeingResetBox}
-                            onChange={(e) =>
-                              setPasswordBeingReset(e.target.value)
+                      {isAdding || isEditing ? (
+                        <div className={isAdding ? "addTask" : "editTask"}>
+                          <label
+                            className={
+                              isAdding ? "addTaskLabel" : "editTaskLabel"
                             }
+                            htmlFor="task"
+                          >
+                            Task
+                          </label>
+                          <input
+                            autoComplete="off"
+                            ref={isAdding ? newTaskTitle : null}
+                            className={
+                              isAdding ? "addTaskInput" : "editTaskInput"
+                            }
+                            value={isEditing ? editedTaskTitle : undefined}
+                            onChange={(e) =>
+                              isEditing && setEditedTaskTitle(e.target.value)
+                            }
+                            type="text"
+                            placeholder={isAdding ? "Doctors Appoinment" : null}
+                            id="task"
+                          />
+                          <label
+                            className={
+                              isAdding ? "addTaskLabel" : "editTaskLabel"
+                            }
+                            htmlFor="day"
+                          >
+                            Time
+                          </label>
+                          <input
+                            autoComplete="off"
+                            ref={isAdding ? newTaskDate : null}
+                            type="text"
+                            value={isEditing ? editedTaskDate : undefined}
+                            onChange={(e) =>
+                              isEditing && setEditedTaskDate(e.target.value)
+                            }
+                            className={
+                              isAdding ? "addTaskInput" : "editTaskInput"
+                            }
+                            placeholder={isAdding ? "February 6th" : null}
+                            id="day"
                           />
                           <div
-                            className="showButton"
-                            onClick={() => showPassword("resetPassword")}
+                            className={
+                              isAdding ? "addTaskReminder" : "editTaskReminder"
+                            }
                           >
-                            Show
+                            <label
+                              htmlFor="reminder"
+                              className={
+                                isAdding ? "addTaskLabel" : "editTaskLabel"
+                              }
+                            >
+                              Reminder
+                            </label>
+                            <input
+                              ref={isAdding ? newTaskReminder : null}
+                              className="reminderCheckbox"
+                              id="reminder"
+                              type="checkbox"
+                              checked={isEditing ? editedTaskReminder : null}
+                              onChange={(e) =>
+                                isEditing &&
+                                setEditedTaskReminder(e.target.checked)
+                              }
+                            />
                           </div>
+                          {isEditing && (
+                            <button
+                              className="red cancel-button"
+                              onClick={() => setIsEditing(false)}
+                            >
+                              Cancel
+                            </button>
+                          )}
                           <button
-                            onClick={() => submitNewPassword()}
-                            className="signOutButton wide"
+                            onClick={() => (isAdding ? addTask() : editTask())}
+                            className="saveTask"
                           >
-                            Submit
+                            Save Task
                           </button>
                         </div>
-                      ) : (
-                        <div>
-                          {isForgettingPassword ? (
-                            <div>
+                      ) : null}
+                      {tasks != null ? (
+                        <>
+                          {tasks.length !== 0 ? (
+                            tasks.map((task, index) => (
                               <div
-                                className="back"
-                                onClick={() => back("forgetPassword")}
-                              >
-                                <div className="backTriangle">{"<"}</div>
-                                <div>Back</div>
-                              </div>
-                              <p>
-                                We just sent a verification code to: {email}
-                              </p>
-                              <br />
-                              <label>Code:</label>
-                              <input
-                                ref={codeBeingInputtedBox}
-                                value={codeBeingInputted}
-                                onChange={(e) =>
-                                  setCodeBeingInputted(Number(e.target.value))
+                                key={Math.random()}
+                                className={
+                                  task.reminder ? "task reminder" : "task"
                                 }
-                                type="number"
-                                className="addUserInput"
-                              />
-                              <button
-                                className="signOutButton wide"
-                                onClick={submitVerificationCode}
                               >
-                                Submit
-                              </button>
-                            </div>
-                          ) : (
-                            <>
-                              <div
-                                className="back"
-                                onClick={() => back("signInPassword")}
-                              >
-                                <div className="backTriangle">{"<"}</div>
-                                <div>Back</div>
-                              </div>
-                              <label>Password</label>
-                              <input
-                                ref={passwordBox}
-                                type="password"
-                                className="password show"
-                                value={passwordBeingAdded}
-                                onChange={(e) =>
-                                  setPasswordBeingAdded(e.target.value)
-                                }
-                              />
-                              <div
-                                className="showButton"
-                                onClick={() => showPassword("password")}
-                              >
-                                Show
-                              </div>
-                              <button
-                                className="submitPassword"
-                                onClick={submitPassword}
-                              >
-                                Sign in
-                              </button>
-                              {incorrectPassword ? (
-                                <div className="line">
-                                  <div
-                                    style={{ display: "inline" }}
-                                    className="incorrectUsername"
-                                  >
-                                    <p>Incorrect password</p>
-                                  </div>
-                                  <div
-                                    className="forgotPassword"
-                                    onClick={() => forgotPassword()}
-                                  >
-                                    Forgot Password?
-                                  </div>
-                                </div>
-                              ) : (
+                                <p className="taskName">{task.task}</p>
+                                <p className="taskDate">{task.date}</p>
                                 <div
-                                  className="forgotPassword"
-                                  onClick={() => forgotPassword()}
+                                  onClick={() => deleteTask(index)}
+                                  className="deleteButton"
                                 >
-                                  Forgot Password?
+                                  <hr className="line1" />
+                                  <hr className="line2" />
                                 </div>
-                              )}
-                            </>
+                                <button
+                                  className="button green edit-button"
+                                  onClick={() => edit(index)}
+                                >
+                                  Edit
+                                </button>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="noTasks">No tasks</p>
                           )}
+                        </>
+                      ) : (
+                        <div className="loadingBox">
+                          <p>Tasks</p>
+                          <div className="loader-3">
+                            <div className="pulse"></div>
+                            <div className="pulse"></div>
+                            <div className="pulse"></div>
+                          </div>
                         </div>
                       )}
+                      <div className="signOutButtons">
+                        <button
+                          className="signOutButton"
+                          onClick={changePassword}
+                        >
+                          Change Password
+                        </button>
+                        <button
+                          className="signOutButton red"
+                          onClick={deleteAccount}
+                        >
+                          Delete Account
+                        </button>
+                        <button
+                          className="signOutButton green"
+                          onClick={signOut}
+                        >
+                          Sign Out
+                        </button>
+                      </div>
+                      <footer className="footer">
+                        <p>Copyright &copy; 2023</p>
+                        <Link to="/about">About</Link>
+                      </footer>
                     </div>
-                  ) : (
-                    <>
-                      {isChangingPassword ? (
-                        <div>
+                  </>
+                ) : (
+                  <>
+                    <div className="container">
+                      {isAddingUser ? (
+                        <div className="addUser">
                           <div
-                            className="back"
-                            onClick={() => back("changePassword")}
+                            className="back addingUser"
+                            onClick={() => back("addingUser")}
                           >
                             <div className="backTriangle">{"<"}</div>
                             <div>Back</div>
                           </div>
-                          <label className="addUserName">Old Password</label>
+                          <label className="addUserName">Name:</label>
                           <input
-                            ref={oldPasswordBox}
+                            ref={addUserName}
+                            value={nameBeingAdded}
+                            onChange={(e) => setNameBeingAdded(e.target.value)}
+                            className="addUserInput"
+                            type="text"
+                          />
+                          <label className="addUserName">Email:</label>
+                          <input
+                            ref={addUserEmail}
+                            value={emailBeingAdded}
+                            onChange={(e) => setEmailBeingAdded(e.target.value)}
+                            className="addUserInput"
+                            type="email"
+                          />
+                          <label className="addUserName">Password:</label>
+                          <input
+                            ref={addUserPassword}
+                            value={passwordBeingAdded}
+                            onChange={(e) =>
+                              setPasswordBeingAdded(e.target.value)
+                            }
                             className="addUserInput show"
-                            value={oldPassword}
                             type="password"
-                            onChange={(e) => setOldPassword(e.target.value)}
                           />
                           <div
                             className="showButton"
-                            onClick={() => showPassword("oldPassword")}
+                            onClick={() => showPassword("newUserPassword")}
                           >
                             Show
                           </div>
-                          <label className="addUserName">New Password</label>
+                          <label className="addUserName">Admin Password:</label>
                           <input
-                            ref={newPasswordBox}
+                            ref={adminPasswordBox}
+                            value={adminPasswordBeingAdded}
+                            onChange={(e) =>
+                              setAdminPasswordBeingAdded(e.target.value)
+                            }
                             className="addUserInput show"
-                            value={newPassword}
                             type="password"
-                            onChange={(e) => setNewPassword(e.target.value)}
                           />
                           <div
                             className="showButton"
-                            onClick={() => showPassword("newPassword")}
+                            onClick={() => showPassword("adminPassword")}
                           >
                             Show
                           </div>
                           <button
-                            className="submitButton"
-                            onClick={completeChangePassword}
+                            onClick={addUser}
+                            className="signOutButton wide"
                           >
-                            Submit
+                            Add
                           </button>
                         </div>
                       ) : (
                         <>
-                          <div className="header">
-                            <h1
-                              className="title"
-                              style={{ textAlign: "center" }}
-                            >
-                              Task Tracker
-                            </h1>
-                            <button
-                              className="addUserButton"
-                              onClick={() => setIsAddingUser(true)}
-                            >
-                              Add User
-                            </button>
-                          </div>
-                          <div className="signInUsername">
-                            {people ? (
-                              <div className="">
-                                <label>Username</label>
-                                <input
-                                  value={username}
-                                  ref={usernameBox}
-                                  onChange={(e) => setUsername(e.target.value)}
-                                  className="addUserInput"
-                                  type="text"
-                                />
-                                <button
-                                  className="submitPassword"
-                                  onClick={signInUsername}
-                                >
-                                  Sign in
-                                </button>
-                                {incorrectUsername && (
-                                  <div className="incorrectUsername">
-                                    <p>Incorrect username</p>
+                          {isPuttingPassword ? (
+                            <div>
+                              {isResettingPassword ? (
+                                <div>
+                                  <label>New Password</label>
+                                  <input
+                                    className="addUserInput show"
+                                    type="password"
+                                    value={passwordBeingReset}
+                                    ref={passwordBeingResetBox}
+                                    onChange={(e) =>
+                                      setPasswordBeingReset(e.target.value)
+                                    }
+                                  />
+                                  <div
+                                    className="showButton"
+                                    onClick={() =>
+                                      showPassword("resetPassword")
+                                    }
+                                  >
+                                    Show
                                   </div>
-                                )}
-                              </div>
-                            ) : (
-                              <div className="loadingBox">
-                                <div className="loader-3">
-                                  <div className="pulse"></div>
-                                  <div className="pulse"></div>
-                                  <div className="pulse"></div>
+                                  <button
+                                    onClick={() => submitNewPassword()}
+                                    className="signOutButton wide"
+                                  >
+                                    Submit
+                                  </button>
                                 </div>
-                              </div>
-                            )}
-                          </div>
+                              ) : (
+                                <div>
+                                  {isForgettingPassword ? (
+                                    <div>
+                                      <div
+                                        className="back"
+                                        onClick={() => back("forgetPassword")}
+                                      >
+                                        <div className="backTriangle">
+                                          {"<"}
+                                        </div>
+                                        <div>Back</div>
+                                      </div>
+                                      <p>
+                                        We just sent a verification code to:{" "}
+                                        {email}
+                                      </p>
+                                      <br />
+                                      <label>Code:</label>
+                                      <input
+                                        ref={codeBeingInputtedBox}
+                                        value={codeBeingInputted}
+                                        onChange={(e) =>
+                                          setCodeBeingInputted(
+                                            Number(e.target.value)
+                                          )
+                                        }
+                                        type="number"
+                                        className="addUserInput"
+                                      />
+                                      <button
+                                        className="signOutButton wide"
+                                        onClick={submitVerificationCode}
+                                      >
+                                        Submit
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <div
+                                        className="back"
+                                        onClick={() => back("signInPassword")}
+                                      >
+                                        <div className="backTriangle">
+                                          {"<"}
+                                        </div>
+                                        <div>Back</div>
+                                      </div>
+                                      <label>Password</label>
+                                      <input
+                                        ref={passwordBox}
+                                        type="password"
+                                        className="password show"
+                                        value={passwordBeingAdded}
+                                        onChange={(e) =>
+                                          setPasswordBeingAdded(e.target.value)
+                                        }
+                                      />
+                                      <div
+                                        className="showButton"
+                                        onClick={() => showPassword("password")}
+                                      >
+                                        Show
+                                      </div>
+                                      <button
+                                        className="submitPassword"
+                                        onClick={submitPassword}
+                                      >
+                                        Sign in
+                                      </button>
+                                      {incorrectPassword ? (
+                                        <div className="line">
+                                          <div
+                                            style={{ display: "inline" }}
+                                            className="incorrectUsername"
+                                          >
+                                            <p>Incorrect password</p>
+                                          </div>
+                                          <div
+                                            className="forgotPassword"
+                                            onClick={() => forgotPassword()}
+                                          >
+                                            Forgot Password?
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div
+                                          className="forgotPassword"
+                                          onClick={() => forgotPassword()}
+                                        >
+                                          Forgot Password?
+                                        </div>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <>
+                              {isChangingPassword ? (
+                                <div>
+                                  <div
+                                    className="back"
+                                    onClick={() => back("changePassword")}
+                                  >
+                                    <div className="backTriangle">{"<"}</div>
+                                    <div>Back</div>
+                                  </div>
+                                  <label className="addUserName">
+                                    Old Password
+                                  </label>
+                                  <input
+                                    ref={oldPasswordBox}
+                                    className="addUserInput show"
+                                    value={oldPassword}
+                                    type="password"
+                                    onChange={(e) =>
+                                      setOldPassword(e.target.value)
+                                    }
+                                  />
+                                  <div
+                                    className="showButton"
+                                    onClick={() => showPassword("oldPassword")}
+                                  >
+                                    Show
+                                  </div>
+                                  <label className="addUserName">
+                                    New Password
+                                  </label>
+                                  <input
+                                    ref={newPasswordBox}
+                                    className="addUserInput show"
+                                    value={newPassword}
+                                    type="password"
+                                    onChange={(e) =>
+                                      setNewPassword(e.target.value)
+                                    }
+                                  />
+                                  <div
+                                    className="showButton"
+                                    onClick={() => showPassword("newPassword")}
+                                  >
+                                    Show
+                                  </div>
+                                  <button
+                                    className="submitButton"
+                                    onClick={completeChangePassword}
+                                  >
+                                    Submit
+                                  </button>
+                                </div>
+                              ) : (
+                                <>
+                                  <div className="header">
+                                    <h1
+                                      className="title"
+                                      style={{ textAlign: "center" }}
+                                    >
+                                      Task Tracker
+                                    </h1>
+                                    <button
+                                      className="addUserButton"
+                                      onClick={() => setIsAddingUser(true)}
+                                    >
+                                      Add User
+                                    </button>
+                                  </div>
+                                  <div className="signInUsername">
+                                    {people ? (
+                                      <div className="">
+                                        <label>Username</label>
+                                        <input
+                                          value={username}
+                                          ref={usernameBox}
+                                          onChange={(e) =>
+                                            setUsername(e.target.value)
+                                          }
+                                          className="addUserInput"
+                                          type="text"
+                                        />
+                                        <button
+                                          className="submitPassword"
+                                          onClick={signInUsername}
+                                        >
+                                          Sign in
+                                        </button>
+                                        {incorrectUsername && (
+                                          <div className="incorrectUsername">
+                                            <p>Incorrect username</p>
+                                          </div>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <div className="loadingBox">
+                                        <div className="loader-3">
+                                          <div className="pulse"></div>
+                                          <div className="pulse"></div>
+                                          <div className="pulse"></div>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </>
+                              )}
+                            </>
+                          )}
                         </>
                       )}
-                    </>
-                  )}
-                </>
-              )}
-              <footer className="footer notSignedIn">
-                <p>Copyright &copy; 2023</p>
-                <Link to="/about">About</Link>
-              </footer>
-            </div>
-          </>
-        )}
-    </div>
+                    </div>
+                  </>
+                )}
+              </>
+            }
+          />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
