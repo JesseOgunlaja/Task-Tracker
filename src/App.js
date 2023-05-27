@@ -282,7 +282,7 @@ function App() {
         const data = await res.json();
           setUser(data.name);
           setSignedIn(true);
-          setTasks(await fetchTasks())
+          setTasks(data.tasks)
 
         if (!res.ok) {
           if (res.status === 401) {
