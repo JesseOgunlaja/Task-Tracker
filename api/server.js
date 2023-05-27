@@ -51,7 +51,7 @@ const authenticateJWT = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    if (decoded.apiKey === API_KEY) {
+    if (decoded === API_KEY) {
       next();
     } else {
       return res.status(401).json({ message: 'Invalid token.' });
