@@ -67,6 +67,7 @@ const createCookie = (req, res, next) => {
   const token = jwt.sign({ apiKey: API_KEY }, SECRET_KEY);
   
   res.cookie('token', token, { httpOnly: true });
+  next()
 }
 
 app.get("/api/users",createCookie,authenticateJWT, async (req, res) => {
