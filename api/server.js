@@ -43,7 +43,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 
 const authenticateJWT = (req, res, next) => {
-  const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+  const token = req.cookies.token;
 
   if (!token) {
     return res.status(401).json({ message: 'Access denied. No token provided.' });
