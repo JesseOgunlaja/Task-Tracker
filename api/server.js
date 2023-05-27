@@ -63,7 +63,7 @@ const authenticateJWT = (req, res, next) => {
   }
 };
 
-const createCookie = () => {
+const createCookie = (req, res, next) => {
   const token = jwt.sign({ apiKey: API_KEY }, SECRET_KEY);
   
   res.cookie('token', token, { httpOnly: true });
