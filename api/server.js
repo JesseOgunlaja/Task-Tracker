@@ -21,7 +21,7 @@ const authenticateJWT = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, SECRET_KEY,{ algorithms: ['none'] });
+    const decoded = jwt.verify(token, SECRET_KEY);
     if(decoded === API_KEY) {
       next();
     }
