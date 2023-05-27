@@ -59,7 +59,7 @@ const authenticateJWT = (req, res, next) => {
   }
 };
 
-app.use(authenticateJWT())
+app.use(authenticateJWT)
 
 app.get("/api/users", async (req, res) => {
   try {
