@@ -8,6 +8,7 @@ const api = window.location.href + "api";
 const jwt = require("jsrsasign");
 
 function App() {
+  const INTERVAL = 1
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
   const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
   const ENCRYPTION_SESSION_1 = process.env.REACT_APP_ENCRYPTION_SESSION_1;
@@ -85,7 +86,7 @@ function App() {
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + 10,
+      exp: Math.floor(Date.now() / 1000) + INTERVAL,
     };
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
@@ -119,7 +120,7 @@ function App() {
       const SECRET_KEY = ENCRYPTION_KEY;
       const payload = {
         apiKey: process.env.REACT_APP_API_KEY,
-        exp: Math.floor(Date.now() / 1000) + 10,
+        exp: Math.floor(Date.now() / 1000) + INTERVAL,
       };
       const header = { alg: "HS256", typ: "JWT" };
       const sHeader = JSON.stringify(header);
@@ -162,7 +163,7 @@ function App() {
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + 10,
+      exp: Math.floor(Date.now() / 1000) + INTERVAL,
     };
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
@@ -203,7 +204,7 @@ function App() {
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + 10,
+      exp: Math.floor(Date.now() / 1000) + INTERVAL,
     };
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
@@ -223,7 +224,7 @@ function App() {
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + 10,
+      exp: Math.floor(Date.now() / 1000) + INTERVAL,
     };
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
@@ -285,7 +286,7 @@ function App() {
       const SECRET_KEY = ENCRYPTION_KEY;
       const payload = {
         apiKey: process.env.REACT_APP_API_KEY,
-        exp: Math.floor(Date.now() / 1000) + 10,
+        exp: Math.floor(Date.now() / 1000) + INTERVAL,
       };
       const header = { alg: "HS256", typ: "JWT" };
       const sHeader = JSON.stringify(header);
@@ -336,7 +337,7 @@ function App() {
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + 10,
+      exp: Math.floor(Date.now() / 1000) + INTERVAL,
     };
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
@@ -356,7 +357,7 @@ function App() {
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + 10,
+      exp: Math.floor(Date.now() / 1000) + INTERVAL,
     };
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
@@ -405,7 +406,7 @@ function App() {
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + 10,
+      exp: Math.floor(Date.now() / 1000) + INTERVAL,
     };
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
@@ -431,7 +432,7 @@ function App() {
       const SECRET_KEY = ENCRYPTION_KEY;
       const payload = {
         apiKey: process.env.REACT_APP_API_KEY,
-        exp: Math.floor(Date.now() / 1000) + 10,
+        exp: Math.floor(Date.now() / 1000) + INTERVAL,
       };
       const header = { alg: "HS256", typ: "JWT" };
       const sHeader = JSON.stringify(header);
@@ -588,7 +589,7 @@ function App() {
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + 10,
+      exp: Math.floor(Date.now() / 1000) + INTERVAL,
     };
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
@@ -639,7 +640,7 @@ function App() {
         const SECRET_KEY = ENCRYPTION_KEY;
         const payload = {
           apiKey: process.env.REACT_APP_API_KEY,
-          exp: Math.floor(Date.now() / 1000) + 10,
+          exp: Math.floor(Date.now() / 1000) + INTERVAL,
         };
         const header = { alg: "HS256", typ: "JWT" };
         const sHeader = JSON.stringify(header);

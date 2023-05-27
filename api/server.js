@@ -52,7 +52,7 @@ const authenticateJWT = (req, res, next) => {
   else {
     const token = req.headers.authorization?.split(" ")[1];
   
-    if (req.headers.authorization) {
+    if (!req.headers.authorization) {
       return res.status(401).json({ message: 'Access denied. No token provided.' });
     }
   
