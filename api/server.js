@@ -40,9 +40,21 @@ const User = mongoose.model("User", UserSchema);
 app.use(bodyParser.json());
 
 const authenticateJWT = (req, res, next) => {
+  if(req.headers.authorization?.split(" ")[0] === "ThirdParty") {
+    const apiKey = req.headers.authorization?.split(" ")[1]
+    if(apiKey === API_KEY) {
+      next()
+    }
+    else {
+      return res.status(401).json({ message: 'Invalid API KEY' });
+    }
+  }
+  else {
+
+  }
   const token = req.headers.authorization?.split(" ")[1];
 
-  if (!token) {
+  if (req.headers.authorization) {
     return res.status(401).json({ message: 'Access denied. No token provided.' });
   }
 
