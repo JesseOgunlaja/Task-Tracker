@@ -13,6 +13,27 @@ const SECRET_KEY = process.env.ENCRYPTION_KEY
 const app = express();
 const port = process.env.PORT || 80;
 
+const authenticateJWT = (req, res, next) => {
+  const token = req.header('Authorization')?.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access denied. No token provided.' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    if(decoded === API_KEY) {
+      next();
+    }
+    else {
+      return res.status(401).json({ message: 'Invalid token.' });
+    }
+  } catch (error) {
+    // Invalid token
+    return res.status(401).json({ message: 'Invalid token.' });
+  }
+};
+
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -38,25 +59,10 @@ const User = mongoose.model("User", UserSchema);
 
 // Use the middleware globally for all requests
 
-app.use(cookieParser());
 app.use(bodyParser.json());
 
-const checkApiKeyMiddleware = (req, res, next) => {
-  const apiKeyCookie = req.cookies.APIKEY;
-  
-  if (apiKeyCookie === 'hi') {
-    // Cookie value is equal to 'hi', continue to the next middleware or route handler
-    next();
-  } else {
-    // Cookie value is not equal to 'hi', send an error response
-    res.status(401).send('Invalid API Key!');
-  }
-};
-
-
-app.use(checkApiKeyMiddleware);
 // Get all users
-app.get("/api/users", async (req, res) => {
+app.get("/api/users",authenticateJWT, async (req, res) => {
   try {
     const users = await User.find();
     res.status(200).json(users);
