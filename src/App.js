@@ -271,7 +271,6 @@ function App() {
       const sHeader = JSON.stringify(header);
       const sPayload = JSON.stringify(payload);
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-      try {
         const res = await fetch(`${api}/Users/${userId}`, {
           method: "GET",
           headers: {
@@ -283,21 +282,6 @@ function App() {
           setUser(data.name);
           setSignedIn(true);
           setTasks(data.tasks)
-
-        if (!res.ok) {
-          if (res.status === 401) {
-            throw new Error("API KEY");
-          }
-        }
-      } catch (error) {
-        if (error.message === "API KEY") {
-          window.location.reload();
-        }
-        if (error.message === "Cannot Find User") {
-          deleteCookie("authToken");
-          window.location.reload();
-        }
-      }
     }
   }
 
