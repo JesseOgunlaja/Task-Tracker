@@ -223,7 +223,7 @@ function App() {
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + 1,
+      exp: Math.floor(Date.now() / 1000) + 5,
     };
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
