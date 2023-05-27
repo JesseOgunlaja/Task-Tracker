@@ -302,7 +302,11 @@ function App() {
   }
 
   useEffect(() => {
-    checkIfSignedIn();
+    async function awaitFunction() {
+      await checkIfSignedIn();
+    }
+
+    awaitFunction()
   }, []);
 
   async function signIn(person, id) {
