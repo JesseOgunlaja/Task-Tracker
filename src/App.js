@@ -273,7 +273,7 @@ function App() {
           },
         })
 
-        if(!res2.ok) {
+        if(!res2.ok && res2.statues === 401) {
           throw new Error("")
         }
         else {
