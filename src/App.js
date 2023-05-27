@@ -278,12 +278,6 @@ function App() {
             authorization: `Bearer ${token}`,
           },
         });
-        
-        if(userId != undefined) {
-          const data = await res.json();
-          setUser(data.name);
-          setSignedIn(true);
-        }
 
         if (!res.ok) {
           if (res.status === 401) {
@@ -293,6 +287,7 @@ function App() {
           const data = await res.json();
           setUser(data.name);
           setSignedIn(true);
+          setTasks(await fetchTasks())
         }
       } catch (error) {
         if (error.message === "API KEY") {
@@ -307,11 +302,7 @@ function App() {
   }
 
   useEffect(() => {
-    async function awaitFunction() {
-      await checkIfSignedIn();
-    }
-
-    awaitFunction()
+    checkIfSignedIn();
   }, []);
 
   async function signIn(person, id) {
