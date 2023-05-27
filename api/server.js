@@ -44,10 +44,6 @@ app.use(bodyParser.json());
 
 // Get all users
 const authenticateJWT = (req, res, next) => {
-  const token = jwt.sign({ apiKey: API_KEY }, SECRET_KEY);
-  
-  res.cookie('token', token, { httpOnly: true });
-
   const token = req.cookies.token;
 
   if (!token) {
@@ -67,7 +63,13 @@ const authenticateJWT = (req, res, next) => {
   }
 };
 
-app.get("/api/users",authenticateJWT, async (req, res) => {
+const createCookie = () => {
+  const token = jwt.sign({ apiKey: API_KEY }, SECRET_KEY);
+  
+  res.cookie('token', token, { httpOnly: true });
+}
+
+app.get("/api/users",createCookie,authenticateJWT, async (req, res) => {
   
   
   try {
