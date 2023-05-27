@@ -262,7 +262,7 @@ function App() {
         headers: {
           authorization: `Bearer ${token}`,
         },
-      });
+      }).catch(() => window.location.reload())
       const data2 = await res2.json().catch(() => window.location.reload());
       setUser(data2.name);
       setSignedIn(true);
