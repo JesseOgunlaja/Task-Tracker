@@ -13,25 +13,6 @@ const SECRET_KEY = process.env.ENCRYPTION_KEY
 const app = express();
 const port = process.env.PORT || 80;
 
-const authenticateJWT = (req, res, next) => {
-  const token = req.cookies.token;
-
-  if (!token) {
-    return res.status(401).json({ message: 'Access denied. No token provided.' });
-  }
-
-  try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    if (decoded.apiKey === API_KEY) {
-      next();
-    } else {
-      return res.status(401).json({ message: 'Invalid token.' });
-    }
-  } catch (error) {
-    // Invalid token
-    return res.status(401).json({ message: 'Invalid token.' });
-  }
-};
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
@@ -62,11 +43,33 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 
 // Get all users
-app.get("/api/users",authenticateJWT, async (req, res) => {
+const authenticateJWT = (req, res, next) => {
   const token = jwt.sign({ apiKey: API_KEY }, SECRET_KEY);
-
+  
   res.cookie('token', token, { httpOnly: true });
 
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access denied. No token provided.' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    if (decoded.apiKey === API_KEY) {
+      next();
+    } else {
+      return res.status(401).json({ message: 'Invalid token.' });
+    }
+  } catch (error) {
+    // Invalid token
+    return res.status(401).json({ message: 'Invalid token.' });
+  }
+};
+
+app.get("/api/users",authenticateJWT, async (req, res) => {
+  
+  
   try {
     const users = await User.find();
     res.status(200).json(users);
