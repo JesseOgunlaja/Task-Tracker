@@ -188,7 +188,12 @@ function App() {
       setPeople(await fetchPeople());
     }
 
-    getPeople();
+    if(!document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("authToken="))
+      ?.split("=")[1]) {
+      getPeople();
+    }
   }, []);
 
   useEffect(() => {
