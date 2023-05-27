@@ -193,10 +193,7 @@ function App() {
     document.cookie = `token=${token};path=/`
     const res = await fetch(`/api/Users`, {
       method: "GET",
-      credentials: "include",
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
+      credentials: "include"
     });
     const data = await res.json();
     const authToken = document.cookie
