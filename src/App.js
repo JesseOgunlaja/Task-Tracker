@@ -274,10 +274,10 @@ function App() {
         })
 
         if(!res2.ok) {
-          if(res2.status === 401) {
+          if(res2.statues === 401) {
             throw new Error("API KEY")
           }
-          if(res2.status === 404 && typeof userId === "string") {
+          if(res2.statues === 404 && typeof userId === "string") {
             throw new Error("Cannot Find User")
           }
         }
