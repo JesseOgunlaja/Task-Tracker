@@ -2,8 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const CryptoJS = require("crypto-js");
-const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 
 const API_KEY = process.env.API_KEY;
@@ -39,7 +37,6 @@ const User = mongoose.model("User", UserSchema);
 
 // Use the middleware globally for all requests
 
-app.use(cookieParser());
 app.use(bodyParser.json());
 
 const authenticateJWT = (req, res, next) => {
@@ -62,7 +59,9 @@ const authenticateJWT = (req, res, next) => {
   }
 };
 
-app.get("/api/users", authenticateJWT, async (req, res) => {
+app.use(authenticateJWT())
+
+app.get("/api/users", async (req, res) => {
   try {
     const users = await User.find();
     res.status(200).json(users);

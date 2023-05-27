@@ -82,11 +82,20 @@ function App() {
     const currentTasks = [...tasks];
     currentTasks.splice(index, 1);
 
+    const SECRET_KEY = ENCRYPTION_KEY;
+    const payload = {
+      apiKey: process.env.REACT_APP_API_KEY,
+      exp: Math.floor(Date.now() / 1000) + 10,
+    };
+    const header = { alg: "HS256", typ: "JWT" };
+    const sHeader = JSON.stringify(header);
+    const sPayload = JSON.stringify(payload);
+    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     await fetch(`${api}/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
-        "x-api-key": "",
+        authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         tasks: currentTasks,
@@ -107,11 +116,20 @@ function App() {
       const currentTasks = [...tasks];
       currentTasks.push(newTask);
 
+      const SECRET_KEY = ENCRYPTION_KEY;
+      const payload = {
+        apiKey: process.env.REACT_APP_API_KEY,
+        exp: Math.floor(Date.now() / 1000) + 10,
+      };
+      const header = { alg: "HS256", typ: "JWT" };
+      const sHeader = JSON.stringify(header);
+      const sPayload = JSON.stringify(payload);
+      const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
       await fetch(`${api}/Users/${userId}`, {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
-          "x-api-key": "",
+          authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           tasks: currentTasks,
@@ -141,11 +159,20 @@ function App() {
 
     const currentTasks = [...tasks];
     currentTasks[editIndex.current] = updatedTask;
+    const SECRET_KEY = ENCRYPTION_KEY;
+    const payload = {
+      apiKey: process.env.REACT_APP_API_KEY,
+      exp: Math.floor(Date.now() / 1000) + 10,
+    };
+    const header = { alg: "HS256", typ: "JWT" };
+    const sHeader = JSON.stringify(header);
+    const sPayload = JSON.stringify(payload);
+    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     await fetch(`${api}/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
-        "x-api-key": "",
+        authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         tasks: currentTasks,
@@ -173,10 +200,19 @@ function App() {
   }, [user]);
 
   async function fetchTasks() {
+    const SECRET_KEY = ENCRYPTION_KEY;
+    const payload = {
+      apiKey: process.env.REACT_APP_API_KEY,
+      exp: Math.floor(Date.now() / 1000) + 10,
+    };
+    const header = { alg: "HS256", typ: "JWT" };
+    const sHeader = JSON.stringify(header);
+    const sPayload = JSON.stringify(payload);
+    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     const res = await fetch(`${api}/Users/${userId}`, {
       methpd: "GET",
       headers: {
-        "x-api-key": "",
+        authorization: `Bearer ${token}`,
       },
     });
     const data = res.json();
@@ -184,20 +220,20 @@ function App() {
   }
 
   async function fetchPeople() {
-    const SECRET_KEY = ENCRYPTION_KEY
+    const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + 10
+      exp: Math.floor(Date.now() / 1000) + 10,
     };
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
-    const token = jwt.jws.JWS.sign('HS256', sHeader, sPayload, SECRET_KEY)
+    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     const res = await fetch(`/api/Users`, {
       method: "GET",
       headers: {
-        "authorization": `Bearer ${token}`
-      }
+        authorization: `Bearer ${token}`,
+      },
     });
     const data = await res.json();
     const authToken = document.cookie
@@ -217,7 +253,7 @@ function App() {
       const res2 = await fetch(`${api}/Users/${userId}`, {
         method: "GET",
         headers: {
-          "x-api-key": "",
+          authorization: `Bearer ${token}`,
         },
       });
       const data2 = await res2.json().catch(() => window.location.reload());
@@ -246,11 +282,20 @@ function App() {
       adminPasswordBox.current.type = "password";
       addUserPassword.current.type = "password";
       addUserEmail.current.type = "password";
+      const SECRET_KEY = ENCRYPTION_KEY;
+      const payload = {
+        apiKey: process.env.REACT_APP_API_KEY,
+        exp: Math.floor(Date.now() / 1000) + 10,
+      };
+      const header = { alg: "HS256", typ: "JWT" };
+      const sHeader = JSON.stringify(header);
+      const sPayload = JSON.stringify(payload);
+      const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
       await fetch(`${api}/Users`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
-          "x-api-key": "",
+          authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           name: nameBeingAdded,
@@ -288,10 +333,19 @@ function App() {
   }
 
   async function deleteAccount() {
+    const SECRET_KEY = ENCRYPTION_KEY;
+    const payload = {
+      apiKey: process.env.REACT_APP_API_KEY,
+      exp: Math.floor(Date.now() / 1000) + 10,
+    };
+    const header = { alg: "HS256", typ: "JWT" };
+    const sHeader = JSON.stringify(header);
+    const sPayload = JSON.stringify(payload);
+    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     await fetch(`${api}/Users/${userId}`, {
       method: "DELETE",
       headers: {
-        "x-api-key": "",
+        authorization: `Bearer ${token}`,
       },
     });
     setPeople(await fetchPeople());
@@ -299,12 +353,21 @@ function App() {
   }
 
   async function submitPassword() {
+    const SECRET_KEY = ENCRYPTION_KEY;
+    const payload = {
+      apiKey: process.env.REACT_APP_API_KEY,
+      exp: Math.floor(Date.now() / 1000) + 10,
+    };
+    const header = { alg: "HS256", typ: "JWT" };
+    const sHeader = JSON.stringify(header);
+    const sPayload = JSON.stringify(payload);
+    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     let password = (
       await (
         await fetch(`${api}/Users/${userId}`, {
           method: "GET",
           headers: {
-            "x-api-key": "",
+            authorization: `Bearer ${token}`,
           },
         })
       ).json()
@@ -339,12 +402,21 @@ function App() {
   }
 
   async function completeChangePassword() {
+    const SECRET_KEY = ENCRYPTION_KEY;
+    const payload = {
+      apiKey: process.env.REACT_APP_API_KEY,
+      exp: Math.floor(Date.now() / 1000) + 10,
+    };
+    const header = { alg: "HS256", typ: "JWT" };
+    const sHeader = JSON.stringify(header);
+    const sPayload = JSON.stringify(payload);
+    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     let password = (
       await (
         await fetch(`${api}/Users/${userId}`, {
           method: "GET",
           headers: {
-            "x-api-key": "",
+            authorization: `Bearer ${token}`,
           },
         })
       ).json()
@@ -356,11 +428,20 @@ function App() {
       oldPassword === ADMIN_PASSWORD
     ) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const SECRET_KEY = ENCRYPTION_KEY;
+      const payload = {
+        apiKey: process.env.REACT_APP_API_KEY,
+        exp: Math.floor(Date.now() / 1000) + 10,
+      };
+      const header = { alg: "HS256", typ: "JWT" };
+      const sHeader = JSON.stringify(header);
+      const sPayload = JSON.stringify(payload);
+      const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
       await fetch(`${api}/Users/${userId}`, {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
-          "x-api-key": "",
+          authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           password: hashedPassword,
@@ -504,11 +585,20 @@ function App() {
 
   async function submitNewPassword() {
     const hashedPassword = await bcrypt.hash(passwordBeingReset, 10);
+    const SECRET_KEY = ENCRYPTION_KEY;
+    const payload = {
+      apiKey: process.env.REACT_APP_API_KEY,
+      exp: Math.floor(Date.now() / 1000) + 10,
+    };
+    const header = { alg: "HS256", typ: "JWT" };
+    const sHeader = JSON.stringify(header);
+    const sPayload = JSON.stringify(payload);
+    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     await fetch(`${api}/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
-        "x-api-key": "",
+        authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         password: hashedPassword,
@@ -546,13 +636,22 @@ function App() {
   useEffect(() => {
     async function getEmail() {
       if (userId != undefined) {
+        const SECRET_KEY = ENCRYPTION_KEY;
+        const payload = {
+          apiKey: process.env.REACT_APP_API_KEY,
+          exp: Math.floor(Date.now() / 1000) + 10,
+        };
+        const header = { alg: "HS256", typ: "JWT" };
+        const sHeader = JSON.stringify(header);
+        const sPayload = JSON.stringify(payload);
+        const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
         setEmail(
           (
             await (
               await fetch(`${api}/Users/${userId}`, {
                 method: "GET",
                 headers: {
-                  "x-api-key": "",
+                  authorization: `Bearer ${token}`,
                 },
               })
             ).json()
