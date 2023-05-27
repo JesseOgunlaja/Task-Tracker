@@ -812,6 +812,7 @@ function App() {
                         </>
                       ) : (
                         <div className="loadingBox">
+                          <p>Tasks loading</p>
                           <div className="loader-3">
                             <div className="pulse"></div>
                             <div className="pulse"></div>
@@ -840,7 +841,6 @@ function App() {
                         </button>
                       </div>
                       <footer className="footer">
-                        <p>Copyright &copy; 2023</p>
                         <Link to="/about">About</Link>
                       </footer>
                     </div>
