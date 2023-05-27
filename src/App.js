@@ -252,15 +252,20 @@ function App() {
       ).toString(CryptoJS.enc.Utf8);
       setUserId(decrypt2);
       token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-      const res2 = await fetch(`${api}/Users/${userId}`, {
-        method: "GET",
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      });
-      const data2 = await res2.json().catch(() => window.location.reload());
-      setUser(data2.name);
-      setSignedIn(true);
+      try {
+        const res2 = await fetch(`${api}/Users/${userId}`, {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        });
+        const data2 = await res2.json()
+        setUser(data2.name);
+        setSignedIn(true);
+      }
+      catch {
+        window.location.reload()
+      }
     }
     return data;
   }
