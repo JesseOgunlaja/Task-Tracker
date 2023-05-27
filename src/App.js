@@ -670,14 +670,7 @@ function App() {
   }
 
   return (
-    <Router>
-      {/* Makes it possible to use Routes */}
-      <div className="app">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
+              <div className="app">
                 {signedIn ? (
                   <>
                     <div className="container">
@@ -1159,21 +1152,7 @@ function App() {
                     </div>
                   </>
                 )}
-              </>
-            }
-          />
-          <Route
-            path="/about"
-            element={
-              <div className="container about">
-                <h4>Version 1.0.0</h4>
-                <Link to="/">Go Back</Link>
               </div>
-            }
-          />
-        </Routes>
-      </div>
-    </Router>
   );
 }
 
