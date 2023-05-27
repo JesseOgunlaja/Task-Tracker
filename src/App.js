@@ -265,15 +265,27 @@ function App() {
       const sHeader = JSON.stringify(header);
       const sPayload = JSON.stringify(payload);
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-      const res2 = await fetch(`${api}/Users/${userId}`, {
-        method: "GET",
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }).catch(() => window.location.reload())
-      const data2 = await res2.json().catch(() => window.location.reload());
+      try {
+        const res2 = await fetch(`${api}/Users/${userId}`, {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        })
+
+        if(!res2.ok) {
+          throw new Error("")
+        }
+        else {
+          const data2 = await res2.json().catch(() => window.location.reload());
       setUser(data2.name);
       setSignedIn(true);
+        }
+      }
+      catch (error) {
+        window.location.reload()
+      }
+      
     }
   }
 
