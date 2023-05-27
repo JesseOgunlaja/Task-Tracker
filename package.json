@@ -117,7 +117,7 @@
     "nodemon": "^2.0.22"
   },
   "browser": {
-    "crypto": true
+    "crypto": false
   },
   "jest": {
     "roots": [

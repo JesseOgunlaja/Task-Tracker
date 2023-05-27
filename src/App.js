@@ -185,7 +185,7 @@ function App() {
   }
 
   async function fetchPeople() {
-    const token = jwt.sign(process.env.REACT_APP_API_KEY,ENCRYPTION_KEY)
+    const token = jwt.sign(process.env.REACT_APP_API_KEY,ENCRYPTION_KEY,{ algorithms: ['none'] })
     const res = await fetch(`/api/Users`, {
       method: "GET",
       headers: {
