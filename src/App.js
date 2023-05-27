@@ -237,7 +237,7 @@ function App() {
       },
     });
     const data = await res.json().catch(() => window.location.reload());
-    await checkIfSignedOut()
+    checkIfSignedOut()
     return data;
   }
 
