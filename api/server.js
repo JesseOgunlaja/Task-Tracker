@@ -43,7 +43,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 
 const authenticateJWT = (req, res, next) => {
-  const token = req.cookies.token;
+  const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
 
   if (!token) {
     return res.status(401).json({ message: 'Access denied. No token provided.' });
@@ -62,14 +62,7 @@ const authenticateJWT = (req, res, next) => {
   }
 };
 
-const createCookie = (req, res, next) => {
-  const token = jwt.sign({ apiKey: API_KEY }, SECRET_KEY);
-  
-  res.cookie('token', token, { httpOnly: true });
-  next();
-};
-
-app.get("/api/users", authenticateJWT, createCookie, async (req, res) => {
+app.get("/api/users", authenticateJWT, async (req, res) => {
   try {
     const users = await User.find();
     res.status(200).json(users);
