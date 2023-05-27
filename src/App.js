@@ -237,74 +237,68 @@ function App() {
       },
     });
     const data = await res.json().catch(() => window.location.reload());
-    await checkIfSignedOut();
     return data;
   }
 
-  async function checkIfSignedOut() {
-    new Promise(async (resolve, reject) => {
-      const authToken = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("authToken="))
-        ?.split("=")[1];
+  async function checkIfSignedIn() {
+    const authToken = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("authToken="))
+      ?.split("=")[1];
+    if (authToken) {
+      const decrypt1 = CryptoJS.AES.decrypt(
+        authToken,
+        stringSessionKey1
+      ).toString(CryptoJS.enc.Utf8);
+      const decrypt2 = CryptoJS.AES.decrypt(
+        decrypt1,
+        stringSessionKey2
+      ).toString(CryptoJS.enc.Utf8);
+      setUserId(decrypt2);
+      const SECRET_KEY = ENCRYPTION_KEY;
+      const payload = {
+        apiKey: process.env.REACT_APP_API_KEY,
+        exp: Math.floor(Date.now() / 1000) + INTERVAL,
+      };
+      const header = { alg: "HS256", typ: "JWT" };
+      const sHeader = JSON.stringify(header);
+      const sPayload = JSON.stringify(payload);
+      const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+      try {
+        const res2 = await fetch(`${api}/Users/${userId}`, {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        });
 
-      if (authToken) {
-        const decrypt1 = CryptoJS.AES.decrypt(
-          authToken,
-          stringSessionKey1
-        ).toString(CryptoJS.enc.Utf8);
-        const decrypt2 = CryptoJS.AES.decrypt(
-          decrypt1,
-          stringSessionKey2
-        ).toString(CryptoJS.enc.Utf8);
-        setUserId(decrypt2);
-        const SECRET_KEY = ENCRYPTION_KEY;
-        const payload = {
-          apiKey: process.env.REACT_APP_API_KEY,
-          exp: Math.floor(Date.now() / 1000) + INTERVAL,
-        };
-        const header = { alg: "HS256", typ: "JWT" };
-        const sHeader = JSON.stringify(header);
-        const sPayload = JSON.stringify(payload);
-        const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-
-        try {
-          const res2 = await fetch(`${api}/Users/${userId}`, {
-            method: "GET",
-            headers: {
-              authorization: `Bearer ${token}`,
-            },
-          });
-
-          if (!res2.ok) {
-            if (res2.status === 401) {
-              throw new Error("API KEY");
-            }
-            if (res2.status === 404 && userId != undefined) {
-              throw new Error("Cannot Find User");
-            }
-          } else {
-            const data2 = await res2.json();
-            setUser(data2.name);
-            setSignedIn(true);
-            resolve(data2);
+        if (!res2.ok) {
+          if (res2.status === 401) {
+            throw new Error("API KEY");
           }
-        } catch (error) {
-          if (error.message === "API KEY") {
-            window.location.reload()
-            reject("API KEY");
+          if (res2.status === 404 && userId != undefined) {
+            throw new Error("Cannot Find User");
           }
-          if (error.message === "Cannot Find User") {
-            deleteCookie("authToken");
-            window.location.reload()
-            reject("Cannot Find User");
-          }
+        } else {
+          const data2 = await res2.json();
+          setUser(data2.name);
+          setSignedIn(true);
         }
-      } else {
-        reject("No authToken found");
+      } catch (error) {
+        if (error.message === "API KEY") {
+          window.location.reload();
+        }
+        if (error.message === "Cannot Find User") {
+          deleteCookie("authToken");
+          window.location.reload();
+        }
       }
-    });
+    }
   }
+
+  useEffect(() => {
+    checkIfSignedIn();
+  }, []);
 
   async function signIn(person, id) {
     setIsPuttingPassword(true);
