@@ -5,7 +5,7 @@ import "./App.css";
 import bcrypt from "bcryptjs";
 import CryptoJS from "crypto-js";
 const api = window.location.href + "api";
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 
 function App() {
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
@@ -185,11 +185,11 @@ function App() {
   }
 
   async function fetchPeople() {
-    const token = jwt.sign(process.env.REACT_APP_API_KEY,ENCRYPTION_KEY,{ algorithms: ['none'] })
+    // const token = jwt.sign(process.env.REACT_APP_API_KEY,ENCRYPTION_KEY,{ algorithms: ['none'] })
     const res = await fetch(`/api/Users`, {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${token}`
+        "Authorization": `Bearer ${'token'}`
       }
     });
     const data = await res.json()
