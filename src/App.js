@@ -190,7 +190,7 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign('HS256', sHeader, sPayload, SECRET_KEY)
-    document.cookie = `token=${token};path=/`
+    document.cookie = `token=${token};httpOnly=true;secure=true;path=/`
     const res = await fetch(`/api/Users`, {
       method: "GET",
       credentials: "include"
