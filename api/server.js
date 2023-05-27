@@ -54,11 +54,11 @@ const authenticateJWT = (req, res, next) => {
     if (decoded.apiKey === API_KEY) {
       next();
     } else {
-      return res.status(401).json({ message: decoded.apiKey });
+      return res.status(401).json({ message: decoded });
     }
   } catch (error) {
     // Invalid token
-    return res.status(401).json({ message: decoded.apiKey });
+    return res.status(401).json({ message: decoded });
   }
 };
 
