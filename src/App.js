@@ -271,17 +271,17 @@ function App() {
       const sHeader = JSON.stringify(header);
       const sPayload = JSON.stringify(payload);
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-        const res = await fetch(`${api}/Users/${userId}`, {
-          method: "GET",
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        });
+      const res = await fetch(`${api}/Users/${userId}`, {
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
 
-        const data = await res.json();
-          setUser(await data.name);
-          setSignedIn(true);
-          setTasks(await data.tasks)
+      const data = await res.json();
+      setUser(await data.name);
+      setSignedIn(true);
+      setTasks(await data.tasks);
     }
   }
 
@@ -290,7 +290,7 @@ function App() {
       await checkIfSignedIn();
     }
 
-    awaitFunction()
+    awaitFunction();
   }, []);
 
   async function signIn(person, id) {
