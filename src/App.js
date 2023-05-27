@@ -188,12 +188,7 @@ function App() {
       setPeople(await fetchPeople());
     }
 
-    if(!document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("authToken="))
-      ?.split("=")[1]) {
-      getPeople();
-    }
+    getPeople();
   }, []);
 
   useEffect(() => {
@@ -287,7 +282,7 @@ function App() {
           }
         }
         else {
-          const data2 = await res2.json().catch(() => window.location.reload());
+          const data2 = await res2.json();
       setUser(data2.name);
       setSignedIn(true);
         }
