@@ -8,7 +8,7 @@ const api = window.location.href + "api";
 const jwt = require("jsrsasign");
 
 function App() {
-  const INTERVAL = 1
+  const INTERVAL = 1;
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
   const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
   const ENCRYPTION_SESSION_1 = process.env.REACT_APP_ENCRYPTION_SESSION_1;
@@ -222,21 +222,26 @@ function App() {
 
   async function fetchPeople() {
     const SECRET_KEY = ENCRYPTION_KEY;
-    let payload = {
+    const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
       exp: Math.floor(Date.now() / 1000) + INTERVAL,
     };
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
-    let sPayload = JSON.stringify(payload);
-    let token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+    const sPayload = JSON.stringify(payload);
+    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     const res = await fetch(`/api/Users`, {
       method: "GET",
       headers: {
         authorization: `Bearer ${token}`,
       },
     });
-    const data = await res.json().catch(() => window.location.reload());;
+    const data = await res.json().catch(() => window.location.reload());
+
+    return data;
+  }
+
+  async function checkIfSignedOut() {
     const authToken = document.cookie
       .split("; ")
       .find((row) => row.startsWith("authToken="))
@@ -251,23 +256,25 @@ function App() {
         stringSessionKey2
       ).toString(CryptoJS.enc.Utf8);
       setUserId(decrypt2);
-      payload = {
+      const SECRET_KEY = ENCRYPTION_KEY;
+      const payload = {
         apiKey: process.env.REACT_APP_API_KEY,
         exp: Math.floor(Date.now() / 1000) + INTERVAL,
       };
-      sPayload = JSON.stringify(payload);
-      token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+      const header = { alg: "HS256", typ: "JWT" };
+      const sHeader = JSON.stringify(header);
+      const sPayload = JSON.stringify(payload);
+      const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
       const res2 = await fetch(`${api}/Users/${userId}`, {
         method: "GET",
         headers: {
           authorization: `Bearer ${token}`,
         },
-      }).catch(() => window.location.reload())
+      });
       const data2 = await res2.json().catch(() => window.location.reload());
       setUser(data2.name);
       setSignedIn(true);
     }
-    return data;
   }
 
   async function signIn(person, id) {
