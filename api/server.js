@@ -41,8 +41,8 @@ const User = mongoose.model("User", UserSchema);
 app.use(bodyParser.json());
 
 const limiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 15 minutes
-  max: 10, // limit each IP to 100 requests per windowMs
+  windowMs: 30 * 1000, // 30 seconds
+  max: 100, // limit each IP to 100 requests per windowMs
   message: 'Too many requests from this IP, please try again later.',
 });
 
