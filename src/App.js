@@ -66,7 +66,24 @@ function App() {
   const [editedTaskReminder, setEditedTaskReminder] = useState();
   const [incorrectUsername, setIncorrectUsername] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
+  
+  function encryptString(name) {
+    const encrypted1 = CryptoJS.AES.encrypt(name, stringDataKey1).toString();
+    const encrypted2 = CryptoJS.AES.encrypt(
+      encrypted1,
+      stringDataKey2
+    ).toString();
+    return encrypted2;
+  }
 
+  function decryptString(name) {
+    const decrypted1 = CryptoJS.AES.decrypt(name, stringDataKey2).toString();
+    const decrypted2 = CryptoJS.AES.decrypt(
+      decrypted1,
+      stringDataKey1
+    ).toString();
+    return decrypted2;
+  }
   function signInUsername() {
     people.forEach((person) => {
       if (decryptString(person.name).toUpperCase() == username.toUpperCase()) {
@@ -78,11 +95,11 @@ function App() {
     });
     setIncorrectUsername(true);
   }
-
+  
   async function deleteTask(index) {
     const currentTasks = [...tasks];
     currentTasks.splice(index, 1);
-
+    
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
@@ -733,23 +750,6 @@ function App() {
       cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   }
 
-  function encryptString(name) {
-    const encrypted1 = CryptoJS.AES.encrypt(name, stringDataKey1).toString();
-    const encrypted2 = CryptoJS.AES.encrypt(
-      encrypted1,
-      stringDataKey2
-    ).toString();
-    return encrypted2;
-  }
-
-  function decryptString(name) {
-    const decrypted1 = CryptoJS.AES.decrypt(name, stringDataKey2).toString();
-    const decrypted2 = CryptoJS.AES.decrypt(
-      decrypted1,
-      stringDataKey1
-    ).toString();
-    return decrypted2;
-  }
 
   return (
     <div className="app">
