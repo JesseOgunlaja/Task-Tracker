@@ -92,6 +92,7 @@ function App() {
         email: encryptedEmail,
       }),
     });
+    setSignedIn(true)
   }
 
   function encryptString(nameGiven) {
@@ -554,6 +555,7 @@ function App() {
     setIsEditing(false);
     setIsChangingData(true);
     setDataBeingChanged("email");
+    signOut()
   }
 
   async function completeChangePassword() {
@@ -788,6 +790,7 @@ function App() {
       setDataBeingChanged("")
       setEmailBeingAdded("")
       setNewEmail("")
+      setSignedIn(true)
     }
   }
 
