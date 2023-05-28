@@ -67,8 +67,8 @@ function App() {
   const [incorrectUsername, setIncorrectUsername] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   
-  function encryptString(name) {
-    const encrypted1 = CryptoJS.AES.encrypt(name, stringDataKey1).toString();
+  function encryptString(nameGiven) {
+    const encrypted1 = CryptoJS.AES.encrypt(nameGiven, stringDataKey1).toString();
     const encrypted2 = CryptoJS.AES.encrypt(
       encrypted1,
       stringDataKey2
@@ -76,8 +76,8 @@ function App() {
     return encrypted2;
   }
 
-  function decryptString(name) {
-    const decrypted1 = CryptoJS.AES.decrypt(name, stringDataKey2).toString();
+  function decryptString(nameGiven) {
+    const decrypted1 = CryptoJS.AES.decrypt(nameGiven, stringDataKey2).toString();
     const decrypted2 = CryptoJS.AES.decrypt(
       decrypted1,
       stringDataKey1
