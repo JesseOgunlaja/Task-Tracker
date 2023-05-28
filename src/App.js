@@ -127,7 +127,7 @@ function App() {
     if (newTaskTitle.current.value !== "" && newTaskDate.current.value !== "") {
       const newTask = {
         task: encryptString(newTaskTitle.current.value),
-        date: newTaskDate.current.value,
+        date: encryptString(newTaskDate.current.value),
         reminder: newTaskReminder.current.checked,
       };
 
@@ -171,7 +171,7 @@ function App() {
   async function editTask() {
     const updatedTask = {
       task: encryptString(editedTaskTitle),
-      date: editedTaskDate,
+      date: encryptString(editedTaskDate),
       reminder: editedTaskReminder,
     };
 
@@ -244,11 +244,12 @@ function App() {
     return data.then((res) =>
       res.tasks.map((task) => {
         const newTask = decryptString(task.task);
+        const newDate = decryptString(task.date)
         return {
           reminder: task.reminder,
           _id: task._id,
           task: newTask,
-          date: task.date,
+          date: newDate,
         };
       })
     );
