@@ -956,7 +956,7 @@ function App() {
                 >
                   Change Password
                 </button>
-                <button className="signOutButton notWide">Change Email</button>
+                <button onClick={changeEmail} className="signOutButton notWide">Change Email</button>
               </div>
               <button
                 className="signOutButton red wide"
