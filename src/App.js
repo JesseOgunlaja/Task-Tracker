@@ -267,7 +267,7 @@ function App() {
       while (userId === undefined) {
         await new Promise((resolve) => setTimeout(resolve, 10)); // Adjust the delay as needed
       }
-      
+
       const SECRET_KEY = ENCRYPTION_KEY;
       const payload = {
         apiKey: process.env.REACT_APP_API_KEY,
@@ -286,14 +286,17 @@ function App() {
       });
 
       if (res.ok) {
+        console.log("ok")
         const data = await res.json();
         setUser(await data.name);
         setSignedIn(true);
         setTasks(await data.tasks);
       } else if (res.status === 404 && userId !== undefined) {
+        console.log("invalid auth token")
         deleteCookie("authToken");
         window.location.reload();
       } else if (res.status === 401 || res.status === 500) {
+        console.log("unauthorised")
         window.location.reload();
       }
     }
