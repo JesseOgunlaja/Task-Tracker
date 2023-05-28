@@ -122,8 +122,6 @@ function App() {
       if (decryptString(person.name).toUpperCase() == username.toUpperCase()) {
         signIn(person.name, person._id);
         return;
-      } else {
-        console.log(decryptString(person.name));
       }
     });
     setIncorrectUsername(true);
@@ -658,6 +656,9 @@ function App() {
       if (usernameBox.current === document.activeElement) {
         signInUsername();
       }
+      if(newEmailBox.current === document.activeElement) {
+        completeChangeEmail()
+      }
     }
   };
 
@@ -709,7 +710,7 @@ function App() {
   async function forgotPassword() {
     const formData = {
       code: verificationCode,
-      user_name: user,
+      user_name: decryptString(user),
       user_email: email,
     };
     setIsForgettingPassword(true);
@@ -824,7 +825,7 @@ function App() {
     }
 
     getEmail();
-  }, [userId, isForgettingPassword]);
+  }, [userId, isForgettingPassword,isChangingData]);
 
   function deleteCookie(cookieName) {
     document.cookie =
