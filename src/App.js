@@ -10,9 +10,12 @@ function App() {
   const INTERVAL = 1;
   let verificationCode = Math.floor(Math.random() * 1000000000)
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
-  const DATA_ENCRYPTION_KEY = process.env.REACT_APP_DATA_ENCRYPTION
-  const parsedDataKey = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY);
-  const stringDataKey = CryptoJS.enc.Utf8.stringify(parsedDataKey);
+  const DATA_ENCRYPTION_KEY1 = process.env.REACT_APP_DATA_ENCRYPTION1
+  const parsedDataKey1 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY1);
+  const stringDataKey1 = CryptoJS.enc.Utf8.stringify(parsedDataKey1);
+  const DATA_ENCRYPTION_KEY2 = process.env.REACT_APP_DATA_ENCRYPTION2
+  const parsedDataKey2 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY2);
+  const stringDataKey2 = CryptoJS.enc.Utf8.stringify(parsedDataKey2);
   const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
   const ENCRYPTION_SESSION_1 = process.env.REACT_APP_ENCRYPTION_SESSION_1;
   const ENCRYPTION_SESSION_2 = process.env.REACT_APP_ENCRYPTION_SESSION_2;
@@ -66,7 +69,7 @@ function App() {
 
   function signInUsername() {
     people.forEach((person) => {
-      if (person.name.toUpperCase() === username.toUpperCase()) {
+      if ((decryptString(person.name)).toUpperCase() === username.toUpperCase()) {
         signIn(person.name, person._id);
         return;
       }
@@ -104,7 +107,7 @@ function App() {
   async function addTask() {
     if (newTaskTitle.current.value !== "" && newTaskDate.current.value !== "") {
       const newTask = {
-        task: newTaskTitle.current.value,
+        task: encryptString(newTaskTitle.current.value),
         date: newTaskDate.current.value,
         reminder: newTaskReminder.current.checked,
       };
@@ -148,7 +151,7 @@ function App() {
 
   async function editTask() {
     const updatedTask = {
-      task: editedTaskTitle,
+      task: encryptString(editedTaskTitle),
       date: editedTaskDate,
       reminder: editedTaskReminder,
     };
@@ -219,7 +222,12 @@ function App() {
       },
     });
     const data = res.json();
-    return data.then((res) => res.tasks);
+    return data.then((res) => res.tasks.map(task => {
+      const newTask = decryptString(task.task)
+      return {
+        reminder: task.reminder, _id: task._id, task: newTask, date: task.date
+      }
+    }));
   }
 
   async function fetchPeople() {
@@ -340,10 +348,10 @@ function App() {
           authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          name: nameBeingAdded,
+          name: encryptString(nameBeingAdded),
           tasks: [],
           password: passwordBeingAdded,
-          email: emailBeingAdded,
+          email: encryptString(emailBeingAdded),
         }),
       });
       setPeople(await fetchPeople());
@@ -694,7 +702,7 @@ function App() {
         const sPayload = JSON.stringify(payload);
         const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
         setEmail(
-          (
+          decryptString((
             await (
               await fetch(`${api}/Users/${userId}`, {
                 method: "GET",
@@ -703,7 +711,7 @@ function App() {
                 },
               })
             ).json()
-          ).email
+          ).email)
         );
       }
     }
@@ -714,6 +722,30 @@ function App() {
   function deleteCookie(cookieName) {
     document.cookie =
       cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  }
+
+  function encryptString(name) {
+    const encrypted1 = (CryptoJS.AES.encrypt(
+      name,
+      stringDataKey1
+    ).toString());
+    const encrypted2 = (CryptoJS.AES.encrypt(
+      encrypted1,
+      stringDataKey2
+    ).toString());
+    return encrypted2
+  }
+
+  function decryptString(name) {
+    const decrypted1 = (CryptoJS.AES.encrypt(
+      name,
+      stringDataKey1
+    ).toString());
+    const decrypted2 = (CryptoJS.AES.encrypt(
+      decrypted1,
+      stringDataKey2
+    ).toString());
+    return decrypted2
   }
 
   return (
