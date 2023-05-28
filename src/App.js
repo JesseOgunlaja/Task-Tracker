@@ -265,39 +265,29 @@ function App() {
       const SECRET_KEY = ENCRYPTION_KEY;
       const payload = {
         apiKey: process.env.REACT_APP_API_KEY,
-        exp: Math.floor(Date.now() / 1000) + INTERVAL,
+        exp: Math.floor(Date.now() / 1000) + (INTERVAL + 4),
       };
       const header = { alg: "HS256", typ: "JWT" };
       const sHeader = JSON.stringify(header);
       const sPayload = JSON.stringify(payload);
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-      try {
-        const res = await fetch(`${api}/Users/${userId}`, {
-          method: "GET",
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        });
 
-        const data = await res.json();
-        setUser(data.name);
-        setSignedIn(true);
-        setTasks(data.tasks);
+      const res = await fetch(`${api}/Users/${userId}`, {
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
 
-        if (!res.ok) {
-          if (res.status === 401) {
-            throw new Error("API KEY");
-          }
-        }
-      } catch (error) {
-        if (error.message === "API KEY") {
-          window.location.reload();
-        }
-        if (error.message === "Cannot Find User") {
-          deleteCookie("authToken");
-          window.location.reload();
-        }
+      if (res.status === 401 || res.status === 500) {
+        window.location.reload()
       }
+
+      const data = await res.json();
+      setUser(data.name);
+      setSignedIn(true);
+      setTasks(data.tasks);
+
     }
   }
 
@@ -434,7 +424,12 @@ function App() {
         FIRST_ENCRYPTION,
         stringSessionKey2
       ).toString();
-      document.cookie = `authToken=${SECOND_ENCRYPTION}; path=/`;
+      let currentDate = new Date();
+      let expirationDate = new Date(
+        currentDate.getTime() + 7 * 24 * 60 * 60 * 1000
+      ); // 7 days * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
+      let expires = expirationDate.toUTCString();
+      document.cookie = `authToken=${SECOND_ENCRYPTION}; expires=${expires}; path=/`;
       setSignedIn(true);
       return;
     }
