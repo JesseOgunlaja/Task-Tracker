@@ -264,9 +264,9 @@ function App() {
       setUserId(decrypt2);
 
       
-      while (userId === undefined) {
-        await new Promise((resolve) => setTimeout(resolve, 10)); // Adjust the delay as needed
-      }
+      // while (userId === undefined) {
+      //   await new Promise((resolve) => setTimeout(resolve, 10)); // Adjust the delay as needed
+      // }
 
       const SECRET_KEY = ENCRYPTION_KEY;
       const payload = {
