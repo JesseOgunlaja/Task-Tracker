@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import emailjs from "@emailjs/browser";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import bcrypt from "bcryptjs";
 import CryptoJS from "crypto-js";
@@ -253,6 +252,7 @@ function App() {
       .find((row) => row.startsWith("authToken="))
       ?.split("=")[1];
     if (authToken) {
+
       const decrypt1 = CryptoJS.AES.decrypt(
         authToken,
         stringSessionKey1
@@ -278,6 +278,11 @@ function App() {
           authorization: `Bearer ${token}`,
         },
       });
+
+      if(res.status === 404 && userId != undefined) {
+        deleteCookie('authToken')
+        window.location.reload()
+      }
 
       if (res.status === 401 || res.status === 500) {
         window.location.reload()
