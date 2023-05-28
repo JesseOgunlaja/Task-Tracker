@@ -8,7 +8,11 @@ const jwt = require("jsrsasign");
 
 function App() {
   const INTERVAL = 1;
+  let verificationCode = Math.floor(Math.random() * 1000000000)
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
+  const DATA_ENCRYPTION_KEY = process.env.REACT_APP_DATA_ENCRYPTION
+  const parsedDataKey = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY);
+  const stringDataKey = CryptoJS.enc.Utf8.stringify(parsedDataKey);
   const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
   const ENCRYPTION_SESSION_1 = process.env.REACT_APP_ENCRYPTION_SESSION_1;
   const ENCRYPTION_SESSION_2 = process.env.REACT_APP_ENCRYPTION_SESSION_2;
@@ -16,12 +20,7 @@ function App() {
   const stringSessionKey1 = CryptoJS.enc.Utf8.stringify(parsedSessionKey1);
   const parsedSessionKey2 = CryptoJS.enc.Utf8.parse(ENCRYPTION_SESSION_2);
   const stringSessionKey2 = CryptoJS.enc.Utf8.stringify(parsedSessionKey2);
-  const parsedKey = CryptoJS.enc.Utf8.parse(ENCRYPTION_KEY);
-  const stringKey = CryptoJS.enc.Base64.stringify(parsedKey);
-  const API_KEY = CryptoJS.AES.encrypt(
-    process.env.REACT_APP_API_KEY,
-    stringKey
-  ).toString();
+
   const newTaskTitle = useRef();
   const newTaskDate = useRef();
   const newTaskReminder = useRef();
@@ -55,9 +54,6 @@ function App() {
   const [newPassword, setNewPassword] = useState("");
   const [emailBeingAdded, setEmailBeingAdded] = useState("");
   const [isForgettingPassword, setIsForgettingPassword] = useState(false);
-  const [verificationCode, setVerificationCode] = useState(
-    Math.floor(Math.random() * 1000000000)
-  );
   const [email, setEmail] = useState("");
   const [codeBeingInputted, setCodeBeingInputted] = useState("");
   const [isResettingPassword, setIsResettingPassword] = useState(false);
@@ -98,7 +94,7 @@ function App() {
         authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        tasks: currentTasks,
+        tasks: encryptTasks(currentTasks),
       }),
     });
 
@@ -132,7 +128,7 @@ function App() {
           authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          tasks: currentTasks,
+          tasks: encryptTasks(currentTasks),
         }),
       });
     }
@@ -279,8 +275,6 @@ function App() {
         window.location.reload();
       }
 
-      console.log(decrypt2)
-
       const res = await fetch(`${api}/Users/${decrypt2}`, {
         method: "GET",
         headers: {
@@ -346,10 +340,10 @@ function App() {
           authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          name: nameBeingAdded,
+          name: encryptString(nameBeingAdded),
           tasks: [],
           password: passwordBeingAdded,
-          email: emailBeingAdded,
+          email: encryptString(emailBeingAdded),
         }),
       });
       setPeople(await fetchPeople());
@@ -369,7 +363,7 @@ function App() {
     setPasswordBeingReset("");
     setPasswordBeingAdded("");
     setIsResettingPassword(false);
-    setVerificationCode(Math.floor(Math.random() * 1000000000));
+    verificationCode = Math.floor(Math.random() * 1000000000);
     setCodeBeingInputted("");
     setIsChangingPassword(false);
     setNameBeingAdded("");
@@ -720,6 +714,36 @@ function App() {
   function deleteCookie(cookieName) {
     document.cookie =
       cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  }
+
+  function encryptString(name) {
+    return CryptoJS.AES.encrypt(
+        name,
+        stringDataKey
+      ).toString();
+  }
+
+  function encryptTasks(currentTasks) {
+    const newTasks = currentTasks.map((task) => {
+      const newTask = encryptString(task.task)
+      return {date: task.date, reminder: task.reminder, task: newTask, _id: task._id}
+    })
+    return newTasks
+  }
+
+  function decryptString(name) {
+    return CryptoJS.AES.decrypt(
+        name,
+        stringDataKey
+      ).toString();
+  }
+
+  function decryptTasks(currentTasks) {
+    const newTasks = currentTasks.map((task) => {
+      const newTask = decryptString(task.task)
+      return {date: task.date, reminder: task.reminder, task: newTask, _id: task._id}
+    })
+    return newTasks
   }
 
   return (
