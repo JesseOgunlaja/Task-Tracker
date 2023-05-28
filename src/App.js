@@ -103,7 +103,17 @@ function App() {
 
   async function deleteTask(index) {
     const currentTasks = [...tasks];
-    currentTasks.splice(index, 1);
+    const encryptedTasks = currentTasks.map((task) => {
+      const newTask = encryptString(task.task);
+      const newDate = encryptString(task.date);
+      return {
+        reminder: task.reminder,
+        _id: task._id,
+        task: newTask,
+        date: newDate,
+      };
+    });
+    encryptedTasks.splice(index, 1);
 
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
@@ -121,7 +131,7 @@ function App() {
         authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        tasks: currentTasks,
+        tasks: encryptedTasks,
       }),
     });
 
