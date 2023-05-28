@@ -266,12 +266,20 @@ function App() {
       const SECRET_KEY = ENCRYPTION_KEY;
       const payload = {
         apiKey: process.env.REACT_APP_API_KEY,
-        exp: Math.floor(Date.now() / 1000) + (INTERVAL + 4),
+        exp: Math.floor(Date.now() / 1000) + INTERVAL,
       };
       const header = { alg: "HS256", typ: "JWT" };
       const sHeader = JSON.stringify(header);
       const sPayload = JSON.stringify(payload);
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+
+      if(decrypt2 === "") {
+        console.log("invalid auth token");
+        deleteCookie("authToken");
+        window.location.reload();
+      }
+
+      console.log(decrypt2)
 
       const res = await fetch(`${api}/Users/${decrypt2}`, {
         method: "GET",
@@ -607,10 +615,10 @@ function App() {
     setIsForgettingPassword(true);
     emailjs
       .send(
-        "service_qt8bik7",
-        "template_938j99h",
+        process.env.REACT_APP_SERVICE_ID,
+        process.env.REACT_APP_TEMPLATE_ID,
         formData,
-        "SWBcr0pFf3wH4zk_K"
+        process.env.REACT_APP_PUBLIC_KEY
       )
       .then(
         (result) => {
