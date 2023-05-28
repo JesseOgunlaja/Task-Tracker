@@ -77,11 +77,11 @@ function App() {
   }
 
   function decryptString(nameGiven) {
-    const decrypted1 = CryptoJS.AES.decrypt(nameGiven, stringDataKey2).toString();
+    const decrypted1 = CryptoJS.AES.decrypt(nameGiven, stringDataKey2).toString(CryptoJS.enc.Utf8);
     const decrypted2 = CryptoJS.AES.decrypt(
       decrypted1,
       stringDataKey1
-    ).toString();
+    ).toString(CryptoJS.enc.Utf8);
     return decrypted2;
   }
   function signInUsername() {
@@ -90,7 +90,7 @@ function App() {
         signIn(person.name, person._id);
         return;
       } else {
-        console.log(decryptString(person.name).toUpperCase());
+        console.log(decryptString(person.name));
       }
     });
     setIncorrectUsername(true);
