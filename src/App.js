@@ -283,24 +283,24 @@ function App() {
       console.log("Response status:", res.status);
 
       if (res.ok) {
-        console.log("ok")
+        console.log("ok");
         const data = await res.json();
         setUser(await data.name);
         setSignedIn(true);
         setTasks(await data.tasks);
-      } else if (res.status === 404 && userId !== undefined) {
-        console.log("invalid auth token")
+      } else if (res.status === 404) {
+        console.log("invalid auth token");
         deleteCookie("authToken");
         window.location.reload();
       } else if (res.status === 401 || res.status === 500) {
-        console.log("unauthorised")
+        console.log("unauthorised");
         window.location.reload();
       }
     }
   }
 
   useEffect(() => {
-    checkIfSignedIn()
+    checkIfSignedIn();
   }, []);
 
   async function signIn(person, id) {
@@ -805,45 +805,35 @@ function App() {
                   </button>
                 </div>
               ) : null}
-              {tasks != null ? (
-                <>
-                  {tasks.length !== 0 ? (
-                    tasks.map((task, index) => (
+              <>
+                {tasks.length !== 0 ? (
+                  tasks.map((task, index) => (
+                    <div
+                      key={Math.random()}
+                      className={task.reminder ? "task reminder" : "task"}
+                    >
+                      <p className="taskName">{task.task}</p>
+                      <p className="taskDate">{task.date}</p>
                       <div
-                        key={Math.random()}
-                        className={task.reminder ? "task reminder" : "task"}
+                        onClick={() => deleteTask(index)}
+                        className="deleteButton"
                       >
-                        <p className="taskName">{task.task}</p>
-                        <p className="taskDate">{task.date}</p>
-                        <div
-                          onClick={() => deleteTask(index)}
-                          className="deleteButton"
-                        >
-                          <hr className="line1" />
-                          <hr className="line2" />
-                        </div>
-                        <button
-                          className="button green edit-button"
-                          onClick={() => edit(index)}
-                        >
-                          Edit
-                        </button>
+                        <hr className="line1" />
+                        <hr className="line2" />
                       </div>
-                    ))
-                  ) : (
-                    <p className="noTasks">No tasks</p>
-                  )}
-                </>
-              ) : (
-                <div className="loadingBox">
-                  <p>Loading Tasks</p>
-                  <div className="loader-3">
-                    <div className="pulse"></div>
-                    <div className="pulse"></div>
-                    <div className="pulse"></div>
-                  </div>
-                </div>
-              )}
+                      <button
+                        className="button green edit-button"
+                        onClick={() => edit(index)}
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="noTasks">No tasks</p>
+                )}
+              </>
+
               <div className="signOutButtons">
                 <button className="signOutButton" onClick={changePassword}>
                   Change Password
