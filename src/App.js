@@ -553,9 +553,9 @@ function App() {
   function changeEmail() {
     setIsAdding(false);
     setIsEditing(false);
+    signOut()
     setIsChangingData(true);
     setDataBeingChanged("email");
-    signOut()
   }
 
   async function completeChangePassword() {
