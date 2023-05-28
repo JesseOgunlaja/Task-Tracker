@@ -66,7 +66,7 @@ function App() {
 
   function signInUsername() {
     people.forEach((person) => {
-      if (person.name.toUpperCase() === username.toUpperCase()) {
+      if (decryptString(person.name).toUpperCase() === username.toUpperCase()) {
         signIn(person.name, person._id);
         return;
       }
@@ -219,7 +219,7 @@ function App() {
       },
     });
     const data = res.json();
-    return data.then((res) => res.tasks);
+    return data.then((res) => decryptTasks(res.tasks));
   }
 
   async function fetchPeople() {
