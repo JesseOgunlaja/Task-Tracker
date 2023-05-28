@@ -421,6 +421,7 @@ function App() {
   }
 
   async function signOut() {
+    setAdminPasswordBeingAdded("");
     deleteCookie("authToken");
     setIncorrectPassword("");
     setIncorrectUsername("");
@@ -887,19 +888,17 @@ function App() {
                     >
                       <p className="taskName">{task.task}</p>
                       <p className="taskDate">{task.date}</p>
-                      <div
-                        onClick={() => deleteTask(index)}
-                        className="deleteButton"
-                      >
-                        <hr className="line1" />
-                        <hr className="line2" />
+                      <div className="buttons">
+                        <button
+                          className="button green edit-button"
+                          onClick={() => edit(index)}
+                        >
+                          Edit
+                        </button>
+                        <button className="button red edit-button">
+                          Delete
+                        </button>
                       </div>
-                      <button
-                        className="button green edit-button"
-                        onClick={() => edit(index)}
-                      >
-                        Edit
-                      </button>
                     </div>
                   ))
                 ) : (
