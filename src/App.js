@@ -285,6 +285,8 @@ function App() {
         },
       });
 
+      console.log("Response status:", res.status);
+
       if (res.ok) {
         console.log("ok")
         const data = await res.json();
@@ -303,11 +305,7 @@ function App() {
   }
 
   useEffect(() => {
-    async function awaitFunction() {
-      await checkIfSignedIn();
-    }
-
-    awaitFunction();
+    checkIfSignedIn()
   }, []);
 
   async function signIn(person, id) {
