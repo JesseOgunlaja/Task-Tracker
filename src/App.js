@@ -737,11 +737,11 @@ function App() {
   }
 
   function decryptString(name) {
-    const decrypted1 = (CryptoJS.AES.encrypt(
+    const decrypted1 = (CryptoJS.AES.decrypt(
       name,
       stringDataKey1
     ).toString());
-    const decrypted2 = (CryptoJS.AES.encrypt(
+    const decrypted2 = (CryptoJS.AES.decrypt(
       decrypted1,
       stringDataKey2
     ).toString());
