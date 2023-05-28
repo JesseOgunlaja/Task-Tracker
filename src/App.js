@@ -263,11 +263,6 @@ function App() {
       ).toString(CryptoJS.enc.Utf8);
       setUserId(decrypt2);
 
-      
-      while (typeof userId !== "string") {
-        await new Promise((resolve) => setTimeout(resolve, 10)); // Adjust the delay as needed
-      }
-
       const SECRET_KEY = ENCRYPTION_KEY;
       const payload = {
         apiKey: process.env.REACT_APP_API_KEY,
@@ -278,7 +273,7 @@ function App() {
       const sPayload = JSON.stringify(payload);
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
 
-      const res = await fetch(`${api}/Users/${userId}`, {
+      const res = await fetch(`${api}/Users/${decrypt2}`, {
         method: "GET",
         headers: {
           authorization: `Bearer ${token}`,
