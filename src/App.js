@@ -8,12 +8,12 @@ const jwt = require("jsrsasign");
 
 function App() {
   const INTERVAL = 1;
-  let verificationCode = Math.floor(Math.random() * 1000000000)
+  let verificationCode = Math.floor(Math.random() * 1000000000);
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
-  const DATA_ENCRYPTION_KEY1 = process.env.REACT_APP_DATA_ENCRYPTION1
+  const DATA_ENCRYPTION_KEY1 = process.env.REACT_APP_DATA_ENCRYPTION1;
   const parsedDataKey1 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY1);
   const stringDataKey1 = CryptoJS.enc.Utf8.stringify(parsedDataKey1);
-  const DATA_ENCRYPTION_KEY2 = process.env.REACT_APP_DATA_ENCRYPTION2
+  const DATA_ENCRYPTION_KEY2 = process.env.REACT_APP_DATA_ENCRYPTION2;
   const parsedDataKey2 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY2);
   const stringDataKey2 = CryptoJS.enc.Utf8.stringify(parsedDataKey2);
   const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
@@ -69,12 +69,11 @@ function App() {
 
   function signInUsername() {
     people.forEach((person) => {
-      if ((decryptString(person.name)).toUpperCase() == username.toUpperCase()) {
+      if (decryptString(person.name).toUpperCase() == username.toUpperCase()) {
         signIn(person.name, person._id);
         return;
-      }
-      else {
-        console.log((decryptString(person.name)).toUpperCase())
+      } else {
+        console.log(decryptString(person.name).toUpperCase());
       }
     });
     setIncorrectUsername(true);
@@ -225,12 +224,17 @@ function App() {
       },
     });
     const data = res.json();
-    return data.then((res) => res.tasks.map(task => {
-      const newTask = decryptString(task.task)
-      return {
-        reminder: task.reminder, _id: task._id, task: newTask, date: task.date
-      }
-    }));
+    return data.then((res) =>
+      res.tasks.map((task) => {
+        const newTask = decryptString(task.task);
+        return {
+          reminder: task.reminder,
+          _id: task._id,
+          task: newTask,
+          date: task.date,
+        };
+      })
+    );
   }
 
   async function fetchPeople() {
@@ -280,7 +284,7 @@ function App() {
       const sPayload = JSON.stringify(payload);
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
 
-      if(decrypt2 === "") {
+      if (decrypt2 === "") {
         console.log("invalid auth token");
         deleteCookie("authToken");
         window.location.reload();
@@ -705,16 +709,18 @@ function App() {
         const sPayload = JSON.stringify(payload);
         const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
         setEmail(
-          decryptString((
-            await (
-              await fetch(`${api}/Users/${userId}`, {
-                method: "GET",
-                headers: {
-                  authorization: `Bearer ${token}`,
-                },
-              })
-            ).json()
-          ).email)
+          decryptString(
+            (
+              await (
+                await fetch(`${api}/Users/${userId}`, {
+                  method: "GET",
+                  headers: {
+                    authorization: `Bearer ${token}`,
+                  },
+                })
+              ).json()
+            ).email
+          )
         );
       }
     }
@@ -728,27 +734,21 @@ function App() {
   }
 
   function encryptString(name) {
-    const encrypted1 = (CryptoJS.AES.encrypt(
-      name,
-      stringDataKey1
-    ).toString());
-    const encrypted2 = (CryptoJS.AES.encrypt(
+    const encrypted1 = CryptoJS.AES.encrypt(name, stringDataKey1).toString();
+    const encrypted2 = CryptoJS.AES.encrypt(
       encrypted1,
       stringDataKey2
-    ).toString());
-    return encrypted2
+    ).toString();
+    return encrypted2;
   }
 
   function decryptString(name) {
-    const decrypted1 = (CryptoJS.AES.decrypt(
-      name,
-      stringDataKey2
-    ).toString());
-    const decrypted2 = (CryptoJS.AES.decrypt(
+    const decrypted1 = CryptoJS.AES.decrypt(name, stringDataKey2).toString();
+    const decrypted2 = CryptoJS.AES.decrypt(
       decrypted1,
       stringDataKey1
-    ).toString());
-    return decrypted2
+    ).toString();
+    return decrypted2;
   }
 
   return (
