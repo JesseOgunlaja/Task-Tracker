@@ -252,7 +252,6 @@ function App() {
       .find((row) => row.startsWith("authToken="))
       ?.split("=")[1];
     if (authToken) {
-
       const decrypt1 = CryptoJS.AES.decrypt(
         authToken,
         stringSessionKey1
@@ -279,20 +278,17 @@ function App() {
         },
       });
 
-      if(res.status === 404 && userId != undefined) {
-        deleteCookie('authToken')
-        window.location.reload()
+      if (res.ok) {
+        const data = await res.json();
+        setUser(await data.name);
+        setSignedIn(true);
+        setTasks(await data.tasks);
+      } else if (res.status === 404 && userId !== undefined) {
+        deleteCookie("authToken");
+        window.location.reload();
+      } else if (res.status === 401 || res.status === 500) {
+        window.location.reload();
       }
-
-      if (res.status === 401 || res.status === 500) {
-        window.location.reload()
-      }
-
-      const data = await res.json();
-      setUser(await data.name);
-      setSignedIn(true);
-      setTasks(await data.tasks);
-
     }
   }
 
