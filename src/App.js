@@ -324,11 +324,12 @@ function App() {
         setSignedIn(true);
         setTasks((await data.tasks).map((task) => {
           const newTask = decryptString(task.task);
+          const newDate = decryptString(task.date)
           return {
             reminder: task.reminder,
             _id: task._id,
             task: newTask,
-            date: task.date,
+            date: newDate,
           };
         }));
       } else if (res.status === 404) {
