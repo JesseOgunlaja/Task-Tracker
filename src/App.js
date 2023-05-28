@@ -284,9 +284,9 @@ function App() {
       }
 
       const data = await res.json();
-      setUser(data.name);
+      setUser(await data.name);
       setSignedIn(true);
-      setTasks(data.tasks);
+      setTasks(await data.tasks);
 
     }
   }
