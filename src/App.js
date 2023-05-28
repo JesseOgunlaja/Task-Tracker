@@ -81,7 +81,7 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    await fetch(`/Users/${userId}`, {
+    await fetch(`api/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -150,7 +150,7 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    await fetch(`/Users/${userId}`, {
+    await fetch(`api/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -194,7 +194,7 @@ function App() {
       const sHeader = JSON.stringify(header);
       const sPayload = JSON.stringify(payload);
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-      await fetch(`/Users/${userId}`, {
+      await fetch(`api/Users/${userId}`, {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
@@ -237,7 +237,7 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    await fetch(`/Users/${userId}`, {
+    await fetch(`api/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -285,7 +285,7 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    const res = await fetch(`/Users/${userId}`, {
+    const res = await fetch(`api/Users/${userId}`, {
       methpd: "GET",
       headers: {
         authorization: `Bearer ${token}`,
@@ -359,7 +359,7 @@ function App() {
         window.location.reload();
       }
 
-      const res = await fetch(`/Users/${decrypt2}`, {
+      const res = await fetch(`api/Users/${decrypt2}`, {
         method: "GET",
         headers: {
           authorization: `Bearer ${token}`,
@@ -428,7 +428,7 @@ function App() {
       const sHeader = JSON.stringify(header);
       const sPayload = JSON.stringify(payload);
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-      await fetch(`/Users`, {
+      await fetch(`api/Users`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -483,7 +483,7 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    await fetch(`/Users/${userId}`, {
+    await fetch(`api/Users/${userId}`, {
       method: "DELETE",
       headers: {
         authorization: `Bearer ${token}`,
@@ -505,7 +505,7 @@ function App() {
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     let password = (
       await (
-        await fetch(`/Users/${userId}`, {
+        await fetch(`api/Users/${userId}`, {
           method: "GET",
           headers: {
             authorization: `Bearer ${token}`,
@@ -567,7 +567,7 @@ function App() {
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     let password = (
       await (
-        await fetch(`/Users/${userId}`, {
+        await fetch(`api/Users/${userId}`, {
           method: "GET",
           headers: {
             authorization: `Bearer ${token}`,
@@ -591,7 +591,7 @@ function App() {
       const sHeader = JSON.stringify(header);
       const sPayload = JSON.stringify(payload);
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-      await fetch(`/Users/${userId}`, {
+      await fetch(`api/Users/${userId}`, {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
@@ -745,7 +745,7 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    await fetch(`/Users/${userId}`, {
+    await fetch(`api/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -806,7 +806,7 @@ function App() {
           decryptString(
             (
               await (
-                await fetch(`/Users/${userId}`, {
+                await fetch(`api/Users/${userId}`, {
                   method: "GET",
                   headers: {
                     authorization: `Bearer ${token}`,
