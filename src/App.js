@@ -66,7 +66,7 @@ function App() {
 
   function signInUsername() {
     people.forEach((person) => {
-      if (decryptString(person.name).toUpperCase() === username.toUpperCase()) {
+      if (person.name.toUpperCase() === username.toUpperCase()) {
         signIn(person.name, person._id);
         return;
       }
@@ -94,7 +94,7 @@ function App() {
         authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        tasks: encryptTasks(currentTasks),
+        tasks: currentTasks,
       }),
     });
 
@@ -128,7 +128,7 @@ function App() {
           authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          tasks: encryptTasks(currentTasks),
+          tasks: currentTasks,
         }),
       });
     }
@@ -219,7 +219,7 @@ function App() {
       },
     });
     const data = res.json();
-    return data.then((res) => decryptTasks(res.tasks));
+    return data.then((res) => res.tasks);
   }
 
   async function fetchPeople() {
@@ -340,10 +340,10 @@ function App() {
           authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          name: encryptString(nameBeingAdded),
+          name: nameBeingAdded,
           tasks: [],
           password: passwordBeingAdded,
-          email: encryptString(emailBeingAdded),
+          email: emailBeingAdded,
         }),
       });
       setPeople(await fetchPeople());
@@ -714,36 +714,6 @@ function App() {
   function deleteCookie(cookieName) {
     document.cookie =
       cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  }
-
-  function encryptString(name) {
-    return CryptoJS.AES.encrypt(
-        name,
-        stringDataKey
-      ).toString();
-  }
-
-  function encryptTasks(currentTasks) {
-    const newTasks = currentTasks.map((task) => {
-      const newTask = encryptString(task.task)
-      return {date: task.date, reminder: task.reminder, task: newTask, _id: task._id}
-    })
-    return newTasks
-  }
-
-  function decryptString(name) {
-    return CryptoJS.AES.decrypt(
-        name,
-        stringDataKey
-      ).toString();
-  }
-
-  function decryptTasks(currentTasks) {
-    const newTasks = currentTasks.map((task) => {
-      const newTask = decryptString(task.task)
-      return {date: task.date, reminder: task.reminder, task: newTask, _id: task._id}
-    })
-    return newTasks
   }
 
   return (
