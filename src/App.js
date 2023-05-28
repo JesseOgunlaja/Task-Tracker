@@ -251,6 +251,7 @@ function App() {
       .split("; ")
       .find((row) => row.startsWith("authToken="))
       ?.split("=")[1];
+
     if (authToken) {
       const decrypt1 = CryptoJS.AES.decrypt(
         authToken,
@@ -261,6 +262,12 @@ function App() {
         stringSessionKey2
       ).toString(CryptoJS.enc.Utf8);
       setUserId(decrypt2);
+
+      
+      while (userId === undefined) {
+        await new Promise((resolve) => setTimeout(resolve, 10)); // Adjust the delay as needed
+      }
+      
       const SECRET_KEY = ENCRYPTION_KEY;
       const payload = {
         apiKey: process.env.REACT_APP_API_KEY,
