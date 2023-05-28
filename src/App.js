@@ -52,7 +52,7 @@ function App() {
   const [userId, setUserId] = useState();
   const [isPuttingPassword, setIsPuttingPassword] = useState(false);
   const [passwordBeingAdded, setPasswordBeingAdded] = useState("");
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isChangingData, setIsChangingData] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [emailBeingAdded, setEmailBeingAdded] = useState("");
@@ -66,6 +66,32 @@ function App() {
   const [editedTaskReminder, setEditedTaskReminder] = useState();
   const [incorrectUsername, setIncorrectUsername] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
+  const [dataBeingChanged, setDataBeingChanged] = useState("");
+  const [newEmail,setNewEmail] = useState("")
+
+  async function completeChangeEmail() {
+    const encryptedEmail = encryptString(newEmail)
+    back("changeEmail")
+    const SECRET_KEY = ENCRYPTION_KEY;
+    const payload = {
+      apiKey: process.env.REACT_APP_API_KEY,
+      exp: Math.floor(Date.now() / 1000) + INTERVAL,
+    };
+    const header = { alg: "HS256", typ: "JWT" };
+    const sHeader = JSON.stringify(header);
+    const sPayload = JSON.stringify(payload);
+    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+    await fetch(`/Users/${userId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        email: encryptedEmail,
+      }),
+    });
+  }
 
   function encryptString(nameGiven) {
     const encrypted1 = CryptoJS.AES.encrypt(
@@ -124,7 +150,7 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    await fetch(`${api}/Users/${userId}`, {
+    await fetch(`/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -168,7 +194,7 @@ function App() {
       const sHeader = JSON.stringify(header);
       const sPayload = JSON.stringify(payload);
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-      await fetch(`${api}/Users/${userId}`, {
+      await fetch(`/Users/${userId}`, {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
@@ -211,7 +237,7 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    await fetch(`${api}/Users/${userId}`, {
+    await fetch(`/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -259,7 +285,7 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    const res = await fetch(`${api}/Users/${userId}`, {
+    const res = await fetch(`/Users/${userId}`, {
       methpd: "GET",
       headers: {
         authorization: `Bearer ${token}`,
@@ -333,7 +359,7 @@ function App() {
         window.location.reload();
       }
 
-      const res = await fetch(`${api}/Users/${decrypt2}`, {
+      const res = await fetch(`/Users/${decrypt2}`, {
         method: "GET",
         headers: {
           authorization: `Bearer ${token}`,
@@ -402,7 +428,7 @@ function App() {
       const sHeader = JSON.stringify(header);
       const sPayload = JSON.stringify(payload);
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-      await fetch(`${api}/Users`, {
+      await fetch(`/Users`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -421,6 +447,8 @@ function App() {
   }
 
   async function signOut() {
+    setNewEmail("")
+    setDataBeingChanged("");
     setAdminPasswordBeingAdded("");
     deleteCookie("authToken");
     setIncorrectPassword("");
@@ -435,7 +463,7 @@ function App() {
     setIsResettingPassword(false);
     verificationCode = Math.floor(Math.random() * 1000000000);
     setCodeBeingInputted("");
-    setIsChangingPassword(false);
+    setIsChangingData(false);
     setNameBeingAdded("");
     setIsAdding(false);
     setIsAddingUser(false);
@@ -455,7 +483,7 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    await fetch(`${api}/Users/${userId}`, {
+    await fetch(`/Users/${userId}`, {
       method: "DELETE",
       headers: {
         authorization: `Bearer ${token}`,
@@ -477,7 +505,7 @@ function App() {
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     let password = (
       await (
-        await fetch(`${api}/Users/${userId}`, {
+        await fetch(`/Users/${userId}`, {
           method: "GET",
           headers: {
             authorization: `Bearer ${token}`,
@@ -516,7 +544,15 @@ function App() {
     setIsAdding(false);
     setIsEditing(false);
     signOut();
-    setIsChangingPassword(true);
+    setIsChangingData(true);
+    setDataBeingChanged("password");
+  }
+
+  function changeEmail() {
+    setIsAdding(false);
+    setIsEditing(false);
+    setIsChangingData(true);
+    setDataBeingChanged("email");
   }
 
   async function completeChangePassword() {
@@ -531,7 +567,7 @@ function App() {
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     let password = (
       await (
-        await fetch(`${api}/Users/${userId}`, {
+        await fetch(`/Users/${userId}`, {
           method: "GET",
           headers: {
             authorization: `Bearer ${token}`,
@@ -555,7 +591,7 @@ function App() {
       const sHeader = JSON.stringify(header);
       const sPayload = JSON.stringify(payload);
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-      await fetch(`${api}/Users/${userId}`, {
+      await fetch(`/Users/${userId}`, {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
@@ -579,7 +615,7 @@ function App() {
     if (oldPasswordBox.current) {
       oldPasswordBox.current.focus();
     }
-  }, [isChangingPassword]);
+  }, [isChangingData]);
 
   useEffect(() => {
     if (addUserName.current) {
@@ -604,10 +640,7 @@ function App() {
       if (isPuttingPassword && passwordBox.current === document.activeElement) {
         submitPassword();
       }
-      if (
-        isChangingPassword &&
-        newPasswordBox.current === document.activeElement
-      ) {
+      if (isChangingData && newPasswordBox.current === document.activeElement) {
         completeChangePassword();
       }
       if (isAddingUser && adminPasswordBox.current === document.activeElement) {
@@ -712,7 +745,7 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    await fetch(`${api}/Users/${userId}`, {
+    await fetch(`/Users/${userId}`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -734,7 +767,7 @@ function App() {
       setUsername("");
     }
     if (page === "changePassword") {
-      setIsChangingPassword(false);
+      setIsChangingData(false);
       setSignedIn(true);
     }
     if (page === "addingUser") {
@@ -748,6 +781,12 @@ function App() {
     if (page === "forgetPassword") {
       setIsForgettingPassword(false);
       setIsPuttingPassword(false);
+    }
+    if(page === "changeEmail") {
+      setIsChangingData(false)
+      setDataBeingChanged("")
+      setEmailBeingAdded("")
+      setNewEmail("")
     }
   }
 
@@ -767,7 +806,7 @@ function App() {
           decryptString(
             (
               await (
-                await fetch(`${api}/Users/${userId}`, {
+                await fetch(`/Users/${userId}`, {
                   method: "GET",
                   headers: {
                     authorization: `Bearer ${token}`,
@@ -895,7 +934,10 @@ function App() {
                         >
                           Edit
                         </button>
-                        <button className="button red edit-button">
+                        <button
+                          onClick={() => deleteTask(index)}
+                          className="button red edit-button"
+                        >
                           Delete
                         </button>
                       </div>
@@ -907,17 +949,23 @@ function App() {
               </>
 
               <div className="signOutButtons">
-                <button className="signOutButton notWide" onClick={changePassword}>
+                <button
+                  className="signOutButton notWide"
+                  onClick={changePassword}
+                >
                   Change Password
                 </button>
                 <button className="signOutButton notWide">Change Email</button>
               </div>
-                <button className="signOutButton red wide" onClick={deleteAccount}>
-                  Delete Account
-                </button>
-                <button className="signOutButton green wide" onClick={signOut}>
-                  Sign Out
-                </button>
+              <button
+                className="signOutButton red wide"
+                onClick={deleteAccount}
+              >
+                Delete Account
+              </button>
+              <button className="signOutButton green wide" onClick={signOut}>
+                Sign Out
+              </button>
             </div>
           </>
         ) : (
@@ -946,7 +994,7 @@ function App() {
                     value={emailBeingAdded}
                     onChange={(e) => setEmailBeingAdded(e.target.value)}
                     className="addUserInput"
-                    type="email"
+                    type="text"
                   />
                   <label className="addUserName">Password:</label>
                   <input
@@ -1102,49 +1150,81 @@ function App() {
                     </div>
                   ) : (
                     <>
-                      {isChangingPassword ? (
+                      {isChangingData ? (
                         <div>
-                          <div
-                            className="back"
-                            onClick={() => back("changePassword")}
-                          >
-                            <div className="backTriangle">{"<"}</div>
-                            <div>Back</div>
-                          </div>
-                          <label className="addUserName">Old Password</label>
-                          <input
-                            ref={oldPasswordBox}
-                            className="addUserInput show"
-                            value={oldPassword}
-                            type="password"
-                            onChange={(e) => setOldPassword(e.target.value)}
-                          />
-                          <div
-                            className="showButton"
-                            onClick={() => showPassword("oldPassword")}
-                          >
-                            Show
-                          </div>
-                          <label className="addUserName">New Password</label>
-                          <input
-                            ref={newPasswordBox}
-                            className="addUserInput show"
-                            value={newPassword}
-                            type="password"
-                            onChange={(e) => setNewPassword(e.target.value)}
-                          />
-                          <div
-                            className="showButton"
-                            onClick={() => showPassword("newPassword")}
-                          >
-                            Show
-                          </div>
-                          <button
-                            className="submitButton"
-                            onClick={completeChangePassword}
-                          >
-                            Submit
-                          </button>
+                          {dataBeingChanged === "password" ? (
+                            <>
+                              <div
+                                className="back"
+                                onClick={() => back("changePassword")}
+                              >
+                                <div className="backTriangle">{"<"}</div>
+                                <div>Back</div>
+                              </div>
+                              <label className="addUserName">
+                                Old Password
+                              </label>
+                              <input
+                                ref={oldPasswordBox}
+                                className="addUserInput show"
+                                value={oldPassword}
+                                type="password"
+                                onChange={(e) => setOldPassword(e.target.value)}
+                              />
+                              <div
+                                className="showButton"
+                                onClick={() => showPassword("oldPassword")}
+                              >
+                                Show
+                              </div>
+                              <label className="addUserName">
+                                New Password
+                              </label>
+                              <input
+                                ref={newPasswordBox}
+                                className="addUserInput show"
+                                value={newPassword}
+                                type="password"
+                                onChange={(e) => setNewPassword(e.target.value)}
+                              />
+                              <div
+                                className="showButton"
+                                onClick={() => showPassword("newPassword")}
+                              >
+                                Show
+                              </div>
+                              <button
+                                className="submitButton"
+                                onClick={completeChangePassword}
+                              >
+                                Submit
+                              </button>
+                            </>
+                          ) : (
+                            <div>
+                              <div
+                                className="back"
+                                onClick={() => back("changeEmail")}
+                              >
+                                <div className="backTriangle">{"<"}</div>
+                                <div>Back</div>
+                              </div>
+                              <label className="addUserName">New email</label>
+                              <input
+                              ref={newEmailBox}
+                              className="addUserInput"
+                              value={newEmail}
+                              type="text"
+                              onChange={(e) => setNewEmail(e.target.value)}
+                              />
+                              <button
+                                className="submitButton"
+                                onClick={completeChangeEmail}
+                              >
+                                Submit
+                              </button>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <>
