@@ -911,13 +911,13 @@ function App() {
                   Change Password
                 </button>
                 <button className="signOutButton">Change Email</button>
+              </div>
                 <button className="signOutButton red wide" onClick={deleteAccount}>
                   Delete Account
                 </button>
                 <button className="signOutButton green wide" onClick={signOut}>
                   Sign Out
                 </button>
-              </div>
             </div>
           </>
         ) : (
