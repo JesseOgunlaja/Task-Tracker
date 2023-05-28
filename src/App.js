@@ -66,9 +66,12 @@ function App() {
   const [editedTaskReminder, setEditedTaskReminder] = useState();
   const [incorrectUsername, setIncorrectUsername] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
-  
+
   function encryptString(nameGiven) {
-    const encrypted1 = CryptoJS.AES.encrypt(nameGiven, stringDataKey1).toString();
+    const encrypted1 = CryptoJS.AES.encrypt(
+      nameGiven,
+      stringDataKey1
+    ).toString();
     const encrypted2 = CryptoJS.AES.encrypt(
       encrypted1,
       stringDataKey2
@@ -77,7 +80,9 @@ function App() {
   }
 
   function decryptString(nameGiven) {
-    const decrypted1 = CryptoJS.AES.decrypt(nameGiven, stringDataKey2).toString(CryptoJS.enc.Utf8);
+    const decrypted1 = CryptoJS.AES.decrypt(nameGiven, stringDataKey2).toString(
+      CryptoJS.enc.Utf8
+    );
     const decrypted2 = CryptoJS.AES.decrypt(
       decrypted1,
       stringDataKey1
@@ -95,11 +100,11 @@ function App() {
     });
     setIncorrectUsername(true);
   }
-  
+
   async function deleteTask(index) {
     const currentTasks = [...tasks];
     currentTasks.splice(index, 1);
-    
+
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
@@ -132,7 +137,17 @@ function App() {
       };
 
       const currentTasks = [...tasks];
-      currentTasks.push(newTask);
+      const encryptedTasks = currentTasks.map((task) => {
+        const newTask = encryptString(task.task);
+        const newDate = encryptString(task.date);
+        return {
+          reminder: task.reminder,
+          _id: task._id,
+          task: newTask,
+          date: newDate,
+        };
+      });
+      encryptedTasks.push(newTask);
 
       const SECRET_KEY = ENCRYPTION_KEY;
       const payload = {
@@ -150,7 +165,7 @@ function App() {
           authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          tasks: currentTasks,
+          tasks: encryptedTasks,
         }),
       });
     }
@@ -244,7 +259,7 @@ function App() {
     return data.then((res) =>
       res.tasks.map((task) => {
         const newTask = decryptString(task.task);
-        const newDate = decryptString(task.date)
+        const newDate = decryptString(task.date);
         return {
           reminder: task.reminder,
           _id: task._id,
@@ -322,16 +337,18 @@ function App() {
         const data = await res.json();
         setUser(decryptString(await data.name));
         setSignedIn(true);
-        setTasks((await data.tasks).map((task) => {
-          const newTask = decryptString(task.task);
-          const newDate = decryptString(task.date)
-          return {
-            reminder: task.reminder,
-            _id: task._id,
-            task: newTask,
-            date: newDate,
-          };
-        }));
+        setTasks(
+          (await data.tasks).map((task) => {
+            const newTask = decryptString(task.task);
+            const newDate = decryptString(task.date);
+            return {
+              reminder: task.reminder,
+              _id: task._id,
+              task: newTask,
+              date: newDate,
+            };
+          })
+        );
       } else if (res.status === 404) {
         console.log("invalid auth token");
         deleteCookie("authToken");
@@ -759,7 +776,6 @@ function App() {
     document.cookie =
       cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   }
-
 
   return (
     <div className="app">
