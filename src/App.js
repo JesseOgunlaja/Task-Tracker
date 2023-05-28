@@ -69,9 +69,12 @@ function App() {
 
   function signInUsername() {
     people.forEach((person) => {
-      if ((decryptString(person.name)).toUpperCase() === username.toUpperCase()) {
+      if ((decryptString(person.name)).toUpperCase() == username.toUpperCase()) {
         signIn(person.name, person._id);
         return;
+      }
+      else {
+        console.log((decryptString(person.name)).toUpperCase())
       }
     });
     setIncorrectUsername(true);
@@ -739,11 +742,11 @@ function App() {
   function decryptString(name) {
     const decrypted1 = (CryptoJS.AES.decrypt(
       name,
-      stringDataKey1
+      stringDataKey2
     ).toString());
     const decrypted2 = (CryptoJS.AES.decrypt(
       decrypted1,
-      stringDataKey2
+      stringDataKey1
     ).toString());
     return decrypted2
   }
