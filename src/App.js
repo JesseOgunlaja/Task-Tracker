@@ -319,9 +319,17 @@ function App() {
       if (res.ok) {
         console.log("ok");
         const data = await res.json();
-        setUser(await data.name);
+        setUser(decryptString(await data.name));
         setSignedIn(true);
-        setTasks(await data.tasks);
+        setTasks((await data.tasks).map((task) => {
+          const newTask = decryptString(task.task);
+          return {
+            reminder: task.reminder,
+            _id: task._id,
+            task: newTask,
+            date: task.date,
+          };
+        }));
       } else if (res.status === 404) {
         console.log("invalid auth token");
         deleteCookie("authToken");
