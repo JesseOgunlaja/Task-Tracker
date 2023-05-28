@@ -910,10 +910,11 @@ function App() {
                 <button className="signOutButton" onClick={changePassword}>
                   Change Password
                 </button>
-                <button className="signOutButton red" onClick={deleteAccount}>
+                <button className="signOutButton">Change Email</button>
+                <button className="signOutButton red wide" onClick={deleteAccount}>
                   Delete Account
                 </button>
-                <button className="signOutButton green" onClick={signOut}>
+                <button className="signOutButton green wide" onClick={signOut}>
                   Sign Out
                 </button>
               </div>
