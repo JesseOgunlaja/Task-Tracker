@@ -907,10 +907,10 @@ function App() {
               </>
 
               <div className="signOutButtons">
-                <button className="signOutButton" onClick={changePassword}>
+                <button className="signOutButton notWide" onClick={changePassword}>
                   Change Password
                 </button>
-                <button className="signOutButton">Change Email</button>
+                <button className="signOutButton notWide">Change Email</button>
               </div>
                 <button className="signOutButton red wide" onClick={deleteAccount}>
                   Delete Account

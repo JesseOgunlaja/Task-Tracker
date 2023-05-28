@@ -229,14 +229,18 @@ body {
   gap: 1%;
 }
 
+.notWide {
+  border-radius: 2.5px !important;
+}
+
 .signOutButton {
   font-size: 20px;
   width: 49.5%;
-  background: #222;
+  background: rgb(0,140,255);
   color: white;
   padding: 5px;
   border-radius: 5px;
-  margin-top: 10px;
+  height: 40px;
   cursor: pointer;
   margin-bottom: 10px;
 }
