@@ -38,6 +38,7 @@ function App() {
   const codeBeingInputtedBox = useRef();
   const adminPasswordBox = useRef();
   const usernameBox = useRef();
+  const newEmailBox = useRef()
 
   const [adminPasswordBeingAdded, setAdminPasswordBeingAdded] = useState("");
   const [username, setUsername] = useState("");
