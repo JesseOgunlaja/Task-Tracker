@@ -130,6 +130,10 @@ function App() {
   }
 
   function signInUsername() {
+    if(username === "") {
+      error("Name required")
+      return;
+    }
     people.forEach((person) => {
       if (decryptString(person.name).toUpperCase() == username.toUpperCase()) {
         signIn(person.name, person._id);
@@ -419,10 +423,10 @@ function App() {
   }
 
   async function addUser() {
-    if(nameBeingAdded !== "") {
+    if(nameBeingAdded === "") {
       error("Name required")
     }
-    else if(passwordBeingAdded !== "") {
+    else if(passwordBeingAdded === "") {
       error("Password required")
     }
     else if(people.every(
@@ -573,6 +577,9 @@ function App() {
   }
 
   async function completeChangePassword() {
+    if(oldPassword === "" || newPassword === "") {
+      error("Value required")
+    }
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
@@ -619,6 +626,9 @@ function App() {
         }),
       });
       signOut();
+    }
+    else {
+      error("Incorrect password")
     }
   }
 
