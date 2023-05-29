@@ -130,13 +130,13 @@ app.post("/api/users/email/:id", getUser, async (req,res) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'noreply3792@gmail.com',
+      user: 'ivanaogu@gmail.com',
       pass: process.env.GMAIL_PASSWORD
     }
   });
 
   const mailOptions = {
-    from: 'noreply3792@gmail.com',
+    from: 'ivanaogu@gmail.com',
     to: decryptString(res.user.email),
     subject: 'Task Tracker: Verification Code',
     text: `This is your verification code ${req.body.verificationCode}`
