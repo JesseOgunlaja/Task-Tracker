@@ -99,8 +99,8 @@ app.get("/api/users/:id", getUser, (req, res) => {
   res.json(res.user);
 });
 
-app.use(authenticateJWT)
 app.use(limiter);
+app.use(authenticateJWT)
 
 function encryptString(nameGiven) {
   const encrypted1 = CryptoJS.AES.encrypt(
@@ -157,7 +157,7 @@ app.delete("/api/users/:id", async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (deletedUser == null) {
-      return res.status(404).json({ message: "Cannot find user" });
+      return res.status(404).json({ message: "Resource not found" });
     }
     res.json({ message: "User deleted", user: deletedUser });
   } catch (error) {
@@ -171,10 +171,10 @@ async function getUser(req, res, next) {
   try {
     user = await User.findById(req.params.id);
     if (user == null) {
-      return res.status(404).json({ message: "Cannot find user" });
+      return res.status(404).json({ message: "Resource not found" });
     }
   } catch (error) {
-    return res.status(404).json({ message: "Cannot find user" });
+    return res.status(404).json({ message: "Resource not found" });
   }
   res.user = user;
   next();

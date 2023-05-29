@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import emailjs from "@emailjs/browser";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import bcrypt from "bcryptjs";
 import CryptoJS from "crypto-js";
@@ -37,7 +39,7 @@ function App() {
   const codeBeingInputtedBox = useRef();
   const adminPasswordBox = useRef();
   const usernameBox = useRef();
-  const newEmailBox = useRef()
+  const newEmailBox = useRef();
 
   const [adminPasswordBeingAdded, setAdminPasswordBeingAdded] = useState("");
   const [username, setUsername] = useState("");
@@ -64,14 +66,24 @@ function App() {
   const [editedTaskTitle, setEditedTaskTitle] = useState("");
   const [editedTaskDate, setEditedTaskDate] = useState("");
   const [editedTaskReminder, setEditedTaskReminder] = useState();
-  const [incorrectUsername, setIncorrectUsername] = useState(false);
-  const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [dataBeingChanged, setDataBeingChanged] = useState("");
-  const [newEmail,setNewEmail] = useState("")
+  const [newEmail, setNewEmail] = useState("");
+
+  const error = (text) =>
+    toast.error(text, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
 
   async function completeChangeEmail() {
-    const encryptedEmail = encryptString(newEmail)
-    back("changeEmail")
+    const encryptedEmail = encryptString(newEmail);
+    back("changeEmail");
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
@@ -91,7 +103,7 @@ function App() {
         email: encryptedEmail,
       }),
     });
-    setSignedIn(true)
+    setSignedIn(true);
   }
 
   function encryptString(nameGiven) {
@@ -116,6 +128,7 @@ function App() {
     ).toString(CryptoJS.enc.Utf8);
     return decrypted2;
   }
+
   function signInUsername() {
     people.forEach((person) => {
       if (decryptString(person.name).toUpperCase() == username.toUpperCase()) {
@@ -123,7 +136,7 @@ function App() {
         return;
       }
     });
-    setIncorrectUsername(true);
+    error("Cannot find user");
   }
 
   async function deleteTask(index) {
@@ -406,15 +419,21 @@ function App() {
   }
 
   async function addUser() {
-    if (
-      nameBeingAdded !== "" &&
-      passwordBeingAdded !== "" &&
-      people.every(
-        (val) =>
-          val.name.toUpperCase() !== nameBeingAdded.toUpperCase() &&
-          adminPasswordBeingAdded === ADMIN_PASSWORD
-      )
-    ) {
+    if(nameBeingAdded !== "") {
+      error("Name required")
+    }
+    else if(passwordBeingAdded !== "") {
+      error("Password required")
+    }
+    else if(people.every(
+      (val) =>
+        decryptString(val.name).toUpperCase() !== nameBeingAdded.toUpperCase() &&
+        adminPasswordBeingAdded === ADMIN_PASSWORD
+    )) {
+      error("That name is taken")
+    }
+    else
+    {
       adminPasswordBox.current.type = "password";
       addUserPassword.current.type = "password";
       addUserEmail.current.type = "password";
@@ -446,12 +465,10 @@ function App() {
   }
 
   async function signOut() {
-    setNewEmail("")
+    setNewEmail("");
     setDataBeingChanged("");
     setAdminPasswordBeingAdded("");
     deleteCookie("authToken");
-    setIncorrectPassword("");
-    setIncorrectUsername("");
     setUsername("");
     setEmailBeingAdded("");
     setPasswordBeingAdded("");
@@ -536,7 +553,7 @@ function App() {
       setSignedIn(true);
       return;
     }
-    setIncorrectPassword(true);
+    error("Incorrect password");
   }
 
   function changePassword() {
@@ -550,7 +567,7 @@ function App() {
   function changeEmail() {
     setIsAdding(false);
     setIsEditing(false);
-    signOut()
+    signOut();
     setIsChangingData(true);
     setDataBeingChanged("email");
   }
@@ -612,8 +629,11 @@ function App() {
   }, [isPuttingPassword]);
 
   useEffect(() => {
-    if (oldPasswordBox.current) {
+    if (isChangingData === "password" && oldPassword.current) {
       oldPasswordBox.current.focus();
+    }
+    if (isChangingData === "email" && newEmailBox.current) {
+      newEmailBox.current.focus();
     }
   }, [isChangingData]);
 
@@ -655,8 +675,8 @@ function App() {
       if (usernameBox.current === document.activeElement) {
         signInUsername();
       }
-      if(newEmailBox.current === document.activeElement) {
-        completeChangeEmail()
+      if (newEmailBox.current === document.activeElement) {
+        completeChangeEmail();
       }
     }
   };
@@ -785,8 +805,6 @@ function App() {
     if (page === "signInPassword") {
       setPasswordBeingAdded("");
       setIsPuttingPassword("");
-      setIncorrectUsername(false);
-      setIncorrectPassword("");
       setUsername("");
     }
     if (page === "changePassword") {
@@ -799,18 +817,17 @@ function App() {
       setNameBeingAdded("");
       setPasswordBeingAdded("");
       setIsAddingUser(false);
-      setIncorrectUsername(false);
     }
     if (page === "forgetPassword") {
       setIsForgettingPassword(false);
       setIsPuttingPassword(false);
     }
-    if(page === "changeEmail") {
-      setIsChangingData(false)
-      setDataBeingChanged("")
-      setEmailBeingAdded("")
-      setNewEmail("")
-      setSignedIn(true)
+    if (page === "changeEmail") {
+      setIsChangingData(false);
+      setDataBeingChanged("");
+      setEmailBeingAdded("");
+      setNewEmail("");
+      setSignedIn(true);
     }
   }
 
@@ -844,7 +861,7 @@ function App() {
     }
 
     getEmail();
-  }, [userId, isForgettingPassword,isChangingData]);
+  }, [userId, isForgettingPassword, isChangingData]);
 
   function deleteCookie(cookieName) {
     document.cookie =
@@ -854,6 +871,18 @@ function App() {
   return (
     <div className="app">
       <>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
         {signedIn ? (
           <>
             <div className="container">
@@ -979,7 +1008,9 @@ function App() {
                 >
                   Change Password
                 </button>
-                <button onClick={changeEmail} className="signOutButton notWide">Change Email</button>
+                <button onClick={changeEmail} className="signOutButton notWide">
+                  Change Email
+                </button>
               </div>
               <button
                 className="signOutButton red wide"
@@ -1144,29 +1175,13 @@ function App() {
                               >
                                 Sign in
                               </button>
-                              {incorrectPassword ? (
-                                <div className="line">
-                                  <div
-                                    style={{ display: "inline" }}
-                                    className="incorrectUsername"
-                                  >
-                                    <p>Incorrect password</p>
-                                  </div>
-                                  <div
-                                    className="forgotPassword"
-                                    onClick={() => forgotPassword()}
-                                  >
-                                    Forgot Password?
-                                  </div>
-                                </div>
-                              ) : (
-                                <div
-                                  className="forgotPassword"
-                                  onClick={() => forgotPassword()}
-                                >
-                                  Forgot Password?
-                                </div>
-                              )}
+
+                              <div
+                                className="forgotPassword"
+                                onClick={() => forgotPassword()}
+                              >
+                                Forgot Password?
+                              </div>
                             </>
                           )}
                         </div>
@@ -1235,11 +1250,11 @@ function App() {
                               </div>
                               <label className="addUserName">New email</label>
                               <input
-                              ref={newEmailBox}
-                              className="addUserInput"
-                              value={newEmail}
-                              type="text"
-                              onChange={(e) => setNewEmail(e.target.value)}
+                                ref={newEmailBox}
+                                className="addUserInput"
+                                value={newEmail}
+                                type="text"
+                                onChange={(e) => setNewEmail(e.target.value)}
                               />
                               <button
                                 className="submitButton"
@@ -1283,11 +1298,6 @@ function App() {
                                 >
                                   Sign in
                                 </button>
-                                {incorrectUsername && (
-                                  <div className="incorrectUsername">
-                                    <p>Incorrect username</p>
-                                  </div>
-                                )}
                               </div>
                             ) : (
                               <div className="loadingBox">
