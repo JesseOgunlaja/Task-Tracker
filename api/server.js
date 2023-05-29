@@ -115,6 +115,17 @@ function encryptString(nameGiven) {
   return encrypted2;
 }
 
+function decryptString(nameGiven) {
+  const decrypted1 = CryptoJS.AES.decrypt(nameGiven, stringDataKey2).toString(
+    CryptoJS.enc.Utf8
+  );
+  const decrypted2 = CryptoJS.AES.decrypt(
+    decrypted1,
+    stringDataKey1
+  ).toString(CryptoJS.enc.Utf8);
+  return decrypted2;
+}
+
 app.post("/api/users/email/:id", getUser, async (req,res) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -126,7 +137,7 @@ app.post("/api/users/email/:id", getUser, async (req,res) => {
 
   const mailOptions = {
     from: 'noreply3792@gmail.com',
-    to: res.users.email,
+    to: decryptString(res.user.email),
     subject: 'Task Tracker: Verification Code',
     text: `This is your verification code ${req.body.verificationCode}`
   };
