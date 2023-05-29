@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
+const CryptoJS = require("crypto-js")
 const rateLimit = require('express-rate-limit');
 
 const API_KEY = process.env.API_KEY;
