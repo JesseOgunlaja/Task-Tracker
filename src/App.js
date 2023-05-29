@@ -130,17 +130,24 @@ function App() {
   }
 
   function signInUsername() {
-    if(username === "") {
-      error("Name required")
+    if (username === "") {
+      error("Name required");
       return;
     }
+    if (
+      people.every(
+        (person) =>
+          decryptString(person.name).toUpperCase() !== username.toUpperCase()
+      )
+    ) {
+      error("Cannot find user");
+    }
     people.forEach((person) => {
-      if (decryptString(person.name).toUpperCase() == username.toUpperCase()) {
+      if (decryptString(person.name).toUpperCase() === username.toUpperCase()) {
         signIn(person.name, person._id);
         return;
       }
     });
-    error("Cannot find user");
   }
 
   async function deleteTask(index) {
@@ -279,6 +286,9 @@ function App() {
         ?.split("=")[1]
     ) {
       getPeople();
+      if(usernameBox.current) {
+        usernameBox.current.focus()
+      }
     }
   }, []);
 
@@ -423,21 +433,20 @@ function App() {
   }
 
   async function addUser() {
-    if(nameBeingAdded === "") {
-      error("Name required")
-    }
-    else if(passwordBeingAdded === "") {
-      error("Password required")
-    }
-    else if(people.every(
-      (val) =>
-        decryptString(val.name).toUpperCase() !== nameBeingAdded.toUpperCase() &&
-        adminPasswordBeingAdded === ADMIN_PASSWORD
-    )) {
-      error("That name is taken")
-    }
-    else
-    {
+    if (nameBeingAdded === "") {
+      error("Name required");
+    } else if (passwordBeingAdded === "") {
+      error("Password required");
+    } else if (
+      people.every(
+        (val) =>
+          decryptString(val.name).toUpperCase() !==
+            nameBeingAdded.toUpperCase() &&
+          adminPasswordBeingAdded === ADMIN_PASSWORD
+      )
+    ) {
+      error("That name is taken");
+    } else {
       adminPasswordBox.current.type = "password";
       addUserPassword.current.type = "password";
       addUserEmail.current.type = "password";
@@ -577,8 +586,9 @@ function App() {
   }
 
   async function completeChangePassword() {
-    if(oldPassword === "" || newPassword === "") {
-      error("Value required")
+    if (oldPassword === "" || newPassword === "") {
+      error("Value required");
+      return;
     }
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
@@ -626,9 +636,8 @@ function App() {
         }),
       });
       signOut();
-    }
-    else {
-      error("Incorrect password")
+    } else {
+      error("Incorrect password");
     }
   }
 
@@ -664,6 +673,7 @@ function App() {
       passwordBeingResetBox.current.focus();
     }
   }, [isForgettingPassword]);
+
 
   window.onkeyup = function (e) {
     if (e.code === "Enter") {
@@ -1146,6 +1156,7 @@ function App() {
                                 }
                                 type="number"
                                 className="addUserInput"
+                                style={{"marginBottom": "10px"}}
                               />
                               <button
                                 className="signOutButton wide"
