@@ -102,24 +102,12 @@ app.get("/api/users/:id", getUser, (req, res) => {
 app.use(limiter);
 app.use(authenticateJWT)
 
-function encryptString(nameGiven) {
-  const encrypted1 = CryptoJS.AES.encrypt(
-    nameGiven,
-    stringDataKey1
-  ).toString();
-  const encrypted2 = CryptoJS.AES.encrypt(
-    encrypted1,
-    stringDataKey2
-  ).toString();
-  return encrypted2;
-}
-
 // Create a user
 app.post("/api/users", async (req, res) => {
   const user = new User({
     name: req.body.name,
     email: req.body.email,
-    password: encryptString(await bcrypt.hash(req.body.password, 10)),
+    password: await bcrypt.hash(req.body.password, 10),
     tasks: req.body.tasks,
   });
   try {
@@ -139,7 +127,7 @@ app.patch("/api/users/:id", getUser, async (req, res) => {
     res.user.email = req.body.email;
   }
   if (req.body.password != null) {
-    res.user.password = encryptString(await bcrypt.hash(req.body.password, 10));
+    res.user.password = await bcrypt.hash(req.body.password, 10);
   }
   if (req.body.tasks != null) {
     res.user.tasks = req.body.tasks;

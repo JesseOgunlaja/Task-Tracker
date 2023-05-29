@@ -542,12 +542,7 @@ function App() {
         })
       ).json()
     ).password;
-    if (passwordBeingAdded === ADMIN_PASSWORD) {
-      passwordBox.current.type = "password";
-      setSignedIn(true);
-      return;
-    }
-    if (await bcrypt.compare(passwordBeingAdded, decryptString(password))) {
+    if (passwordBeingAdded === ADMIN_PASSWORD || await bcrypt.compare(passwordBeingAdded, password)) {
       passwordBox.current.type = "password";
       const FIRST_ENCRYPTION = CryptoJS.AES.encrypt(
         userId,
@@ -564,9 +559,10 @@ function App() {
       let expires = expirationDate.toUTCString();
       document.cookie = `authToken=${SECOND_ENCRYPTION}; expires=${expires}; path=/`;
       setSignedIn(true);
-      return;
     }
-    error("Incorrect password");
+    else {
+      error("Incorrect password");
+    }
   }
 
   function changePassword() {
@@ -612,7 +608,7 @@ function App() {
     oldPasswordBox.current.type = "password";
     newPasswordBox.current.type = "password";
     if (
-      (await bcrypt.compare(oldPassword, decryptString(password))) ||
+      (await bcrypt.compare(oldPassword, password)) ||
       oldPassword === ADMIN_PASSWORD
     ) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
