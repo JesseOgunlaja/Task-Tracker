@@ -9,6 +9,12 @@ const rateLimit = require('express-rate-limit');
 const API_KEY = process.env.API_KEY;
 const SECRET_KEY = process.env.ENCRYPTION_KEY
 
+const DATA_ENCRYPTION_KEY1 = process.env.DATA_ENCRYPTION1;
+const parsedDataKey1 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY1);
+const stringDataKey1 = CryptoJS.enc.Utf8.stringify(parsedDataKey1);
+const DATA_ENCRYPTION_KEY2 = process.env.DATA_ENCRYPTION2;
+const parsedDataKey2 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY2);
+const stringDataKey2 = CryptoJS.enc.Utf8.stringify(parsedDataKey2);
 
 const app = express();
 const port = process.env.PORT || 80;
