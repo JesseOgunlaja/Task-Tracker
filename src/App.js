@@ -3,7 +3,6 @@ import emailjs from "@emailjs/browser";
 import "./App.css";
 import bcrypt from "bcryptjs";
 import CryptoJS from "crypto-js";
-const api = window.location.href + "api";
 const jwt = require("jsrsasign");
 
 function App() {
@@ -708,10 +707,30 @@ function App() {
   }
 
   async function forgotPassword() {
+    const SECRET_KEY = ENCRYPTION_KEY;
+    const payload = {
+      apiKey: process.env.REACT_APP_API_KEY,
+      exp: Math.floor(Date.now() / 1000) + INTERVAL,
+    };
+    const header = { alg: "HS256", typ: "JWT" };
+    const sHeader = JSON.stringify(header);
+    const sPayload = JSON.stringify(payload);
+    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     const formData = {
       code: verificationCode,
       user_name: decryptString(user),
-      user_email: email,
+      user_email: decryptString(
+        (
+          await (
+            await fetch(`api/Users/${userId}`, {
+              method: "GET",
+              headers: {
+                authorization: `Bearer ${token}`,
+              },
+            })
+          ).json()
+        ).email
+      ),
     };
     setIsForgettingPassword(true);
     emailjs
