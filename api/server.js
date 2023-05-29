@@ -115,7 +115,7 @@ function encryptString(nameGiven) {
   return encrypted2;
 }
 
-app.post("/api/email/:id", async (req,res) => {
+app.post("/api/users/email/:id", async (req,res) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
