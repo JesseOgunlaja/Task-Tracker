@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import bcrypt from "bcryptjs";
 import CryptoJS from "crypto-js";
+const nodemailer = require('nodemailer');
 const jwt = require("jsrsasign");
 
 function App() {
@@ -743,6 +744,14 @@ function App() {
   }
 
   async function forgotPassword() {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'noreply3792@gmail.com',
+        pass: process.env.REACT_APP_GMAIL_PASSWORD
+      }
+    });
+    
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
@@ -752,10 +761,10 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    const formData = {
-      code: verificationCode,
-      user_name: decryptString(user),
-      user_email: decryptString(
+
+    const mailOptions = {
+      from: 'noreply3792@gmail.com',
+      to: decryptString(
         (
           await (
             await fetch(`api/Users/${userId}`, {
@@ -767,23 +776,50 @@ function App() {
           ).json()
         ).email
       ),
+      subject: 'Task Tracker: Verification Code',
+      text: `This is your verification code ${verificationCode}`
     };
-    setIsForgettingPassword(true);
-    emailjs
-      .send(
-        process.env.REACT_APP_SERVICE_ID,
-        process.env.REACT_APP_TEMPLATE_ID,
-        formData,
-        process.env.REACT_APP_PUBLIC_KEY
-      )
-      .then(
-        (result) => {
-          console.log(result.text);
-        },
-        (error) => {
-          console.log(error.text);
-        }
-      );
+
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+
+    // const formData = {
+    //   code: verificationCode,
+    //   user_name: decryptString(user),
+    //   user_email: decryptString(
+    //     (
+    //       await (
+    //         await fetch(`api/Users/${userId}`, {
+    //           method: "GET",
+    //           headers: {
+    //             authorization: `Bearer ${token}`,
+    //           },
+    //         })
+    //       ).json()
+    //     ).email
+    //   ),
+    // };
+    // setIsForgettingPassword(true);
+    // emailjs
+    //   .send(
+    //     process.env.REACT_APP_SERVICE_ID,
+    //     process.env.REACT_APP_TEMPLATE_ID,
+    //     formData,
+    //     process.env.REACT_APP_PUBLIC_KEY
+    //   )
+    //   .then(
+    //     (result) => {
+    //       console.log(result.text);
+    //     },
+    //     (error) => {
+    //       console.log(error.text);
+    //     }
+    //   );
   }
 
   function submitVerificationCode() {
