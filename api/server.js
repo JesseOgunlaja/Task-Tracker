@@ -77,8 +77,6 @@ const authenticateJWT = (req, res, next) => {
   }
 };
 
-app.use(authenticateJWT)
-app.use(limiter);
 
 app.get("/api/users", async (req, res) => {
   try {
@@ -93,6 +91,9 @@ app.get("/api/users", async (req, res) => {
 app.get("/api/users/:id", getUser, (req, res) => {
   res.json(res.user);
 });
+
+app.use(authenticateJWT)
+app.use(limiter);
 
 // Create a user
 app.post("/api/users", async (req, res) => {
