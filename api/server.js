@@ -53,6 +53,11 @@ const limiter = rateLimit({
   message: 'Too many requests from this IP, please try again later.',
 });
 
+function hashPassword(password) {
+  const hashedPassword = CryptoJS.SHA256(password).toString();
+  return hashedPassword;
+}
+
 const authenticateJWT = (req, res, next) => {
   if(req.headers.authorization?.split(" ")[0] === "ThirdParty") {
     const apiKey = req.headers.authorization?.split(" ")[1]
@@ -107,7 +112,7 @@ app.post("/api/users", async (req, res) => {
   const user = new User({
     name: req.body.name,
     email: req.body.email,
-    password: await bcrypt.hash(req.body.password, 5),
+    password: hashPassword(req.body.password),
     tasks: req.body.tasks,
   });
   try {
@@ -127,7 +132,7 @@ app.patch("/api/users/:id", getUser, async (req, res) => {
     res.user.email = req.body.email;
   }
   if (req.body.password != null) {
-    res.user.password = await bcrypt.hash(req.body.password,5);
+    res.user.password = hashPassword(req.body.password);
   }
   if (req.body.tasks != null) {
     res.user.tasks = req.body.tasks;
