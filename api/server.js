@@ -132,7 +132,7 @@ app.patch("/api/users/:id", getUser, async (req, res) => {
     res.user.email = req.body.email;
   }
   if (req.body.password != null) {
-    res.user.password = req.body.password;
+    res.user.password = encryptString(await bcrypt.hash(req.body.password, 10));
   }
   if (req.body.tasks != null) {
     res.user.tasks = req.body.tasks;
