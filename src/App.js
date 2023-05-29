@@ -5,7 +5,6 @@ import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import bcrypt from "bcryptjs";
 import CryptoJS from "crypto-js";
-const nodemailer = require('nodemailer');
 const jwt = require("jsrsasign");
 
 function App() {
@@ -744,14 +743,7 @@ function App() {
   }
 
   async function forgotPassword() {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'noreply3792@gmail.com',
-        pass: process.env.REACT_APP_GMAIL_PASSWORD
-      }
-    });
-    
+    setIsForgettingPassword(true);    
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
@@ -761,32 +753,16 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-
-    const mailOptions = {
-      from: 'noreply3792@gmail.com',
-      to: decryptString(
-        (
-          await (
-            await fetch(`api/Users/${userId}`, {
-              method: "GET",
-              headers: {
-                authorization: `Bearer ${token}`,
-              },
-            })
-          ).json()
-        ).email
-      ),
-      subject: 'Task Tracker: Verification Code',
-      text: `This is your verification code ${verificationCode}`
-    };
-
-    transporter.sendMail(mailOptions, function(error, info){
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('Email sent: ' + info.response);
-      }
-    });
+    await fetch(`/api/users/email/${userId}`, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        verificationCode: verificationCode
+      })
+    })
 
     // const formData = {
     //   code: verificationCode,

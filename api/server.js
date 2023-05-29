@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const CryptoJS = require("crypto-js")
+const nodemailer = require('nodemailer');
 const rateLimit = require('express-rate-limit');
 
 const API_KEY = process.env.API_KEY;
@@ -113,6 +114,31 @@ function encryptString(nameGiven) {
   ).toString();
   return encrypted2;
 }
+
+app.post("/api/email/:id", async (req,res) => {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'noreply3792@gmail.com',
+      pass: process.env.GMAIL_PASSWORD
+    }
+  });
+
+  const mailOptions = {
+    from: 'noreply3792@gmail.com',
+    to: res.users.email,
+    subject: 'Task Tracker: Verification Code',
+    text: `This is your verification code ${req.body.verificationCode}`
+  };
+  
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+})
 
 // Create a user
 app.post("/api/users", async (req, res) => {
