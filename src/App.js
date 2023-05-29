@@ -517,7 +517,7 @@ function App() {
       setSignedIn(true);
       return;
     }
-    if (await bcrypt.compare(passwordBeingAdded, password)) {
+    if (await bcrypt.compare(passwordBeingAdded, decryptString(password))) {
       passwordBox.current.type = "password";
       const FIRST_ENCRYPTION = CryptoJS.AES.encrypt(
         userId,
@@ -578,7 +578,7 @@ function App() {
     oldPasswordBox.current.type = "password";
     newPasswordBox.current.type = "password";
     if (
-      (await bcrypt.compare(oldPassword, password)) ||
+      (await bcrypt.compare(oldPassword, decryptString(password))) ||
       oldPassword === ADMIN_PASSWORD
     ) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);

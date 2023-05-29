@@ -95,12 +95,24 @@ app.get("/api/users/:id", getUser, (req, res) => {
 app.use(authenticateJWT)
 app.use(limiter);
 
+function encryptString(nameGiven) {
+  const encrypted1 = CryptoJS.AES.encrypt(
+    nameGiven,
+    stringDataKey1
+  ).toString();
+  const encrypted2 = CryptoJS.AES.encrypt(
+    encrypted1,
+    stringDataKey2
+  ).toString();
+  return encrypted2;
+}
+
 // Create a user
 app.post("/api/users", async (req, res) => {
   const user = new User({
     name: req.body.name,
     email: req.body.email,
-    password: await bcrypt.hash(req.body.password, 10),
+    password: encryptString(await bcrypt.hash(req.body.password, 10)),
     tasks: req.body.tasks,
   });
   try {
