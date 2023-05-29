@@ -542,7 +542,7 @@ function App() {
         })
       ).json()
     ).password;
-    if (passwordBeingAdded === ADMIN_PASSWORD || comparePasswords(passwordBeingAdded,password)) {
+    if (passwordBeingAdded === ADMIN_PASSWORD || await bcrypt.compare(passwordBeingAdded, decryptString(password))) {
       passwordBox.current.type = "password";
       const FIRST_ENCRYPTION = CryptoJS.AES.encrypt(
         userId,
@@ -608,9 +608,10 @@ function App() {
     oldPasswordBox.current.type = "password";
     newPasswordBox.current.type = "password";
     if (
-      comparePasswords(oldPassword,password) ||
+      decryptString(await bcrypt.compare(oldPassword, password)) ||
       oldPassword === ADMIN_PASSWORD
     ) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
       const SECRET_KEY = ENCRYPTION_KEY;
       const payload = {
         apiKey: process.env.REACT_APP_API_KEY,
@@ -627,7 +628,7 @@ function App() {
           authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          password: newPassword,
+          password: hashedPassword,
         }),
       });
       signOut();
@@ -739,11 +740,6 @@ function App() {
         adminPasswordBox.current.type = "text";
       }
     }
-  }
-
-  function comparePasswords(password, hashedPassword) {
-    const inputHash = CryptoJS.SHA256(password).toString();
-    return inputHash === hashedPassword;
   }
 
   async function forgotPassword() {
