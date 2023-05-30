@@ -800,8 +800,12 @@ function App() {
 
   function submitVerificationCode() {
     if (codeBeingInputted == verificationCode) {
+      console.log("success")
       setIsResettingPassword(true);
       setIsForgettingPassword(false);
+    }
+    else {
+      console.log(verificationCode)
     }
   }
 
