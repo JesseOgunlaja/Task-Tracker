@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 const CryptoJS = require("crypto-js");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
-const { MailtrapClient } = require("mailtrap");
 
 const API_KEY = process.env.API_KEY;
 const SECRET_KEY = process.env.ENCRYPTION_KEY;
@@ -124,13 +123,13 @@ app.post("/api/users/email/:id", getUser, async (req, res) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: "noreply3792@gmail.com",
+      user: "noreply4313@gmail.com",
       pass: process.env.GMAIL_PASSWORD,
     },
   });
 
   const mailOptions = {
-    from: "noreply3792@gmail.com",
+    from: "noreply4313@gmail.com",
     to: decryptString(res.user.email),
     subject: "Task Tracker: Verification Code",
     text: `This is your verification code ${req.body.verificationCode}`,
