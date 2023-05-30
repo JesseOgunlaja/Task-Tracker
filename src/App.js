@@ -616,7 +616,6 @@ function App() {
       await bcrypt.compare(oldPassword, decryptString(password)) ||
       oldPassword === ADMIN_PASSWORD
     ) {
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
       const SECRET_KEY = ENCRYPTION_KEY;
       const payload = {
         apiKey: process.env.REACT_APP_API_KEY,
@@ -633,7 +632,7 @@ function App() {
           authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          password: hashedPassword,
+          password: newPassword,
         }),
       });
       signOut();
@@ -760,7 +759,7 @@ function App() {
 }
 
   async function forgotPassword() {
-    const verifCode = setVerificationCode(makeRandomString(8))
+    const verifCode = makeRandomString(8)
     setVerificationCode(verifCode)
     setIsForgettingPassword(true);    
     const SECRET_KEY = ENCRYPTION_KEY;
