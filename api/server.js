@@ -152,10 +152,10 @@ app.post("/api/users/email/:id", getUser, async (req,res) => {
         text: `This is your verification code ${req.body.verificationCode}`,
         category: "Integration Test",
       })
-      res.send(200).json({message: "Email sent"})
+      res.status(200).json({message: "Email sent"})
   } 
   catch {
-    res.send(400).json({message: "Error"})
+    res.status(400).json({message: "Error"})
   }
 
   // const transporter = nodemailer.createTransport({
