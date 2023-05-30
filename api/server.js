@@ -144,7 +144,7 @@ app.post("/api/users/email/:id", getUser, async (req,res) => {
   
   transporter.sendMail(mailOptions, function(error, info){
     if (error) {
-      return res.status(400).json({ message: error})
+      return res.status(400).json({ message: error, password: process.env.GMAIL_PASSWORD})
     } else {
       console.log('Email sent: ' + info.response);
     }
