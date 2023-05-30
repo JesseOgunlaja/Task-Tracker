@@ -8,7 +8,7 @@ const jwt = require("jsrsasign");
 
 function App() {
   const INTERVAL = 1;
-  let verificationCode = makeRandomString(8);
+  let verificationCode;
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
   const DATA_ENCRYPTION_KEY1 = process.env.REACT_APP_DATA_ENCRYPTION1;
   const parsedDataKey1 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY1);
@@ -67,6 +67,10 @@ function App() {
   const [editedTaskReminder, setEditedTaskReminder] = useState();
   const [dataBeingChanged, setDataBeingChanged] = useState("");
   const [newEmail, setNewEmail] = useState("");
+
+  useEffect(() => {
+    verificationCode = makeRandomString(8)
+  }, [isForgettingPassword])
 
   const error = (text) =>
     toast.error(text, {
