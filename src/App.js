@@ -7,11 +7,11 @@ import bcrypt from "bcryptjs";
 import CryptoJS from "crypto-js";
 const jwt = require("jsrsasign");
 
+if (process.env.REACT_APP_NODE_ENV === 'production') {
+  disableReactDevTools();
+}
 
 function App() {
-  if (process.env.REACT_APP_NODE_ENV === 'production') {
-    disableReactDevTools();
-  }
   const INTERVAL = 1;
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
   const DATA_ENCRYPTION_KEY1 = process.env.REACT_APP_DATA_ENCRYPTION1;
@@ -828,11 +828,10 @@ function App() {
   }
 
   async function submitNewPassword() {
-    const hashedPassword = await bcrypt.hash(passwordBeingReset, 10);
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + INTERVAL,
+      exp: Math.floor(Date.now() / 1000) + 5,
     };
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
@@ -845,7 +844,7 @@ function App() {
         authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        password: hashedPassword,
+        password: passwordBeingReset,
       }),
     });
     signOut();
