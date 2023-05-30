@@ -8,7 +8,7 @@ const jwt = require("jsrsasign");
 
 function App() {
   const INTERVAL = 1;
-  let verificationCode = Math.floor(Math.random() * 1000000000);
+  let verificationCode = makeRandomString(8);
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
   const DATA_ENCRYPTION_KEY1 = process.env.REACT_APP_DATA_ENCRYPTION1;
   const parsedDataKey1 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY1);
@@ -489,7 +489,7 @@ function App() {
     setPasswordBeingReset("");
     setPasswordBeingAdded("");
     setIsResettingPassword(false);
-    verificationCode = Math.floor(Math.random() * 1000000000);
+    verificationCode = makeRandomString(8);
     setCodeBeingInputted("");
     setIsChangingData(false);
     setNameBeingAdded("");
@@ -740,6 +740,18 @@ function App() {
       }
     }
   }
+
+  function makeRandomString(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+}
 
   async function forgotPassword() {
     setIsForgettingPassword(true);    
@@ -1164,9 +1176,9 @@ function App() {
                                 ref={codeBeingInputtedBox}
                                 value={codeBeingInputted}
                                 onChange={(e) =>
-                                  setCodeBeingInputted(Number(e.target.value))
+                                  setCodeBeingInputted(e.target.value)
                                 }
-                                type="number"
+                                type="text"
                                 className="addUserInput"
                                 style={{"marginBottom": "10px"}}
                               />
