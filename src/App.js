@@ -9,7 +9,9 @@ const jwt = require("jsrsasign");
 
 
 function App() {
-  disableReactDevTools()
+  if (process.env.REACT_APP_NODE_ENV === 'production') {
+    disableReactDevTools();
+  }
   const INTERVAL = 1;
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
   const DATA_ENCRYPTION_KEY1 = process.env.REACT_APP_DATA_ENCRYPTION1;
@@ -821,6 +823,7 @@ function App() {
     }
     else {
       console.log(verificationCode)
+      console.log(codeBeingInputted)
     }
   }
 
