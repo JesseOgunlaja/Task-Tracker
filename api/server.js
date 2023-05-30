@@ -128,7 +128,7 @@ function decryptString(nameGiven) {
 
 app.post("/api/users/email/:id", getUser, async (req,res) => {
   const transporter = nodemailer.createTransport({
-    service: 'Gmail',
+    service: 'gmail',
     auth: {
       user: 'noreply3792@gmail.com',
       pass: process.env.GMAIL_PASSWORD
@@ -144,9 +144,9 @@ app.post("/api/users/email/:id", getUser, async (req,res) => {
   
   transporter.sendMail(mailOptions, function(error, info){
     if (error) {
-      return res.status(400).json({ message: error, password: process.env.GMAIL_PASSWORD})
+      return res.status(400).json({ message: error})
     } else {
-      console.log('Email sent: ' + info.response);
+      return res.status(200).json({message: `Email sent`, info: info.response})
     }
   });
 })
