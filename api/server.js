@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const CryptoJS = require("crypto-js");
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
 const { MailtrapClient } = require("mailtrap");
 
@@ -121,12 +121,6 @@ function decryptString(nameGiven) {
 }
 
 app.post("/api/users/email/:id", getUser, async (req, res) => {
-
-
-
-
-
-
   let testAccount = await nodemailer.createTestAccount();
 
   // create reusable transporter object using the default SMTP transport
@@ -141,32 +135,19 @@ app.post("/api/users/email/:id", getUser, async (req, res) => {
   });
 
   // send mail with defined transport object
-  let info = await transporter.sendMail({
-    from: 'noreply3792@gmail.com', // sender address
-    to: decryptString(res.user.email), // list of receivers
-    subject: "Task Tracker: Verification Code", // Subject line
-    text: `This is your verification code ${req.body.verificationCode}`, // plain text body
-    html: "<b>Hello world?</b>", // html body
-  });
 
-  console.log("Message sent: %s", info.messageId);
-  // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-
-  // Preview only available when sending through an Ethereal account
-  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-
-
-
-
-
-
-
-
-
-
-
-
-
+  try {
+    await transporter.sendMail({
+      from: "noreply3792@gmail.com", // sender address
+      to: decryptString(res.user.email), // list of receivers
+      subject: "Task Tracker: Verification Code", // Subject line
+      text: `This is your verification code ${req.body.verificationCode}`, // plain text body
+      html: "<b>Hello world?</b>", // html body
+    });
+    res.status(200);
+  } catch {
+    res.status(400);
+  }
 
   // const client = new MailtrapClient({ token: process.env.SMTP });
 
@@ -177,16 +158,6 @@ app.post("/api/users/email/:id", getUser, async (req, res) => {
   //   subject: "Task Tracker: Verification Code",
   //   text: `This is your verification code ${req.body.verificationCode}`
   // })
-
-
-
-
-
-
-
-
-
-
 
   // const TOKEN = process.env.SMTP;
   // const ENDPOINT = "https://send.api.mailtrap.io/";
