@@ -1,3 +1,4 @@
+import { disableReactDevTools } from '@fvilers/disable-react-devtools';
 import { useEffect, useState, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -6,9 +7,10 @@ import bcrypt from "bcryptjs";
 import CryptoJS from "crypto-js";
 const jwt = require("jsrsasign");
 
+
 function App() {
+  disableReactDevTools()
   const INTERVAL = 1;
-  let verificationCode;
   const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
   const DATA_ENCRYPTION_KEY1 = process.env.REACT_APP_DATA_ENCRYPTION1;
   const parsedDataKey1 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY1);
@@ -67,10 +69,7 @@ function App() {
   const [editedTaskReminder, setEditedTaskReminder] = useState();
   const [dataBeingChanged, setDataBeingChanged] = useState("");
   const [newEmail, setNewEmail] = useState("");
-
-  useEffect(() => {
-    verificationCode = makeRandomString(8)
-  }, [isForgettingPassword])
+  const [verificationCode,setVerificationCode] = useState(makeRandomString(8))
 
   const error = (text) =>
     toast.error(text, {
@@ -490,10 +489,11 @@ function App() {
     setPasswordBeingAdded("");
     setNewPassword("");
     setOldPassword("");
+    setIsForgettingPassword(false)
     setPasswordBeingReset("");
     setPasswordBeingAdded("");
     setIsResettingPassword(false);
-    verificationCode = makeRandomString(8);
+    setVerificationCode(makeRandomString(8))
     setCodeBeingInputted("");
     setIsChangingData(false);
     setNameBeingAdded("");
