@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 import CryptoJS from "crypto-js";
 const jwt = require("jsrsasign");
 
-if (process.env.REACT_APP_NODE_ENV === 'production') {
+if (process.env.REACT_APP_DATA_ENCRYPTION1) {
   disableReactDevTools();
 }
 
@@ -384,7 +384,6 @@ function App() {
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
 
       if (decrypt2 === "") {
-        console.log("invalid auth token");
         deleteCookie("authToken");
         window.location.reload();
       }
@@ -396,10 +395,8 @@ function App() {
         },
       });
 
-      console.log("Response status:", res.status);
 
       if (res.ok) {
-        console.log("ok");
         const data = await res.json();
         setUser(decryptString(await data.name));
         setSignedIn(true);
@@ -416,11 +413,9 @@ function App() {
           })
         );
       } else if (res.status === 404) {
-        console.log("invalid auth token");
         deleteCookie("authToken");
         window.location.reload();
       } else if (res.status === 401 || res.status === 500) {
-        console.log("unauthorised");
         window.location.reload();
       }
     }
@@ -698,6 +693,9 @@ function App() {
       if (newEmailBox.current === document.activeElement) {
         completeChangeEmail();
       }
+      if(codeBeingInputtedBox.current === document.activeElement) {
+        submitVerificationCode()
+      }
     }
   };
 
@@ -781,50 +779,12 @@ function App() {
         verificationCode: encryptString(verifCode)
       })
     })
-
-    // const formData = {
-    //   code: verificationCode,
-    //   user_name: decryptString(user),
-    //   user_email: decryptString(
-    //     (
-    //       await (
-    //         await fetch(`api/Users/${userId}`, {
-    //           method: "GET",
-    //           headers: {
-    //             authorization: `Bearer ${token}`,
-    //           },
-    //         })
-    //       ).json()
-    //     ).email
-    //   ),
-    // };
-    // setIsForgettingPassword(true);
-    // emailjs
-    //   .send(
-    //     process.env.REACT_APP_SERVICE_ID,
-    //     process.env.REACT_APP_TEMPLATE_ID,
-    //     formData,
-    //     process.env.REACT_APP_PUBLIC_KEY
-    //   )
-    //   .then(
-    //     (result) => {
-    //       console.log(result.text);
-    //     },
-    //     (error) => {
-    //       console.log(error.text);
-    //     }
-    //   );
   }
 
   function submitVerificationCode() {
     if (codeBeingInputted == verificationCode) {
-      console.log("success")
       setIsResettingPassword(true);
       setIsForgettingPassword(false);
-    }
-    else {
-      console.log(verificationCode)
-      console.log(codeBeingInputted)
     }
   }
 
