@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const CryptoJS = require("crypto-js");
-// const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 const rateLimit = require("express-rate-limit");
 const { MailtrapClient } = require("mailtrap");
 
