@@ -143,15 +143,20 @@ app.post("/api/users/email/:id", getUser, async (req,res) => {
     }
   ];
   
-  client
-    .send({
-      from: sender,
-      to: recipients,
-      subject: "Task Tracker: Verification Code",
-      text: `This is your verification code ${req.body.verificationCode}`,
-      category: "Integration Test",
-    })
-    .then(console.log, console.error);
+  try {
+    client
+      .send({
+        from: sender,
+        to: recipients,
+        subject: "Task Tracker: Verification Code",
+        text: `This is your verification code ${req.body.verificationCode}`,
+        category: "Integration Test",
+      })
+      res.send(200).json({message: "Email sent"})
+  } 
+  catch {
+    res.send(400).json({message: "Error"})
+  }
 
   // const transporter = nodemailer.createTransport({
   //   host: "sandbox.smtp.mailtrap.io",
