@@ -139,7 +139,7 @@ app.post("/api/users/email/:id", getUser, async (req,res) => {
   };
   const recipients = [
     {
-      email: res.user.email,
+      email: decryptString(res.user.email),
     }
   ];
   
