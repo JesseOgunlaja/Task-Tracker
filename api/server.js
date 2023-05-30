@@ -121,124 +121,30 @@ function decryptString(nameGiven) {
 }
 
 app.post("/api/users/email/:id", getUser, async (req, res) => {
-  let testAccount = await nodemailer.createTestAccount();
-
-  // create reusable transporter object using the default SMTP transport
-  let transporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false, // true for 465, false for other ports
+  const transporter = nodemailer.createTransport({
+    server: 'gmail',
     auth: {
-      user: testAccount.user, // generated ethereal user
-      pass: testAccount.pass, // generated ethereal password
+      user: "noreply3792@gmail.com",
+      pass: process.env.GMAIL_PASSWORD,
     },
   });
 
-  // send mail with defined transport object
+  const mailOptions = {
+    from: "noreply3792@gmail.com",
+    to: decryptString(res.user.email),
+    subject: "Task Tracker: Verification Code",
+    text: `This is your verification code ${req.body.verificationCode}`,
+  };
 
-  try {
-    await transporter.sendMail({
-      from: "noreply3792@gmail.com", // sender address
-      to: decryptString(res.user.email), // list of receivers
-      subject: "Task Tracker: Verification Code", // Subject line
-      text: `This is your verification code ${req.body.verificationCode}`, // plain text body
-      html: "<b>Hello world?</b>", // html body
-    });
-    res.status(200);
-  } catch {
-    res.status(400);
-  }
-
-  // const client = new MailtrapClient({ token: process.env.SMTP });
-
-  // await client
-  // .send({
-  //   from: {email: 'mailtrap@tasktracker4313.online'},
-  //   to: [{email: decryptString(res.user.email)}],
-  //   subject: "Task Tracker: Verification Code",
-  //   text: `This is your verification code ${req.body.verificationCode}`
-  // })
-
-  // const TOKEN = process.env.SMTP;
-  // const ENDPOINT = "https://send.api.mailtrap.io/";
-
-  // const client = new MailtrapClient({ endpoint: ENDPOINT, token: TOKEN });
-
-  // const sender = {
-  //   email: "mailtrap@tasktracker4313.online",
-  //   name: "Mailtrap Test",
-  // };
-  // const recipients = [
-  //   {
-  //     email: decryptString(res.user.email),
-  //   }
-  // ];
-
-  // try {
-  //   client
-  //     .send({
-  //       from: sender,
-  //       to: recipients,
-  //       subject: "Task Tracker: Verification Code",
-  //       text: `This is your verification code ${req.body.verificationCode}`,
-  //       category: "Integration Test",
-  //     })
-  //     res.status(200).json({message: "Email sent"})
-  // }
-  // catch {
-  //   res.status(400).json({message: "Error"})
-  // }
-
-  // const transporter = nodemailer.createTransport({
-  //   host: "sandbox.smtp.mailtrap.io",
-  // port: 2525,
-  // auth: {
-  //   user: "1d54821b2a563a",
-  //   pass: "07528919a18256"
-  // }
-  // });
-
-  // const mailOptions = {
-  //   from: 'noreply3792@gmail.com',
-  //   to: decryptString(res.user.email),
-  //   subject: 'Task Tracker: Verification Code',
-  //   text: `This is your verification code ${req.body.verificationCode}`
-  // };
-
-  // transporter.sendMail(mailOptions, function(error, info){
-  //   if (error) {
-  //     return res.status(400).json({ message: error})
-  //   } else {
-  //     return res.status(200).json({message: `Email sent`, info: info.response})
-  //   }
-  // });
-
-  // const transporter = nodemailer.createTransport({
-  //   host: "smtp.gmail.com",
-  //   port: 465,
-  //   secure: true, // use SSL
-  //   auth: {
-  //     user: "noreply3792@gmail.com",
-  //     pass: process.env.GMAIL_PASSWORD,
-  //   },
-  // });
-
-  // const mailOptions = {
-  //   from: "noreply3792@gmail.com",
-  //   to: decryptString(res.user.email),
-  //   subject: "Task Tracker: Verification Code",
-  //   text: `This is your verification code ${req.body.verificationCode}`,
-  // };
-
-  // transporter.sendMail(mailOptions, function (error, info) {
-  //   if (error) {
-  //     return res.status(400).json({ message: error });
-  //   } else {
-  //     return res
-  //       .status(200)
-  //       .json({ message: `Email sent`, info: info.response });
-  //   }
-  // });
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      return res.status(400).json({ message: error });
+    } else {
+      return res
+        .status(200)
+        .json({ message: `Email sent`, info: info.response });
+    }
+  });
 });
 
 // Create a user
