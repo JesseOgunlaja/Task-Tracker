@@ -131,7 +131,7 @@ app.post("/api/users/email/:id", getUser, async (req,res) => {
     service: 'gmail',
     auth: {
       user: 'noreply3792@gmail.com',
-      pass: "mgicwnsuesoabtmm"
+      pass: process.env.GMAIL_PASSWORD
     }
   });
 
