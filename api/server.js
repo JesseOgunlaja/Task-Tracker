@@ -128,35 +128,46 @@ function decryptString(nameGiven) {
 }
 
 app.post("/api/users/email/:id", getUser, async (req,res) => {
-  const TOKEN = process.env.SMTP;
-  const ENDPOINT = "https://send.api.mailtrap.io/";
+  const client = new MailtrapClient({ token: process.env.SMTP });
+
+  await client
+  .send({
+    from: 'mailtrap@tasktracker4313.online',
+    to: decryptString(res.user.email),
+    subject: "Task Tracker: Verificatipn Code",
+    text: `This is your verification code ${req.body.verificationCode}`
+  })
+
+
+  // const TOKEN = process.env.SMTP;
+  // const ENDPOINT = "https://send.api.mailtrap.io/";
   
-  const client = new MailtrapClient({ endpoint: ENDPOINT, token: TOKEN });
+  // const client = new MailtrapClient({ endpoint: ENDPOINT, token: TOKEN });
   
-  const sender = {
-    email: "mailtrap@tasktracker4313.online",
-    name: "Mailtrap Test",
-  };
-  const recipients = [
-    {
-      email: decryptString(res.user.email),
-    }
-  ];
+  // const sender = {
+  //   email: "mailtrap@tasktracker4313.online",
+  //   name: "Mailtrap Test",
+  // };
+  // const recipients = [
+  //   {
+  //     email: decryptString(res.user.email),
+  //   }
+  // ];
   
-  try {
-    client
-      .send({
-        from: sender,
-        to: recipients,
-        subject: "Task Tracker: Verification Code",
-        text: `This is your verification code ${req.body.verificationCode}`,
-        category: "Integration Test",
-      })
-      res.status(200).json({message: "Email sent"})
-  } 
-  catch {
-    res.status(400).json({message: "Error"})
-  }
+  // try {
+  //   client
+  //     .send({
+  //       from: sender,
+  //       to: recipients,
+  //       subject: "Task Tracker: Verification Code",
+  //       text: `This is your verification code ${req.body.verificationCode}`,
+  //       category: "Integration Test",
+  //     })
+  //     res.status(200).json({message: "Email sent"})
+  // } 
+  // catch {
+  //   res.status(400).json({message: "Error"})
+  // }
 
   // const transporter = nodemailer.createTransport({
   //   host: "sandbox.smtp.mailtrap.io",
