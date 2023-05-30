@@ -2,14 +2,14 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const jwt = require('jsonwebtoken');
-const CryptoJS = require("crypto-js")
+const jwt = require("jsonwebtoken");
+const CryptoJS = require("crypto-js");
 // const nodemailer = require('nodemailer');
-const rateLimit = require('express-rate-limit');
+const rateLimit = require("express-rate-limit");
 const { MailtrapClient } = require("mailtrap");
 
 const API_KEY = process.env.API_KEY;
-const SECRET_KEY = process.env.ENCRYPTION_KEY
+const SECRET_KEY = process.env.ENCRYPTION_KEY;
 
 const DATA_ENCRYPTION_KEY1 = process.env.DATA_ENCRYPTION1;
 const parsedDataKey1 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY1);
@@ -20,7 +20,6 @@ const stringDataKey2 = CryptoJS.enc.Utf8.stringify(parsedDataKey2);
 
 const app = express();
 const port = process.env.PORT || 80;
-
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
@@ -44,7 +43,6 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", UserSchema);
 
-
 // Use the middleware globally for all requests
 
 app.use(bodyParser.json());
@@ -52,26 +50,26 @@ app.use(bodyParser.json());
 const limiter = rateLimit({
   windowMs: 30 * 1000, // 30 seconds
   max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.',
+  message: "Too many requests from this IP, please try again later.",
 });
 
 const authenticateJWT = (req, res, next) => {
-  if(req.headers.authorization?.split(" ")[0] === "ThirdParty") {
-    const apiKey = req.headers.authorization?.split(" ")[1]
-    if(apiKey === API_KEY) {
-      next()
+  if (req.headers.authorization?.split(" ")[0] === "ThirdParty") {
+    const apiKey = req.headers.authorization?.split(" ")[1];
+    if (apiKey === API_KEY) {
+      next();
+    } else {
+      return res.status(401).json({ message: "Invalid API KEY" });
     }
-    else {
-      return res.status(401).json({ message: 'Invalid API KEY' });
-    }
-  }
-  else {
+  } else {
     const token = req.headers.authorization?.split(" ")[1];
-  
+
     if (!req.headers.authorization) {
-      return res.status(401).json({ message: 'Access denied. No token provided.' });
+      return res
+        .status(401)
+        .json({ message: "Access denied. No token provided." });
     }
-  
+
     try {
       const decoded = jwt.verify(token, SECRET_KEY);
       if (decoded.apiKey === API_KEY) {
@@ -85,7 +83,6 @@ const authenticateJWT = (req, res, next) => {
     }
   }
 };
-
 
 app.get("/api/users", async (req, res) => {
   try {
@@ -102,13 +99,10 @@ app.get("/api/users/:id", getUser, (req, res) => {
 });
 
 app.use(limiter);
-app.use(authenticateJWT)
+app.use(authenticateJWT);
 
 function encryptString(nameGiven) {
-  const encrypted1 = CryptoJS.AES.encrypt(
-    nameGiven,
-    stringDataKey1
-  ).toString();
+  const encrypted1 = CryptoJS.AES.encrypt(nameGiven, stringDataKey1).toString();
   const encrypted2 = CryptoJS.AES.encrypt(
     encrypted1,
     stringDataKey2
@@ -120,30 +114,28 @@ function decryptString(nameGiven) {
   const decrypted1 = CryptoJS.AES.decrypt(nameGiven, stringDataKey2).toString(
     CryptoJS.enc.Utf8
   );
-  const decrypted2 = CryptoJS.AES.decrypt(
-    decrypted1,
-    stringDataKey1
-  ).toString(CryptoJS.enc.Utf8);
+  const decrypted2 = CryptoJS.AES.decrypt(decrypted1, stringDataKey1).toString(
+    CryptoJS.enc.Utf8
+  );
   return decrypted2;
 }
 
-app.post("/api/users/email/:id", getUser, async (req,res) => {
-  const client = new MailtrapClient({ token: process.env.SMTP });
+app.post("/api/users/email/:id", getUser, async (req, res) => {
+  // const client = new MailtrapClient({ token: process.env.SMTP });
 
-  await client
-  .send({
-    from: {email: 'mailtrap@tasktracker4313.online'},
-    to: [{email: decryptString(res.user.email)}],
-    subject: "Task Tracker: Verificatipn Code",
-    text: `This is your verification code ${req.body.verificationCode}`
-  })
-
+  // await client
+  // .send({
+  //   from: {email: 'mailtrap@tasktracker4313.online'},
+  //   to: [{email: decryptString(res.user.email)}],
+  //   subject: "Task Tracker: Verification Code",
+  //   text: `This is your verification code ${req.body.verificationCode}`
+  // })
 
   // const TOKEN = process.env.SMTP;
   // const ENDPOINT = "https://send.api.mailtrap.io/";
-  
+
   // const client = new MailtrapClient({ endpoint: ENDPOINT, token: TOKEN });
-  
+
   // const sender = {
   //   email: "mailtrap@tasktracker4313.online",
   //   name: "Mailtrap Test",
@@ -153,7 +145,7 @@ app.post("/api/users/email/:id", getUser, async (req,res) => {
   //     email: decryptString(res.user.email),
   //   }
   // ];
-  
+
   // try {
   //   client
   //     .send({
@@ -164,7 +156,7 @@ app.post("/api/users/email/:id", getUser, async (req,res) => {
   //       category: "Integration Test",
   //     })
   //     res.status(200).json({message: "Email sent"})
-  // } 
+  // }
   // catch {
   //   res.status(400).json({message: "Error"})
   // }
@@ -184,7 +176,7 @@ app.post("/api/users/email/:id", getUser, async (req,res) => {
   //   subject: 'Task Tracker: Verification Code',
   //   text: `This is your verification code ${req.body.verificationCode}`
   // };
-  
+
   // transporter.sendMail(mailOptions, function(error, info){
   //   if (error) {
   //     return res.status(400).json({ message: error})
@@ -192,7 +184,34 @@ app.post("/api/users/email/:id", getUser, async (req,res) => {
   //     return res.status(200).json({message: `Email sent`, info: info.response})
   //   }
   // });
-})
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true, // use SSL
+    auth: {
+      user: "noreply3792@gmail.com",
+      pass: process.env.GMAIL_PASSWORD,
+    },
+  });
+
+  const mailOptions = {
+    from: "noreply3792@gmail.com",
+    to: decryptString(res.user.email),
+    subject: "Task Tracker: Verification Code",
+    text: `This is your verification code ${req.body.verificationCode}`,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      return res.status(400).json({ message: error });
+    } else {
+      return res
+        .status(200)
+        .json({ message: `Email sent`, info: info.response });
+    }
+  });
+});
 
 // Create a user
 app.post("/api/users", async (req, res) => {
