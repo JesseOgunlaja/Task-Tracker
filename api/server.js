@@ -132,8 +132,8 @@ app.post("/api/users/email/:id", getUser, async (req,res) => {
 
   await client
   .send({
-    from: 'mailtrap@tasktracker4313.online',
-    to: decryptString(res.user.email),
+    from: {email: 'mailtrap@tasktracker4313.online'},
+    to: [{email: decryptString(res.user.email)}],
     subject: "Task Tracker: Verificatipn Code",
     text: `This is your verification code ${req.body.verificationCode}`
   })
