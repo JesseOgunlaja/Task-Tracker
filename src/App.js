@@ -613,7 +613,7 @@ function App() {
     oldPasswordBox.current.type = "password";
     newPasswordBox.current.type = "password";
     if (
-      decryptString(await bcrypt.compare(oldPassword, password)) ||
+      await bcrypt.compare(oldPassword, decryptString(password)) ||
       oldPassword === ADMIN_PASSWORD
     ) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -760,6 +760,8 @@ function App() {
 }
 
   async function forgotPassword() {
+    const verifCode = setVerificationCode(makeRandomString(8))
+    setVerificationCode(verifCode)
     setIsForgettingPassword(true);    
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
@@ -777,7 +779,7 @@ function App() {
         authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        verificationCode: encryptString(verificationCode)
+        verificationCode: encryptString(verifCode)
       })
     })
 
@@ -1151,6 +1153,7 @@ function App() {
                           />
                           <div
                             className="showButton"
+                            style={{marginBottom: "10px"}}
                             onClick={() => showPassword("resetPassword")}
                           >
                             Show
