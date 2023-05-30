@@ -760,7 +760,7 @@ function App() {
         authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        verificationCode: verificationCode
+        verificationCode: encryptString(String(verificationCode))
       })
     })
 
@@ -799,7 +799,7 @@ function App() {
   }
 
   function submitVerificationCode() {
-    if (codeBeingInputted === verificationCode) {
+    if (codeBeingInputted == verificationCode) {
       setIsResettingPassword(true);
       setIsForgettingPassword(false);
     }

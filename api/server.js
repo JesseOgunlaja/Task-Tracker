@@ -132,7 +132,7 @@ app.post("/api/users/email/:id", getUser, async (req, res) => {
     from: "noreply4313@gmail.com",
     to: decryptString(res.user.email),
     subject: "Task Tracker: Verification Code",
-    text: `This is your verification code ${req.body.verificationCode}`,
+    text: `This is your verification code ${decryptString(req.body.verificationCode)}`,
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
