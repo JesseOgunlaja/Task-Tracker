@@ -125,14 +125,16 @@ function App() {
             username: username,
           }),
         })
-          .then(response => {
+          .then((response) => {
             if (response.ok) {
+              console.log("ok");
+      signIn(username);
               resolve(response.json());
             } else {
               reject(new Error(`HTTP error: ${response.status}`));
             }
           })
-          .catch(error => {
+          .catch((error) => {
             reject(error);
           });
       }),
@@ -142,10 +144,6 @@ function App() {
         error: "User not found",
       }
     );
-    if (res.status === 200) {
-      console.log("ok")
-      signIn(username);
-    }
   }
 
   async function signIn(person) {
@@ -404,8 +402,8 @@ function App() {
 
   async function submitPassword() {
     const res = await toast.promise(
-      new Promise((resolve, reject) => {
-        fetch("/api/users/loginPassword", {
+      new Promise( async(resolve, reject) => {
+        const res2 = await fetch("/api/users/loginPassword", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -415,27 +413,10 @@ function App() {
             password: passwordBeingAdded,
           }),
         })
-          .then(response => {
+          .then(async (response) => {
             if (response.ok) {
-              resolve(response.json());
-            } else {
-              reject(new Error(`HTTP error: ${response.status}`));
-            }
-          })
-          .catch(error => {
-            reject(error);
-          });
-      }),
-      {
-        pending: "Loading",
-        success: "Success",
-        error: "User not found",
-      }
-    );
-
-    if (res.ok) {
-      console.log("ok")
-      const data = await res.json();
+              console.log("ok");
+      const data = await res2.json();
       const tokenGiven = data.token;
       setToken(tokenGiven);
       passwordBox.current.type = "password";
@@ -448,7 +429,21 @@ function App() {
       document.cookie = `user=${username}; expires=${expires}; path=/`;
       setTasks(await fetchTasks(tokenGiven));
       setSignedIn(true);
-    }
+              resolve(response.json());
+            } else {
+              reject(new Error(`HTTP error: ${response.status}`));
+            }
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      }),
+      {
+        pending: "Loading",
+        success: "Success",
+        error: "User not found",
+      }
+    );
   }
 
   function changePassword() {
@@ -476,8 +471,8 @@ function App() {
     newPasswordBox.current.type = "password";
 
     const res = await toast.promise(
-      new Promise((resolve, reject) => {
-        fetch("/api/users/loginPassword", {
+      new Promise(async (resolve, reject) => {
+        const res2 = await fetch("/api/users/loginPassword", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -487,14 +482,27 @@ function App() {
             password: oldPassword,
           }),
         })
-          .then(response => {
+          .then(async (response) => {
             if (response.ok) {
+              console.log("ok");
+              await fetch(`api/Users`, {
+                method: "PATCH",
+                headers: {
+                  "Content-type": "application/json",
+                  authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  username: username,
+                  password: newPassword,
+                }),
+              });
+              signOut();
               resolve(response.json());
             } else {
               reject(new Error(`HTTP error: ${response.status}`));
             }
           })
-          .catch(error => {
+          .catch((error) => {
             reject(error);
           });
       }),
@@ -504,24 +512,6 @@ function App() {
         error: "User not found",
       }
     );
-
-    if (res.ok) {
-      console.log("ok")
-      await fetch(`api/Users`, {
-        method: "PATCH",
-        headers: {
-          "Content-type": "application/json",
-          authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          username: username,
-          password: newPassword,
-        }),
-      });
-      signOut();
-    } else {
-      error("Incorrect password");
-    }
   }
 
   useEffect(() => {
