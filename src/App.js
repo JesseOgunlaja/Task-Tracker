@@ -72,7 +72,7 @@ function App() {
   const [verificationCode, setVerificationCode] = useState(makeRandomString(8));
   const [token, setToken] = useState();
 
-  const error = (text) =>
+  const error = (text) =>{
     toast.error(text, {
       position: "top-right",
       autoClose: 5000,
@@ -83,11 +83,9 @@ function App() {
       progress: undefined,
       theme: "dark",
     });
+  }
 
   async function completeChangeEmail() {
-    const encryptedEmail = encryptString(newEmail);
-    back("changeEmail");
-
     await fetch(`api/Users`, {
       method: "PATCH",
       headers: {
@@ -96,9 +94,10 @@ function App() {
       },
       body: JSON.stringify({
         username: username,
-        email: encryptedEmail,
+        email: newEmail,
       }),
     });
+    back("changeEmail");
     setSignedIn(true);
   }
 
@@ -151,17 +150,7 @@ function App() {
 
   async function deleteTask(index) {
     const currentTasks = [...tasks];
-    const encryptedTasks = currentTasks.map((task) => {
-      const newTask = encryptString(task.task);
-      const newDate = encryptString(task.date);
-      return {
-        reminder: task.reminder,
-        _id: task._id,
-        task: newTask,
-        date: newDate,
-      };
-    });
-    encryptedTasks.splice(index, 1);
+    currentTasks.splice(index, 1);
 
     await fetch(`api/Users`, {
       method: "PATCH",
@@ -181,15 +170,15 @@ function App() {
   async function addTask() {
     if (newTaskTitle.current.value !== "" && newTaskDate.current.value !== "") {
       const newTask = {
-        task: encryptString(newTaskTitle.current.value),
-        date: encryptString(newTaskDate.current.value),
+        task: newTaskTitle.current.value,
+        date: newTaskDate.current.value,
         reminder: newTaskReminder.current.checked,
       };
 
       const currentTasks = [...tasks];
       const encryptedTasks = currentTasks.map((task) => {
-        const newTask = encryptString(task.task);
-        const newDate = encryptString(task.date);
+        const newTask = task.task;
+        const newDate = task.date;
         return {
           reminder: task.reminder,
           _id: task._id,
@@ -227,8 +216,8 @@ function App() {
 
   async function editTask() {
     const updatedTask = {
-      task: encryptString(editedTaskTitle),
-      date: encryptString(editedTaskDate),
+      task: editedTaskTitle,
+      date: editedTaskDate,
       reminder: editedTaskReminder,
     };
 
@@ -371,10 +360,10 @@ function App() {
           authorization: `Bearer ${globalToken}`,
         },
         body: JSON.stringify({
-          name: encryptString(nameBeingAdded),
+          name: nameBeingAdded,
           tasks: [],
           password: passwordBeingAdded,
-          email: encryptString(emailBeingAdded),
+          email: emailBeingAdded,
         }),
       });
       signOut();

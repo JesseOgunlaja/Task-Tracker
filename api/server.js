@@ -116,7 +116,7 @@ app.get("/api/users",authenticateJWTGlobal, async (req, res) => {
 
 // Get one user
 app.post("/api/users/user",authenticateJWTUser, async (req, res) => {
-  const user = await User.findOne({ name: req.body.name });
+  const user = await User.findOne({ name: req.body.username });
 
   res.json(user);
 });
@@ -132,7 +132,7 @@ function decryptString(nameGiven) {
 }
 
 app.post("/api/users/email", async (req, res) => {
-  const user = await User.findOne({ name: req.body.name });
+  const user = await User.findOne({ name: req.body.username });
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -179,7 +179,7 @@ app.post("/api/users", authenticateJWTGlobal, async (req, res) => {
 });
 
 app.post("/api/users/loginPassword", async (req, res) => {
-  const user = await User.findOne({ name: req.body.name });
+  const user = await User.findOne({ name: req.body.username });
   const passwordInputted = req.body.password;
 
   if (await bcrypt.compare(passwordInputted, user.password)) {
@@ -193,7 +193,7 @@ app.post("/api/users/loginPassword", async (req, res) => {
 });
 
 app.post("/api/users/loginName", async (req, res) => {
-  const user = await User.findOne({ name: req.body.name });
+  const user = await User.findOne({ name: req.body.username });
   if(user == null) {
     return res.status(400).json({message: "Resoure not found"})
   }
@@ -204,7 +204,7 @@ app.post("/api/users/loginName", async (req, res) => {
 
 // Update a user
 app.patch("/api/users",authenticateJWTUser, async (req, res) => {
-  const user = await User.findOne({ name: req.body.name });
+  const user = await User.findOne({ name: req.body.username });
   if (req.body.name != null) {
     user.name = req.body.name;
   }
@@ -227,7 +227,7 @@ app.patch("/api/users",authenticateJWTUser, async (req, res) => {
 
 // Delete a user
 app.post("/api/users/delete",authenticateJWTUser, async (req, res) => {
-  const user = await User.findOne({ name: req.body.name });
+  const user = await User.findOne({ name: req.body.username });
   try {
     const deletedUser = await User.findOneAndDelete({ name: user.name });
     if (deletedUser == null) {
