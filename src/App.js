@@ -75,7 +75,7 @@ function App() {
   const error = (text) => {
     toast.error(text, {
       position: "top-right",
-      autoClose: 5000,
+      autoClose: 2500,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -127,7 +127,6 @@ function App() {
         })
           .then((response) => {
             if (response.ok) {
-              console.log("ok");
               signIn(username);
               resolve(response.json());
             } else {
@@ -277,7 +276,7 @@ function App() {
       .find((row) => row.startsWith("user="))
       ?.split("=")[1];
 
-    if (authToken && username) {
+    if (authToken && usernameCookie) {
       const res = await fetch("/api/users/user", {
         method: "POST",
         headers: {
@@ -393,7 +392,6 @@ function App() {
         })
           .then(async (response) => {
             if (response.ok) {
-              console.log("ok");
               const data = await response.json();
               const tokenGiven = data.token;
               setToken(tokenGiven);
@@ -462,7 +460,6 @@ function App() {
         })
           .then(async (response) => {
             if (response.ok) {
-              console.log("ok");
               await fetch(`api/Users`, {
                 method: "PATCH",
                 headers: {
@@ -647,9 +644,12 @@ function App() {
   }
 
   function submitVerificationCode() {
-    if (codeBeingInputted == verificationCode) {
+    if (codeBeingInputted === verificationCode) {
       setIsResettingPassword(true);
       setIsForgettingPassword(false);
+    }
+    else {
+      error("Incorrect verification code")
     }
   }
 
@@ -740,7 +740,7 @@ function App() {
       <>
         <ToastContainer
           position="top-right"
-          autoClose={5000}
+          autoClose={2500}
           hideProgressBar={false}
           newestOnTop={false}
           closeOnClick
@@ -885,7 +885,7 @@ function App() {
               >
                 Delete Account
               </button>
-              <button className="signOutButton green wide" onClick={signOut}>
+              <button className="signOutButton green wide" onClick={() => signOut(true)}>
                 Sign Out
               </button>
             </div>
@@ -979,7 +979,7 @@ function App() {
                                 <div>Back</div>
                               </div>
                               <p>
-                                We just sent a verification code to: {email}
+                                We just sent a verification code to the email registered with your account
                               </p>
                               <br />
                               <label>Code:</label>
