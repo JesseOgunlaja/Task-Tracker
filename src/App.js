@@ -115,14 +115,26 @@ function App() {
 
   async function signInUsername() {
     const res = await toast.promise(
-      await fetch("/api/users/loginName", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: username,
-        }),
+      new Promise((resolve, reject) => {
+        fetch("/api/users/loginName", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username,
+          }),
+        })
+          .then(response => {
+            if (response.ok) {
+              resolve(response.json());
+            } else {
+              reject(new Error(`HTTP error: ${response.status}`));
+            }
+          })
+          .catch(error => {
+            reject(error);
+          });
       }),
       {
         pending: "Loading",
@@ -131,6 +143,7 @@ function App() {
       }
     );
     if (res.status === 200) {
+      console.log("ok")
       signIn(username);
     }
   }
@@ -391,15 +404,27 @@ function App() {
 
   async function submitPassword() {
     const res = await toast.promise(
-      await fetch("/api/users/loginPassword", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: username,
-          password: passwordBeingAdded,
-        }),
+      new Promise((resolve, reject) => {
+        fetch("/api/users/loginPassword", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username,
+            password: passwordBeingAdded,
+          }),
+        })
+          .then(response => {
+            if (response.ok) {
+              resolve(response.json());
+            } else {
+              reject(new Error(`HTTP error: ${response.status}`));
+            }
+          })
+          .catch(error => {
+            reject(error);
+          });
       }),
       {
         pending: "Loading",
@@ -407,7 +432,9 @@ function App() {
         error: "User not found",
       }
     );
+
     if (res.ok) {
+      console.log("ok")
       const data = await res.json();
       const tokenGiven = data.token;
       setToken(tokenGiven);
@@ -421,8 +448,6 @@ function App() {
       document.cookie = `user=${username}; expires=${expires}; path=/`;
       setTasks(await fetchTasks(tokenGiven));
       setSignedIn(true);
-    } else {
-      error("Incorrect password");
     }
   }
 
@@ -451,15 +476,27 @@ function App() {
     newPasswordBox.current.type = "password";
 
     const res = await toast.promise(
-      await fetch("/api/users/loginPassword", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: username,
-          password: passwordBeingAdded,
-        }),
+      new Promise((resolve, reject) => {
+        fetch("/api/users/loginPassword", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username,
+            password: oldPassword,
+          }),
+        })
+          .then(response => {
+            if (response.ok) {
+              resolve(response.json());
+            } else {
+              reject(new Error(`HTTP error: ${response.status}`));
+            }
+          })
+          .catch(error => {
+            reject(error);
+          });
       }),
       {
         pending: "Loading",
@@ -469,6 +506,7 @@ function App() {
     );
 
     if (res.ok) {
+      console.log("ok")
       await fetch(`api/Users`, {
         method: "PATCH",
         headers: {
