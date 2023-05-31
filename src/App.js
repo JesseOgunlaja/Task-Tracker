@@ -264,11 +264,11 @@ function App() {
     getTasks();
   }, [user]);
 
-  async function fetchTasks() {
+  async function fetchTasks(tokenPassed) {
     const res = await fetch(`api/users/user`, {
       method: "POST",
       headers: {
-        authorization: `Bearer ${token}`,
+        authorization: `Bearer ${tokenPassed}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
@@ -451,7 +451,7 @@ function App() {
       // ); // 7 days * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
       // let expires = expirationDate.toUTCString();
       // document.cookie = `authToken=${SECOND_ENCRYPTION}; expires=${expires}; path=/`;
-      setTasks(await fetchTasks());
+      setTasks(await fetchTasks(tokenGiven));
       setSignedIn(true);
     } else {
       error("Incorrect password");
