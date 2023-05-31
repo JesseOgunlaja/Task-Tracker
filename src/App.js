@@ -53,7 +53,6 @@ function App() {
   const [user, setUser] = useState("");
   const [signedIn, setSignedIn] = useState(false);
   const [nameBeingAdded, setNameBeingAdded] = useState("");
-  const [userId, setUserId] = useState();
   const [isPuttingPassword, setIsPuttingPassword] = useState(false);
   const [passwordBeingAdded, setPasswordBeingAdded] = useState("");
   const [isChangingData, setIsChangingData] = useState(false);
@@ -71,6 +70,7 @@ function App() {
   const [dataBeingChanged, setDataBeingChanged] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [verificationCode,setVerificationCode] = useState(makeRandomString(8))
+  const [token,setToken] = useState()
 
   const error = (text) =>
     toast.error(text, {
@@ -87,16 +87,8 @@ function App() {
   async function completeChangeEmail() {
     const encryptedEmail = encryptString(newEmail);
     back("changeEmail");
-    const SECRET_KEY = ENCRYPTION_KEY;
-    const payload = {
-      apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + INTERVAL,
-    };
-    const header = { alg: "HS256", typ: "JWT" };
-    const sHeader = JSON.stringify(header);
-    const sPayload = JSON.stringify(payload);
-    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    await fetch(`api/Users/${userId}`, {
+    
+    await fetch(`api/Users`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -132,25 +124,28 @@ function App() {
     return decrypted2;
   }
 
-  function signInUsername() {
-    if (username === "") {
-      error("Name required");
-      return;
+  async function signInUsername() {
+    const res = await fetch("/api/users/loginName", {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: username
+      })
+    })
+
+    if(res.status === 400) {
+      error("User not found")
     }
-    if (
-      people.every(
-        (person) =>
-          decryptString(person.name).toUpperCase() !== username.toUpperCase()
-      )
-    ) {
-      error("Cannot find user");
+    if(res.status === 200) {
+      signIn(username);
     }
-    people.forEach((person) => {
-      if (decryptString(person.name).toUpperCase() === username.toUpperCase()) {
-        signIn(person.name, person._id);
-        return;
-      }
-    });
+  }
+
+  async function signIn(person) {
+    setIsPuttingPassword(true);
+    setUser(person);
   }
 
   async function deleteTask(index) {
@@ -167,16 +162,8 @@ function App() {
     });
     encryptedTasks.splice(index, 1);
 
-    const SECRET_KEY = ENCRYPTION_KEY;
-    const payload = {
-      apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + INTERVAL,
-    };
-    const header = { alg: "HS256", typ: "JWT" };
-    const sHeader = JSON.stringify(header);
-    const sPayload = JSON.stringify(payload);
-    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    await fetch(`api/Users/${userId}`, {
+    
+    await fetch(`api/Users`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -220,7 +207,7 @@ function App() {
       const sHeader = JSON.stringify(header);
       const sPayload = JSON.stringify(payload);
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-      await fetch(`api/Users/${userId}`, {
+      await fetch(`api/Users`, {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
@@ -254,16 +241,8 @@ function App() {
 
     const currentTasks = [...tasks];
     currentTasks[editIndex.current] = updatedTask;
-    const SECRET_KEY = ENCRYPTION_KEY;
-    const payload = {
-      apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + INTERVAL,
-    };
-    const header = { alg: "HS256", typ: "JWT" };
-    const sHeader = JSON.stringify(header);
-    const sPayload = JSON.stringify(payload);
-    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    await fetch(`api/Users/${userId}`, {
+    
+    await fetch(`api/Users`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -287,16 +266,8 @@ function App() {
   }, [user]);
 
   async function fetchTasks() {
-    const SECRET_KEY = ENCRYPTION_KEY;
-    const payload = {
-      apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + INTERVAL,
-    };
-    const header = { alg: "HS256", typ: "JWT" };
-    const sHeader = JSON.stringify(header);
-    const sPayload = JSON.stringify(payload);
-    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    const res = await fetch(`api/Users/${userId}`, {
+    
+    const res = await fetch(`api/Users`, {
       methpd: "GET",
       headers: {
         authorization: `Bearer ${token}`,
@@ -317,26 +288,6 @@ function App() {
     );
   }
 
-  async function fetchPeople() {
-    const SECRET_KEY = ENCRYPTION_KEY;
-    const payload = {
-      apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + INTERVAL,
-    };
-    const header = { alg: "HS256", typ: "JWT" };
-    const sHeader = JSON.stringify(header);
-    const sPayload = JSON.stringify(payload);
-    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    const res = await fetch(`/api/Users`, {
-      method: "GET",
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
-    const data = await res.json().catch(() => window.location.reload());
-    return data;
-  }
-
   async function checkIfSignedIn() {
     const authToken = document.cookie
       .split("; ")
@@ -352,7 +303,6 @@ function App() {
         decrypt1,
         stringSessionKey2
       ).toString(CryptoJS.enc.Utf8);
-      setUserId(decrypt2);
 
       const SECRET_KEY = ENCRYPTION_KEY;
       const payload = {
@@ -403,13 +353,12 @@ function App() {
   }
 
   useEffect(() => {
-    checkIfSignedIn();
+    // checkIfSignedIn();
   }, []);
 
   async function signIn(person, id) {
     setIsPuttingPassword(true);
     setUser(person);
-    setUserId(id);
   }
 
   async function addUser() {
@@ -417,15 +366,6 @@ function App() {
       error("Name required");
     } else if (passwordBeingAdded === "") {
       error("Password required");
-    } else if (
-      people.every(
-        (val) =>
-          decryptString(val.name).toUpperCase() !==
-            nameBeingAdded.toUpperCase() &&
-          adminPasswordBeingAdded === ADMIN_PASSWORD
-      )
-    ) {
-      error("That name is taken");
     } else {
       adminPasswordBox.current.type = "password";
       addUserPassword.current.type = "password";
@@ -452,7 +392,6 @@ function App() {
           email: encryptString(emailBeingAdded),
         }),
       });
-      setPeople(await fetchPeople());
       signOut();
     }
   }
@@ -480,65 +419,49 @@ function App() {
     setIsEditing(false);
     setIsPuttingPassword(false);
     setSignedIn(false);
-    setPeople(await fetchPeople());
   }
 
   async function deleteAccount() {
-    const SECRET_KEY = ENCRYPTION_KEY;
-    const payload = {
-      apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + INTERVAL,
-    };
-    const header = { alg: "HS256", typ: "JWT" };
-    const sHeader = JSON.stringify(header);
-    const sPayload = JSON.stringify(payload);
-    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    await fetch(`api/Users/${userId}`, {
+    
+    await fetch(`api/Users`, {
       method: "DELETE",
       headers: {
         authorization: `Bearer ${token}`,
       },
     });
-    setPeople(await fetchPeople());
     signOut();
   }
 
   async function submitPassword() {
-    const SECRET_KEY = ENCRYPTION_KEY;
-    const payload = {
-      apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + INTERVAL,
-    };
-    const header = { alg: "HS256", typ: "JWT" };
-    const sHeader = JSON.stringify(header);
-    const sPayload = JSON.stringify(payload);
-    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    let password = (
-      await (
-        await fetch(`api/Users/${userId}`, {
-          method: "GET",
+        const res = await fetch(`api/Users/loginPassword`, {
+          method: "POST",
           headers: {
-            authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
           },
+          body: JSON.stringify({
+            name: username,
+            password: passwordBeingAdded
+          })
         })
-      ).json()
-    ).password;
-    if (passwordBeingAdded === ADMIN_PASSWORD || await bcrypt.compare(passwordBeingAdded, decryptString(password))) {
+    if (res.status === 200) {
+      const data = await res.json();
+      const tokenProvided = data.token;
+      setToken(tokenProvided)
       passwordBox.current.type = "password";
-      const FIRST_ENCRYPTION = CryptoJS.AES.encrypt(
-        userId,
-        stringSessionKey1
-      ).toString();
-      const SECOND_ENCRYPTION = CryptoJS.AES.encrypt(
-        FIRST_ENCRYPTION,
-        stringSessionKey2
-      ).toString();
-      let currentDate = new Date();
-      let expirationDate = new Date(
-        currentDate.getTime() + 7 * 24 * 60 * 60 * 1000
-      ); // 7 days * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
-      let expires = expirationDate.toUTCString();
-      document.cookie = `authToken=${SECOND_ENCRYPTION}; expires=${expires}; path=/`;
+      // const FIRST_ENCRYPTION = CryptoJS.AES.encrypt(
+      //   userId,
+      //   stringSessionKey1
+      // ).toString();
+      // const SECOND_ENCRYPTION = CryptoJS.AES.encrypt(
+      //   FIRST_ENCRYPTION,
+      //   stringSessionKey2
+      // ).toString();
+      // let currentDate = new Date();
+      // let expirationDate = new Date(
+      //   currentDate.getTime() + 7 * 24 * 60 * 60 * 1000
+      // ); // 7 days * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
+      // let expires = expirationDate.toUTCString();
+      // document.cookie = `authToken=${SECOND_ENCRYPTION}; expires=${expires}; path=/`;
       setSignedIn(true);
     }
     else {
@@ -567,18 +490,10 @@ function App() {
       error("Value required");
       return;
     }
-    const SECRET_KEY = ENCRYPTION_KEY;
-    const payload = {
-      apiKey: process.env.REACT_APP_API_KEY,
-      exp: Math.floor(Date.now() / 1000) + INTERVAL,
-    };
-    const header = { alg: "HS256", typ: "JWT" };
-    const sHeader = JSON.stringify(header);
-    const sPayload = JSON.stringify(payload);
-    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+    
     let password = (
       await (
-        await fetch(`api/Users/${userId}`, {
+        await fetch(`api/Users`, {
           method: "GET",
           headers: {
             authorization: `Bearer ${token}`,
@@ -601,7 +516,7 @@ function App() {
       const sHeader = JSON.stringify(header);
       const sPayload = JSON.stringify(payload);
       const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-      await fetch(`api/Users/${userId}`, {
+      await fetch(`api/Users`, {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
@@ -750,7 +665,7 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    await fetch(`/api/users/email/${userId}`, {
+    await fetch(`/api/users/email`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -779,7 +694,7 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    await fetch(`api/Users/${userId}`, {
+    await fetch(`api/Users`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -824,35 +739,35 @@ function App() {
 
   useEffect(() => {
     async function getEmail() {
-      if (userId != undefined) {
-        const SECRET_KEY = ENCRYPTION_KEY;
-        const payload = {
-          apiKey: process.env.REACT_APP_API_KEY,
-          exp: Math.floor(Date.now() / 1000) + INTERVAL,
-        };
-        const header = { alg: "HS256", typ: "JWT" };
-        const sHeader = JSON.stringify(header);
-        const sPayload = JSON.stringify(payload);
-        const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-        setEmail(
-          decryptString(
-            (
-              await (
-                await fetch(`api/Users/${userId}`, {
-                  method: "GET",
-                  headers: {
-                    authorization: `Bearer ${token}`,
-                  },
-                })
-              ).json()
-            ).email
-          )
-        );
-      }
+      // if (userId != undefined) {
+      //   const SECRET_KEY = ENCRYPTION_KEY;
+      //   const payload = {
+      //     apiKey: process.env.REACT_APP_API_KEY,
+      //     exp: Math.floor(Date.now() / 1000) + INTERVAL,
+      //   };
+      //   const header = { alg: "HS256", typ: "JWT" };
+      //   const sHeader = JSON.stringify(header);
+      //   const sPayload = JSON.stringify(payload);
+      //   const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+      //   setEmail(
+      //     decryptString(
+      //       (
+      //         await (
+      //           await fetch(`api/Users`, {
+      //             method: "GET",
+      //             headers: {
+      //               authorization: `Bearer ${token}`,
+      //             },
+      //           })
+      //         ).json()
+      //       ).email
+      //     )
+      //   );
+      // }
     }
 
     getEmail();
-  }, [userId, isForgettingPassword, isChangingData]);
+  }, [isForgettingPassword, isChangingData]);
 
   function deleteCookie(cookieName) {
     document.cookie =
@@ -1276,7 +1191,6 @@ function App() {
                             </button>
                           </div>
                           <div className="signInUsername">
-                            {people ? (
                               <div className="">
                                 <label>Username</label>
                                 <input
@@ -1293,15 +1207,6 @@ function App() {
                                   Sign in
                                 </button>
                               </div>
-                            ) : (
-                              <div className="loadingBox">
-                                <div className="loader-3">
-                                  <div className="pulse"></div>
-                                  <div className="pulse"></div>
-                                  <div className="pulse"></div>
-                                </div>
-                              </div>
-                            )}
                           </div>
                         </>
                       )}

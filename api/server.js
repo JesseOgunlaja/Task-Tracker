@@ -169,7 +169,7 @@ app.post("/api/users", authenticateJWTGlobal, async (req, res) => {
   }
 });
 
-app.post("/api/users/login", async (req, res) => {
+app.post("/api/users/loginPassword", async (req, res) => {
   const user = await User.findOne({ name: req.body.name });
   const passwordInputted = req.body.password;
 
@@ -180,6 +180,16 @@ app.post("/api/users/login", async (req, res) => {
     res.status(200).json({ token: token });
   } else {
     res.status(401).json({ message: "Invalid Credentials" });
+  }
+});
+
+app.post("/api/users/loginName", async (req, res) => {
+  const user = await User.findOne({ name: req.body.name });
+  if(user == null) {
+    return res.status(400).json({message: "Resoure not found"})
+  }
+  else {
+    return res.status(200).json({message: "Resoure found"})
   }
 });
 
