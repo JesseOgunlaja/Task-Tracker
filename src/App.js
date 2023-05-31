@@ -8,7 +8,7 @@ import CryptoJS from "crypto-js";
 const jwt = require("jsrsasign");
 
 if (process.env.REACT_APP_DATA_ENCRYPTION1) {
-  disableReactDevTools();
+  // disableReactDevTools();
 }
 
 function App() {

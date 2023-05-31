@@ -106,7 +106,7 @@ const authenticateJWTUser = async (req, res, next) => {
 };
 
 // Get one user
-app.post("/api/users",authenticateJWTUser, async (req, res) => {
+app.post("/api/users/user",authenticateJWTUser, async (req, res) => {
   const user = await User.findOne({ name: req.body.name });
 
   res.json(user);
