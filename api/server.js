@@ -53,18 +53,6 @@ const limiter = rateLimit({
 app.use(bodyParser.json());
 app.use(limiter);
 
-function encryptString(nameGiven) {
-  const encrypted1 = CryptoJS.AES.encrypt(
-    nameGiven,
-    stringDataKey1
-  ).toString();
-  const encrypted2 = CryptoJS.AES.encrypt(
-    encrypted1,
-    stringDataKey2
-  ).toString();
-  return encrypted2;
-}
-
 const authenticateJWTGlobal = (req, res, next) => {
   if (req.headers.authorization?.split(" ")[0] === "ThirdParty") {
     const apiKey = req.headers.authorization?.split(" ")[1];
@@ -205,7 +193,7 @@ app.post("/api/users/loginPassword", async (req, res) => {
 });
 
 app.post("/api/users/loginName", async (req, res) => {
-  const user = await User.findOne({ name: encryptString(req.body.nam)e });
+  const user = await User.findOne({ name: req.body.name });
   if(user == null) {
     return res.status(400).json({message: "Resoure not found"})
   }
