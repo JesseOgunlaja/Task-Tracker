@@ -276,7 +276,7 @@ function App() {
       })
     });
     const data = await res.json();
-    return data.then((res) => res.tasks);
+    return data.tasks
   }
 
   async function checkIfSignedIn() {
