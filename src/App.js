@@ -270,7 +270,7 @@ function App() {
     });
     const data = await res.json();
     const fetchedTasks = data.tasks
-    const decryptedTasks = fetcedhTasks.map((value) => {
+    const decryptedTasks = fetchedTasks.map((value) => {
       return {
         task: decryptString(value.task),
         date: decryptString(value.date),
