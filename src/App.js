@@ -252,27 +252,43 @@ function App() {
       ?.split("=")[1];
 
     if (authToken) {
-      const res = await fetch("/api/users/checkJWT", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${authToken}`,
+      const res = await toast.promise(
+        new Promise((resolve, reject) => {
+          fetch("/api/users/checkJWT", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${authToken}`,
+            },
+          })
+            .then(async (response) => {
+              if (response.ok) {
+                const data = await response.json();
+
+                if (data.valid) {
+                  setUser(data.user.name);
+                  setToken(authToken);
+                  setTasks(data.user.tasks);
+                  setSignedIn(true);
+                } else {
+                  deleteCookie("authToken");
+                  window.location.reload();
+                }
+                resolve(data);
+              } else {
+                reject(new Error(`HTTP error: ${response.status}`));
+              }
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        }),
+        {
+          pending: "Loading",
+          success: "Success",
+          error: "User not found",
         }
-      });
-
-      const data = await res.json()
-
-      if (data.valid) {
-        setUser(data.user.name);
-        setToken(authToken)
-        setTasks(data.user.tasks);
-        setSignedIn(true);
-      } else if (res.status === 404) {
-        deleteCookie("authToken");
-        window.location.reload();
-      } else if (res.status === 401 || res.status === 500) {
-        window.location.reload();
-      }
+      );
     }
   }
 
@@ -319,7 +335,7 @@ function App() {
     setPasswordBeingAdded("");
     setNewPassword("");
     setOldPassword("");
-    if(eraseUserName === false) {
+    if (eraseUserName === false) {
       setUsername("");
     }
     setIsForgettingPassword(false);
@@ -376,7 +392,6 @@ function App() {
               ); // 7 days * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
               let expires = expirationDate.toUTCString();
               document.cookie = `authToken=${tokenGiven}; expires=${expires}; path=/`;
-              document.cookie = `user=${username}; expires=${expires}; path=/`;
               setTasks(await fetchTasks(tokenGiven));
               setSignedIn(true);
               resolve(data);
@@ -621,9 +636,8 @@ function App() {
     if (codeBeingInputted === verificationCode) {
       setIsResettingPassword(true);
       setIsForgettingPassword(false);
-    }
-    else {
-      error("Incorrect verification code")
+    } else {
+      error("Incorrect verification code");
     }
   }
 
@@ -700,6 +714,10 @@ function App() {
           pauseOnHover={false}
           theme="dark"
         />
+        {document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("authToken="))
+          ?.split("=")[1] != null && tasks == null}
         {signedIn ? (
           <>
             <div className="container">
@@ -835,7 +853,10 @@ function App() {
               >
                 Delete Account
               </button>
-              <button className="signOutButton green wide" onClick={() => signOut(true)}>
+              <button
+                className="signOutButton green wide"
+                onClick={() => signOut(true)}
+              >
                 Sign Out
               </button>
             </div>
@@ -928,8 +949,9 @@ function App() {
                                 <div className="backTriangle">{"<"}</div>
                                 <div>Back</div>
                               </div>
-                              <p>
-                                We just sent a verification code to the email registered with your account
+                              <p style={{ width: "85%" }}>
+                                We just sent a verification code to the email
+                                registered with your account
                               </p>
                               <br />
                               <label>Code:</label>

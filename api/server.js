@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const CryptoJS = require("crypto-js");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
+const apicache = require("apicache")
 
 const API_KEY = process.env.API_KEY;
 const SECRET_KEY = process.env.ENCRYPTION_KEY;
@@ -42,6 +43,10 @@ const UserSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", UserSchema);
+
+let cache = apicache.middleware
+
+app.use(cache('1 minute'))
 
 const limiter = rateLimit({
   windowMs: 30 * 1000, // 30 seconds
