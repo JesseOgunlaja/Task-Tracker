@@ -275,7 +275,7 @@ function App() {
         name: username
       })
     });
-    const data = res.json();
+    const data = await res.json();
     return data.then((res) => res.tasks);
   }
 
@@ -434,8 +434,7 @@ function App() {
     });
     if (res.status === 200) {
       const data = await res.json();
-      const tokenProvided = data.token;
-      setToken(tokenProvided);
+      setToken(data.then((res) => res.token))
       passwordBox.current.type = "password";
       // const FIRST_ENCRYPTION = CryptoJS.AES.encrypt(
       //   userId,
