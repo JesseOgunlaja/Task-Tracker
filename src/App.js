@@ -432,8 +432,8 @@ function App() {
         password: passwordBeingAdded,
       }),
     });
-    if (res.status === 200) {
-      const data = await res.json();
+    if (res.ok) {
+      const data = res.json();
       setToken(data.then((res) => res.token))
       passwordBox.current.type = "password";
       // const FIRST_ENCRYPTION = CryptoJS.AES.encrypt(
