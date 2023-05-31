@@ -7,7 +7,7 @@ import CryptoJS from "crypto-js";
 const jwt = require("jsrsasign");
 
 if (process.env.REACT_APP_GMAIL_PASSWORD) {
-  // disableReactDevTools();
+  disableReactDevTools();
 }
 
 function App() {
@@ -266,7 +266,7 @@ function App() {
                 const data = await response.json();
 
                 if (data.valid) {
-                  setUser(data.user.name);
+                  setUsername(data.user.name);
                   setToken(authToken);
                   setTasks(data.user.tasks);
                   setSignedIn(true);
