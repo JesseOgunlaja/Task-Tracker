@@ -268,7 +268,7 @@ function App() {
     const res = await fetch(`api/users/user`, {
       method: "POST",
       headers: {
-        authorization: `Bearer ${tokenPassed}`,
+        authorization: `Bearer ${tokenPassed || token}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
