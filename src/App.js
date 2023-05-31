@@ -8,7 +8,7 @@ import CryptoJS from "crypto-js";
 const jwt = require("jsrsasign");
 
 if (process.env.REACT_APP_DATA_ENCRYPTION1) {
-  // disableReactDevTools();
+  disableReactDevTools();
 }
 
 function App() {
@@ -95,6 +95,7 @@ function App() {
         authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
+        username: username,
         email: encryptedEmail,
       }),
     });
@@ -131,7 +132,7 @@ function App() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: username,
+        username: username,
       }),
     });
 
@@ -169,6 +170,7 @@ function App() {
         authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
+        username: username,
         tasks: encryptedTasks,
       }),
     });
@@ -197,7 +199,6 @@ function App() {
       });
       encryptedTasks.push(newTask);
 
-      
       await fetch(`api/Users`, {
         method: "PATCH",
         headers: {
@@ -205,7 +206,7 @@ function App() {
           authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          name: username,
+          username: username,
           tasks: encryptedTasks,
         }),
       });
@@ -241,6 +242,7 @@ function App() {
         authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
+        username: username,
         tasks: currentTasks,
       }),
     });
@@ -262,22 +264,22 @@ function App() {
       method: "POST",
       headers: {
         authorization: `Bearer ${tokenPassed || token}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: username
-      })
+        username: username,
+      }),
     });
     const data = await res.json();
-    const fetchedTasks = data.tasks
+    const fetchedTasks = data.tasks;
     const decryptedTasks = fetchedTasks.map((value) => {
       return {
         task: decryptString(value.task),
         date: decryptString(value.date),
-        reminder: value.reminder
-      }
-    })
-    return decryptedTasks
+        reminder: value.reminder,
+      };
+    });
+    return decryptedTasks;
   }
 
   async function checkIfSignedIn() {
@@ -286,29 +288,22 @@ function App() {
       .find((row) => row.startsWith("authToken="))
       ?.split("=")[1];
 
-    if (authToken) {
-      const decrypt1 = CryptoJS.AES.decrypt(
-        authToken,
-        stringSessionKey1
-      ).toString(CryptoJS.enc.Utf8);
-      const decrypt2 = CryptoJS.AES.decrypt(
-        decrypt1,
-        stringSessionKey2
-      ).toString(CryptoJS.enc.Utf8);
+      const usernameCookie = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("user="))
+      ?.split("=")[1];
 
-      
-
-      if (decrypt2 === "") {
-        deleteCookie("authToken");
-        window.location.reload();
-      }
-
-      const res = await fetch(`api/Users/${decrypt2}`, {
-        method: "GET",
+    if (authToken && username) {
+      const res = await fetch("/api/users/user", {
+        method: 'POST',
         headers: {
-          authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          authorization: `Bearer ${authToken}`
         },
-      });
+        body : JSON.stringify({
+          username: usernameCookie
+        })
+      })
 
       if (res.ok) {
         const data = await res.json();
@@ -353,12 +348,27 @@ function App() {
       adminPasswordBox.current.type = "password";
       addUserPassword.current.type = "password";
       addUserEmail.current.type = "password";
-      
+
+      const SECRET_KEY = ENCRYPTION_KEY;
+      const payload = {
+        apiKey: process.env.REACT_APP_API_KEY,
+        exp: Math.floor(Date.now() / 1000) + INTERVAL,
+      };
+      const header = { alg: "HS256", typ: "JWT" };
+      const sHeader = JSON.stringify(header);
+      const sPayload = JSON.stringify(payload);
+      const globalToken = jwt.jws.JWS.sign(
+        "HS256",
+        sHeader,
+        sPayload,
+        SECRET_KEY
+      );
+
       await fetch(`api/Users`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
-          authorization: `Bearer ${token}`,
+          authorization: `Bearer ${globalToken}`,
         },
         body: JSON.stringify({
           name: encryptString(nameBeingAdded),
@@ -397,11 +407,14 @@ function App() {
   }
 
   async function deleteAccount() {
-    await fetch(`api/Users`, {
-      method: "DELETE",
+    await fetch(`api/Users/delete`, {
+      method: "POST",
       headers: {
         authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify({
+        username: username
+      })
     });
     signOut();
   }
@@ -413,29 +426,22 @@ function App() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: username,
+        username: username,
         password: passwordBeingAdded,
       }),
     });
     if (res.ok) {
       const data = await res.json();
-      const tokenGiven = data.token
-      setToken(tokenGiven)
+      const tokenGiven = data.token;
+      setToken(tokenGiven);
       passwordBox.current.type = "password";
-      // const FIRST_ENCRYPTION = CryptoJS.AES.encrypt(
-      //   userId,
-      //   stringSessionKey1
-      // ).toString();
-      // const SECOND_ENCRYPTION = CryptoJS.AES.encrypt(
-      //   FIRST_ENCRYPTION,
-      //   stringSessionKey2
-      // ).toString();
-      // let currentDate = new Date();
-      // let expirationDate = new Date(
-      //   currentDate.getTime() + 7 * 24 * 60 * 60 * 1000
-      // ); // 7 days * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
-      // let expires = expirationDate.toUTCString();
-      // document.cookie = `authToken=${SECOND_ENCRYPTION}; expires=${expires}; path=/`;
+      let currentDate = new Date();
+      let expirationDate = new Date(
+        currentDate.getTime() + 7 * 24 * 60 * 60 * 1000
+      ); // 7 days * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
+      let expires = expirationDate.toUTCString();
+      document.cookie = `authToken=${tokenGiven}; expires=${expires}; path=/`;
+      document.cookie = `user=${username}; expires=${expires}; path=/`;
       setTasks(await fetchTasks(tokenGiven));
       setSignedIn(true);
     } else {
@@ -481,7 +487,6 @@ function App() {
       (await bcrypt.compare(oldPassword, decryptString(password))) ||
       oldPassword === ADMIN_PASSWORD
     ) {
-      
       await fetch(`api/Users`, {
         method: "PATCH",
         headers: {
@@ -489,6 +494,7 @@ function App() {
           authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
+          username: username,
           password: newPassword,
         }),
       });
@@ -630,12 +636,12 @@ function App() {
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
-    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+    const globalToken = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     await fetch(`/api/users/email`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
-        authorization: `Bearer ${token}`,
+        authorization: `Bearer ${globalToken}`,
       },
       body: JSON.stringify({
         verificationCode: encryptString(verifCode),
@@ -667,6 +673,7 @@ function App() {
         authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
+        username: username,
         password: passwordBeingReset,
       }),
     });
@@ -705,31 +712,34 @@ function App() {
 
   useEffect(() => {
     async function getEmail() {
-      // if (userId != undefined) {
-      //   const SECRET_KEY = ENCRYPTION_KEY;
-      //   const payload = {
-      //     apiKey: process.env.REACT_APP_API_KEY,
-      //     exp: Math.floor(Date.now() / 1000) + INTERVAL,
-      //   };
-      //   const header = { alg: "HS256", typ: "JWT" };
-      //   const sHeader = JSON.stringify(header);
-      //   const sPayload = JSON.stringify(payload);
-      //   const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-      //   setEmail(
-      //     decryptString(
-      //       (
-      //         await (
-      //           await fetch(`api/Users`, {
-      //             method: "GET",
-      //             headers: {
-      //               authorization: `Bearer ${token}`,
-      //             },
-      //           })
-      //         ).json()
-      //       ).email
-      //     )
-      //   );
-      // }
+      if (username != undefined) {
+        const SECRET_KEY = ENCRYPTION_KEY;
+        const payload = {
+          apiKey: process.env.REACT_APP_API_KEY,
+          exp: Math.floor(Date.now() / 1000) + INTERVAL,
+        };
+        const header = { alg: "HS256", typ: "JWT" };
+        const sHeader = JSON.stringify(header);
+        const sPayload = JSON.stringify(payload);
+        const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+        setEmail(
+          decryptString(
+            (
+              await (
+                await fetch(`api/User/users`, {
+                  method: "POST",
+                  headers: {
+                    authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({
+                    username: username,
+                  })
+                })
+              ).json()
+            ).email
+          )
+        );
+      }
     }
 
     getEmail();

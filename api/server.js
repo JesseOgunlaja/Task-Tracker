@@ -95,7 +95,7 @@ const authenticateJWTUser = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    if ((await User.findById(decoded.id)).name === req.body.name) {
+    if ((await User.findById(decoded.id)).name === req.body.username) {
       next();
     } else {
       return res.status(401).json({ message: "Invalid token"});
@@ -104,6 +104,15 @@ const authenticateJWTUser = async (req, res, next) => {
     return res.status(401).json({ message: "Invalid token"});
   }
 };
+
+app.get("/api/users",authenticateJWTGlobal, async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 // Get one user
 app.post("/api/users/user",authenticateJWTUser, async (req, res) => {
@@ -217,7 +226,7 @@ app.patch("/api/users",authenticateJWTUser, async (req, res) => {
 });
 
 // Delete a user
-app.delete("/api/users", async (req, res) => {
+app.post("/api/users/delete",authenticateJWTUser, async (req, res) => {
   const user = await User.findOne({ name: req.body.name });
   try {
     const deletedUser = await User.findOneAndDelete({ name: user.name });
