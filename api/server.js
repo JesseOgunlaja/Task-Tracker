@@ -131,6 +131,19 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
+app.get("/api/users/checkJWT", async (req,res) => {
+  const token = req.headers.authorization?.split(" ")[1]
+
+  const decoded = jwt.verify(token,SECRET_KEY)
+
+  if(decoded != null && await User.findById(decoded.id) != null) {
+    return res.status(200).json({valid: true, user: User.findById(decoded.id)})
+  }
+  else {
+    return res.status(400).json({valid: false})
+  }
+})
+
 app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
   const user = await User.findOne({ name: req.body.username });
 

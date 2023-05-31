@@ -3,17 +3,14 @@ import { useEffect, useState, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
-import bcrypt from "bcryptjs";
 import CryptoJS from "crypto-js";
 const jwt = require("jsrsasign");
 
-if (process.env.REACT_APP_DATA_ENCRYPTION1) {
-  disableReactDevTools();
+if (process.env.REACT_APP_GMAIL_PASSWORD) {
+  // disableReactDevTools();
 }
 
 function App() {
-  const INTERVAL = 1;
-  const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD;
   const DATA_ENCRYPTION_KEY1 = process.env.REACT_APP_DATA_ENCRYPTION1;
   const parsedDataKey1 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY1);
   const stringDataKey1 = CryptoJS.enc.Utf8.stringify(parsedDataKey1);
@@ -21,12 +18,6 @@ function App() {
   const parsedDataKey2 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY2);
   const stringDataKey2 = CryptoJS.enc.Utf8.stringify(parsedDataKey2);
   const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY;
-  const ENCRYPTION_SESSION_1 = process.env.REACT_APP_ENCRYPTION_SESSION_1;
-  const ENCRYPTION_SESSION_2 = process.env.REACT_APP_ENCRYPTION_SESSION_2;
-  const parsedSessionKey1 = CryptoJS.enc.Utf8.parse(ENCRYPTION_SESSION_1);
-  const stringSessionKey1 = CryptoJS.enc.Utf8.stringify(parsedSessionKey1);
-  const parsedSessionKey2 = CryptoJS.enc.Utf8.parse(ENCRYPTION_SESSION_2);
-  const stringSessionKey2 = CryptoJS.enc.Utf8.stringify(parsedSessionKey2);
 
   const newTaskTitle = useRef();
   const newTaskDate = useRef();
@@ -44,7 +35,6 @@ function App() {
   const usernameBox = useRef();
   const newEmailBox = useRef();
 
-  const [adminPasswordBeingAdded, setAdminPasswordBeingAdded] = useState("");
   const [username, setUsername] = useState("");
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -60,7 +50,6 @@ function App() {
   const [newPassword, setNewPassword] = useState("");
   const [emailBeingAdded, setEmailBeingAdded] = useState("");
   const [isForgettingPassword, setIsForgettingPassword] = useState(false);
-  const [email, setEmail] = useState("");
   const [codeBeingInputted, setCodeBeingInputted] = useState("");
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [passwordBeingReset, setPasswordBeingReset] = useState("");
@@ -271,28 +260,21 @@ function App() {
       .find((row) => row.startsWith("authToken="))
       ?.split("=")[1];
 
-    const usernameCookie = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("user="))
-      ?.split("=")[1];
-
-    if (authToken && usernameCookie) {
-      const res = await fetch("/api/users/user", {
-        method: "POST",
+    if (authToken) {
+      const res = await fetch("/api/users/checkJWT", {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({
-          username: usernameCookie,
-        }),
+        }
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        setUser(usernameCookie);
+      const data = await res.json()
+
+      if (data.valid) {
+        setUser(data.user.name);
         setToken(authToken)
-        setTasks(data.tasks);
+        setTasks(data.user.tasks);
         setSignedIn(true);
       } else if (res.status === 404) {
         deleteCookie("authToken");
@@ -706,30 +688,6 @@ function App() {
       setSignedIn(true);
     }
   }
-
-  useEffect(() => {
-    async function getEmail() {
-      if (username != undefined) {
-        setEmail(
-          (
-            await (
-              await fetch(`api/Users/user`, {
-                method: "POST",
-                headers: {
-                  authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  username: username,
-                }),
-              })
-            ).json()
-          ).email
-        );
-      }
-    }
-
-    getEmail();
-  }, [isForgettingPassword, isChangingData]);
 
   function deleteCookie(cookieName) {
     document.cookie =
