@@ -266,9 +266,10 @@ function App() {
 
   async function fetchTasks() {
     const res = await fetch(`api/Users`, {
-      methpd: "POST",
+      method: "POST",
       headers: {
         authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         name: username
