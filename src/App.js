@@ -160,7 +160,7 @@ function App() {
       },
       body: JSON.stringify({
         username: username,
-        tasks: encryptedTasks,
+        tasks: currentTasks,
       }),
     });
 
