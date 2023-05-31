@@ -52,7 +52,6 @@ function App() {
   const [tasks, setTasks] = useState(null);
   const [user, setUser] = useState("");
   const [signedIn, setSignedIn] = useState(false);
-  const [people, setPeople] = useState(null);
   const [nameBeingAdded, setNameBeingAdded] = useState("");
   const [userId, setUserId] = useState();
   const [isPuttingPassword, setIsPuttingPassword] = useState(false);
@@ -277,24 +276,6 @@ function App() {
     setTasks(await fetchTasks());
     setIsEditing(false);
   }
-
-  useEffect(() => {
-    async function getPeople() {
-      setPeople(await fetchPeople());
-    }
-
-    if (
-      !document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("authToken="))
-        ?.split("=")[1]
-    ) {
-      getPeople();
-      if(usernameBox.current) {
-        usernameBox.current.focus()
-      }
-    }
-  }, []);
 
   useEffect(() => {
     async function getTasks() {

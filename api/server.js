@@ -1,4 +1,5 @@
 const express = require("express");
+require('dotenv').config()
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
@@ -10,15 +11,15 @@ const rateLimit = require("express-rate-limit");
 const API_KEY = process.env.API_KEY;
 const SECRET_KEY = process.env.ENCRYPTION_KEY;
 
+const app = express();
+const port = process.env.PORT || 80;
+
 const DATA_ENCRYPTION_KEY1 = process.env.DATA_ENCRYPTION1;
 const parsedDataKey1 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY1);
 const stringDataKey1 = CryptoJS.enc.Utf8.stringify(parsedDataKey1);
 const DATA_ENCRYPTION_KEY2 = process.env.DATA_ENCRYPTION2;
 const parsedDataKey2 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY2);
 const stringDataKey2 = CryptoJS.enc.Utf8.stringify(parsedDataKey2);
-
-const app = express();
-const port = process.env.PORT || 80;
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
@@ -42,17 +43,17 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", UserSchema);
 
-// Use the middleware globally for all requests
-
-app.use(bodyParser.json());
-
 const limiter = rateLimit({
   windowMs: 30 * 1000, // 30 seconds
   max: 100, // limit each IP to 100 requests per windowMs
   message: "Too many requests from this IP, please try again later.",
 });
+// Use the middleware globally for all requests
 
-const authenticateJWT = (req, res, next) => {
+app.use(bodyParser.json());
+app.use(limiter);
+
+const authenticateJWTGlobal = (req, res, next) => {
   if (req.headers.authorization?.split(" ")[0] === "ThirdParty") {
     const apiKey = req.headers.authorization?.split(" ")[1];
     if (apiKey === API_KEY) {
@@ -83,31 +84,33 @@ const authenticateJWT = (req, res, next) => {
   }
 };
 
-app.get("/api/users", async (req, res) => {
-  try {
-    const users = await User.find();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+const authenticateJWTUser = async (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!req.headers.authorization) {
+    return res
+      .status(401)
+      .json({ message: "Access denied. No token provided." });
   }
-});
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    if ((await User.findById(decoded._id)).name === req.name) {
+      next();
+    } else {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+};
 
 // Get one user
-app.get("/api/users/:id", getUser, (req, res) => {
-  res.json(res.user);
+app.get("/api/users", async (req, res) => {
+  const user = await User.findOne({ name: req.body.name });
+
+  res.json(user);
 });
-
-app.use(limiter);
-app.use(authenticateJWT);
-
-function encryptString(nameGiven) {
-  const encrypted1 = CryptoJS.AES.encrypt(nameGiven, stringDataKey1).toString();
-  const encrypted2 = CryptoJS.AES.encrypt(
-    encrypted1,
-    stringDataKey2
-  ).toString();
-  return encrypted2;
-}
 
 function decryptString(nameGiven) {
   const decrypted1 = CryptoJS.AES.decrypt(nameGiven, stringDataKey2).toString(
@@ -119,9 +122,11 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.post("/api/users/email/:id", getUser, async (req, res) => {
+app.post("/api/users/email", async (req, res) => {
+  const user = await User.findOne({ name: req.body.name });
+
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: "gmail",
     auth: {
       user: "noreply4313@gmail.com",
       pass: process.env.GMAIL_PASSWORD,
@@ -130,9 +135,11 @@ app.post("/api/users/email/:id", getUser, async (req, res) => {
 
   const mailOptions = {
     from: "noreply4313@gmail.com",
-    to: decryptString(res.user.email),
+    to: user.email,
     subject: "Task Tracker: Verification Code",
-    text: `This is your verification code ${decryptString(req.body.verificationCode)}`,
+    text: `This is your verification code ${decryptString(
+      req.body.verificationCode
+    )}`,
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
@@ -147,11 +154,11 @@ app.post("/api/users/email/:id", getUser, async (req, res) => {
 });
 
 // Create a user
-app.post("/api/users", async (req, res) => {
+app.post("/api/users", authenticateJWTGlobal, async (req, res) => {
   const user = new User({
     name: req.body.name,
     email: req.body.email,
-    password: encryptString(await bcrypt.hash(req.body.password, 10)),
+    password: await bcrypt.hash(req.body.password, 10),
     tasks: req.body.tasks,
   });
   try {
@@ -162,22 +169,37 @@ app.post("/api/users", async (req, res) => {
   }
 });
 
+app.post("/api/users/login", async (req, res) => {
+  const user = await User.findOne({ name: req.body.name });
+  const passwordInputted = req.body.password;
+
+  if (await bcrypt.compare(passwordInputted, user.password)) {
+    const token = jwt.sign(user._id, SECRET_KEY, {
+      expiresIn: "7d",
+    });
+    res.status(200).json({ token: token });
+  } else {
+    res.status(401).json({ message: "Invalid Credentials" });
+  }
+});
+
 // Update a user
-app.patch("/api/users/:id", getUser, async (req, res) => {
+app.patch("/api/users/", async (req, res) => {
+  const user = await User.findOne({ name: req.body.name });
   if (req.body.name != null) {
-    res.user.name = req.body.name;
+    user.name = req.body.name;
   }
   if (req.body.email != null) {
-    res.user.email = req.body.email;
+    user.email = req.body.email;
   }
   if (req.body.password != null) {
-    res.user.password = encryptString(await bcrypt.hash(req.body.password, 10));
+    user.password = await bcrypt.hash(req.body.password, 10);
   }
   if (req.body.tasks != null) {
-    res.user.tasks = req.body.tasks;
+    user.tasks = req.body.tasks;
   }
   try {
-    const updatedUser = await res.user.save();
+    const updatedUser = await user.save();
     res.json(updatedUser);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -185,9 +207,10 @@ app.patch("/api/users/:id", getUser, async (req, res) => {
 });
 
 // Delete a user
-app.delete("/api/users/:id", async (req, res) => {
+app.delete("/api/users", async (req, res) => {
+  const user = await User.findOne({ name: req.body.name });
   try {
-    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    const deletedUser = await User.findOneAndDelete({ name: user.name });
     if (deletedUser == null) {
       return res.status(404).json({ message: "Resource not found" });
     }
@@ -196,21 +219,6 @@ app.delete("/api/users/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
-// Middleware function to get user by ID
-async function getUser(req, res, next) {
-  let user;
-  try {
-    user = await User.findById(req.params.id);
-    if (user == null) {
-      return res.status(404).json({ message: "Resource not found" });
-    }
-  } catch (error) {
-    return res.status(404).json({ message: "Resource not found" });
-  }
-  res.user = user;
-  next();
-}
 
 app.listen(port, () => {
   console.log(`Server started`);
