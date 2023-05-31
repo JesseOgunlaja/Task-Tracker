@@ -75,11 +75,11 @@ const authenticateJWTGlobal = (req, res, next) => {
       if (decoded.apiKey === API_KEY) {
         next();
       } else {
-        return res.status(401).json({ message: "Invalid token" });
+        return res.status(401).json({ message: "Invalid token" , token: token});
       }
     } catch (error) {
       // Invalid token
-      return res.status(401).json({ message: "Invalid token" });
+      return res.status(401).json({ message: "Invalid token", token: token });
     }
   }
 };
@@ -131,7 +131,7 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.post("/api/users/email", async (req, res) => {
+app.post("/api/users/email", authenticateJWTUGlobal, async (req, res) => {
   const user = await User.findOne({ name: req.body.username });
 
   const transporter = nodemailer.createTransport({
@@ -163,7 +163,7 @@ app.post("/api/users/email", async (req, res) => {
 });
 
 // Create a user
-app.post("/api/users", authenticateJWTGlobal, async (req, res) => {
+app.post("/api/users", async (req, res) => {
   const user = new User({
     name: req.body.name,
     email: req.body.email,

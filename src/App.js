@@ -113,31 +113,23 @@ function App() {
     return encrypted2;
   }
 
-  function decryptString(nameGiven) {
-    const decrypted1 = CryptoJS.AES.decrypt(nameGiven, stringDataKey2).toString(
-      CryptoJS.enc.Utf8
-    );
-    const decrypted2 = CryptoJS.AES.decrypt(
-      decrypted1,
-      stringDataKey1
-    ).toString(CryptoJS.enc.Utf8);
-    return decrypted2;
-  }
-
   async function signInUsername() {
-    const res = await fetch("/api/users/loginName", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: username,
+    const res = await toast.promise(
+      fetch("/api/users/loginName", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+        })
       }),
-    });
-
-    if (res.status === 400) {
-      error("User not found");
-    }
+      {
+        pending: 'Loading',
+        success: 'Success',
+        error: 'User not found'
+      }
+    )
     if (res.status === 200) {
       signIn(username);
     }
@@ -319,26 +311,10 @@ function App() {
       addUserPassword.current.type = "password";
       addUserEmail.current.type = "password";
 
-      const SECRET_KEY = ENCRYPTION_KEY;
-      const payload = {
-        apiKey: process.env.REACT_APP_API_KEY,
-        exp: Math.floor(Date.now() / 1000) + INTERVAL,
-      };
-      const header = { alg: "HS256", typ: "JWT" };
-      const sHeader = JSON.stringify(header);
-      const sPayload = JSON.stringify(payload);
-      const globalToken = jwt.jws.JWS.sign(
-        "HS256",
-        sHeader,
-        sPayload,
-        SECRET_KEY
-      );
-
       await fetch(`api/Users`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
-          authorization: `Bearer ${globalToken}`,
         },
         body: JSON.stringify({
           name: nameBeingAdded,
@@ -355,7 +331,6 @@ function App() {
     if (eraseUserName === false) {
       setNewEmail("");
       setDataBeingChanged("");
-      setAdminPasswordBeingAdded("");
       deleteCookie("authToken");
       deleteCookie("user");
       setEmailBeingAdded("");
@@ -378,7 +353,6 @@ function App() {
     } else {
       setNewEmail("");
       setDataBeingChanged("");
-      setAdminPasswordBeingAdded("");
       deleteCookie("authToken");
       deleteCookie("user");
       setEmailBeingAdded("");
@@ -534,6 +508,9 @@ function App() {
 
   window.onkeyup = function (e) {
     if (e.code === "Enter") {
+      if(addUserPassword.current === document.activeElement) {
+        addUser()
+      }
       if (isPuttingPassword && passwordBox.current === document.activeElement) {
         submitPassword();
       }
@@ -691,7 +668,6 @@ function App() {
       setSignedIn(true);
     }
     if (page === "addingUser") {
-      setAdminPasswordBeingAdded("");
       setEmailBeingAdded("");
       setNameBeingAdded("");
       setPasswordBeingAdded("");
@@ -942,20 +918,6 @@ function App() {
                   <div
                     className="showButton"
                     onClick={() => showPassword("newUserPassword")}
-                  >
-                    Show
-                  </div>
-                  <label className="addUserName">Admin Password:</label>
-                  <input
-                    ref={adminPasswordBox}
-                    value={adminPasswordBeingAdded}
-                    onChange={(e) => setAdminPasswordBeingAdded(e.target.value)}
-                    className="addUserInput show"
-                    type="password"
-                  />
-                  <div
-                    className="showButton"
-                    onClick={() => showPassword("adminPassword")}
                   >
                     Show
                   </div>
