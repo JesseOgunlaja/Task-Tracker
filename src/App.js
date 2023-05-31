@@ -114,8 +114,8 @@ function App() {
   }
 
   async function signInUsername() {
-    function makeRequest() {
-      fetch("/api/users/loginName", {
+    const res = await toast.promise(
+      await fetch("/api/users/loginName", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -123,13 +123,13 @@ function App() {
         body: JSON.stringify({
           username: username,
         }),
-      });
-    }
-    const res = await toast.promise(makeRequest(), {
-      pending: "Loading",
-      success: "Success",
-      error: "User not found",
-    });
+      }),
+      {
+        pending: "Loading",
+        success: "Success",
+        error: "User not found",
+      }
+    );
     if (res.status === 200) {
       signIn(username);
     }
@@ -390,8 +390,8 @@ function App() {
   }
 
   async function submitPassword() {
-    function makeRequest() {
-      return fetch(`api/Users/loginPassword`, {
+    const res = await toast.promise(
+      await fetch("/api/users/loginPassword", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -400,13 +400,13 @@ function App() {
           username: username,
           password: passwordBeingAdded,
         }),
-      });
-    }
-    const res = await toast.promise(makeRequest(), {
-      pending: "Loading",
-      success: "Success",
-      error: "User not found",
-    });
+      }),
+      {
+        pending: "Loading",
+        success: "Success",
+        error: "User not found",
+      }
+    );
     if (res.ok) {
       const data = await res.json();
       const tokenGiven = data.token;
@@ -450,24 +450,23 @@ function App() {
     oldPasswordBox.current.type = "password";
     newPasswordBox.current.type = "password";
 
-    function makeRequest() {
-      return fetch("api/users/loginPassword", {
+    const res = await toast.promise(
+      await fetch("/api/users/loginPassword", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           username: username,
-          password: oldPassword,
+          password: passwordBeingAdded,
         }),
-      });
-    }
-
-    const res = await toast.promise(makeRequest(), {
-      pending: "Loading",
-      success: "Success",
-      error: "User not found",
-    });
+      }),
+      {
+        pending: "Loading",
+        success: "Success",
+        error: "User not found",
+      }
+    );
 
     if (res.ok) {
       await fetch(`api/Users`, {
