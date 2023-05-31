@@ -265,7 +265,7 @@ function App() {
   }, [user]);
 
   async function fetchTasks() {
-    const res = await fetch(`api/Users`, {
+    const res = await fetch(`api/users/user`, {
       method: "POST",
       headers: {
         authorization: `Bearer ${token}`,
@@ -433,8 +433,9 @@ function App() {
       }),
     });
     if (res.ok) {
-      const data = res.json();
-      setToken(data.then((res) => res.token))
+      const data = await res.json();
+      const tokenGiven = data.token
+      setToken(tokenGiven)
       passwordBox.current.type = "password";
       // const FIRST_ENCRYPTION = CryptoJS.AES.encrypt(
       //   userId,
