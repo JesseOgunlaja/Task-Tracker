@@ -101,7 +101,7 @@ const authenticateJWTUser = async (req, res, next) => {
       return res.status(401).json({ message: "Invalid token", token: decoded });
     }
   } catch (error) {
-    return res.status(401).json({ message: "Invalid token", token: decoded });
+    return res.status(401).json({ message: "Invalid token", token: jwt.verify(token, SECRET_KEY) });
   }
 };
 
