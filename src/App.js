@@ -114,7 +114,7 @@ function App() {
   }
 
   async function signInUsername() {
-    const res = await toast.promise(
+    function makeRequest() {
       fetch("/api/users/loginName", {
         method: "POST",
         headers: {
@@ -122,14 +122,14 @@ function App() {
         },
         body: JSON.stringify({
           username: username,
-        })
-      }),
-      {
-        pending: 'Loading',
-        success: 'Success',
-        error: 'User not found'
-      }
-    )
+        }),
+      });
+    }
+    const res = await toast.promise(makeRequest(), {
+      pending: "Loading",
+      success: "Success",
+      error: "User not found",
+    });
     if (res.status === 200) {
       signIn(username);
     }
@@ -293,7 +293,7 @@ function App() {
   }
 
   useEffect(() => {
-    // checkIfSignedIn();
+    checkIfSignedIn();
   }, []);
 
   async function signIn(person, id) {
@@ -390,15 +390,22 @@ function App() {
   }
 
   async function submitPassword() {
-    const res = await fetch(`api/Users/loginPassword`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: username,
-        password: passwordBeingAdded,
-      }),
+    function makeRequest() {
+      return fetch(`api/Users/loginPassword`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+          password: passwordBeingAdded,
+        }),
+      });
+    }
+    const res = await toast.promise(makeRequest(), {
+      pending: "Loading",
+      success: "Success",
+      error: "User not found",
     });
     if (res.ok) {
       const data = await res.json();
@@ -443,15 +450,23 @@ function App() {
     oldPasswordBox.current.type = "password";
     newPasswordBox.current.type = "password";
 
-    const res = await fetch("api/users/loginPassword", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: username,
-        password: oldPassword,
-      }),
+    function makeRequest() {
+      return fetch("api/users/loginPassword", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+          password: oldPassword,
+        }),
+      });
+    }
+
+    const res = await toast.promise(makeRequest(), {
+      pending: "Loading",
+      success: "Success",
+      error: "User not found",
     });
 
     if (res.ok) {
@@ -507,8 +522,8 @@ function App() {
 
   window.onkeyup = function (e) {
     if (e.code === "Enter") {
-      if(addUserPassword.current === document.activeElement) {
-        addUser()
+      if (addUserPassword.current === document.activeElement) {
+        addUser();
       }
       if (isPuttingPassword && passwordBox.current === document.activeElement) {
         submitPassword();
@@ -621,6 +636,7 @@ function App() {
       },
       body: JSON.stringify({
         verificationCode: encryptString(verifCode),
+        username: username,
       }),
     });
   }
@@ -688,15 +704,6 @@ function App() {
   useEffect(() => {
     async function getEmail() {
       if (username != undefined) {
-        const SECRET_KEY = ENCRYPTION_KEY;
-        const payload = {
-          apiKey: process.env.REACT_APP_API_KEY,
-          exp: Math.floor(Date.now() / 1000) + INTERVAL,
-        };
-        const header = { alg: "HS256", typ: "JWT" };
-        const sHeader = JSON.stringify(header);
-        const sPayload = JSON.stringify(payload);
-        const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
         setEmail(
           (
             await (
@@ -913,6 +920,7 @@ function App() {
                     onChange={(e) => setPasswordBeingAdded(e.target.value)}
                     className="addUserInput show"
                     type="password"
+                    style={{ marginBottom: "10px" }}
                   />
                   <div
                     className="showButton"
