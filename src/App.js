@@ -356,7 +356,6 @@ function App() {
     setDataBeingChanged("");
     setAdminPasswordBeingAdded("");
     deleteCookie("authToken");
-    setUsername("");
     setEmailBeingAdded("");
     setPasswordBeingAdded("");
     setNewPassword("");
