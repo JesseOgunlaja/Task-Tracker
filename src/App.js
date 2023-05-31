@@ -72,7 +72,7 @@ function App() {
   const [verificationCode, setVerificationCode] = useState(makeRandomString(8));
   const [token, setToken] = useState();
 
-  const error = (text) =>{
+  const error = (text) => {
     toast.error(text, {
       position: "top-right",
       autoClose: 5000,
@@ -83,7 +83,7 @@ function App() {
       progress: undefined,
       theme: "dark",
     });
-  }
+  };
 
   async function completeChangeEmail() {
     await fetch(`api/Users`, {
@@ -260,15 +260,7 @@ function App() {
       }),
     });
     const data = await res.json();
-    const fetchedTasks = data.tasks;
-    const decryptedTasks = fetchedTasks.map((value) => {
-      return {
-        task: decryptString(value.task),
-        date: decryptString(value.date),
-        reminder: value.reminder,
-      };
-    });
-    return decryptedTasks;
+    return data.tasks;
   }
 
   async function checkIfSignedIn() {
@@ -277,39 +269,28 @@ function App() {
       .find((row) => row.startsWith("authToken="))
       ?.split("=")[1];
 
-      const usernameCookie = document.cookie
+    const usernameCookie = document.cookie
       .split("; ")
       .find((row) => row.startsWith("user="))
       ?.split("=")[1];
 
     if (authToken && username) {
       const res = await fetch("/api/users/user", {
-        method: 'POST',
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${authToken}`
+          authorization: `Bearer ${authToken}`,
         },
-        body : JSON.stringify({
-          username: usernameCookie
-        })
-      })
+        body: JSON.stringify({
+          username: usernameCookie,
+        }),
+      });
 
       if (res.ok) {
         const data = await res.json();
-        setUser(decryptString(await data.name));
+        setUser(await data.name);
         setSignedIn(true);
-        setTasks(
-          (await data.tasks).map((task) => {
-            const newTask = decryptString(task.task);
-            const newDate = decryptString(task.date);
-            return {
-              reminder: task.reminder,
-              _id: task._id,
-              task: newTask,
-              date: newDate,
-            };
-          })
-        );
+        setTasks(data.tasks);
       } else if (res.status === 404) {
         deleteCookie("authToken");
         window.location.reload();
@@ -402,8 +383,8 @@ function App() {
         authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        username: username
-      })
+        username: username,
+      }),
     });
     signOut();
   }
@@ -459,23 +440,21 @@ function App() {
       error("Value required");
       return;
     }
-
-    let password = (
-      await (
-        await fetch(`api/Users`, {
-          method: "GET",
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        })
-      ).json()
-    ).password;
     oldPasswordBox.current.type = "password";
     newPasswordBox.current.type = "password";
-    if (
-      (await bcrypt.compare(oldPassword, decryptString(password))) ||
-      oldPassword === ADMIN_PASSWORD
-    ) {
+
+    const res = await fetch("api/users/loginPassword", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username,
+        password: oldPassword,
+      }),
+    });
+
+    if (res.ok) {
       await fetch(`api/Users`, {
         method: "PATCH",
         headers: {
@@ -625,7 +604,12 @@ function App() {
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
-    const globalToken = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+    const globalToken = jwt.jws.JWS.sign(
+      "HS256",
+      sHeader,
+      sPayload,
+      SECRET_KEY
+    );
     await fetch(`/api/users/email`, {
       method: "POST",
       headers: {
@@ -712,21 +696,19 @@ function App() {
         const sPayload = JSON.stringify(payload);
         const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
         setEmail(
-          decryptString(
-            (
-              await (
-                await fetch(`api/User/users`, {
-                  method: "POST",
-                  headers: {
-                    authorization: `Bearer ${token}`,
-                  },
-                  body: JSON.stringify({
-                    username: username,
-                  })
-                })
-              ).json()
-            ).email
-          )
+          (
+            await (
+              await fetch(`api/User/users`, {
+                method: "POST",
+                headers: {
+                  authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  username: username,
+                }),
+              })
+            ).json()
+          ).email
         );
       }
     }
