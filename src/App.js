@@ -351,34 +351,62 @@ function App() {
     }
   }
 
-  async function signOut() {
-    setNewEmail("");
-    setDataBeingChanged("");
-    setAdminPasswordBeingAdded("");
-    deleteCookie("authToken");
-    setEmailBeingAdded("");
-    setPasswordBeingAdded("");
-    setNewPassword("");
-    setOldPassword("");
-    setIsForgettingPassword(false);
-    setPasswordBeingReset("");
-    setPasswordBeingAdded("");
-    setIsResettingPassword(false);
-    setVerificationCode(makeRandomString(8));
-    setCodeBeingInputted("");
-    setIsChangingData(false);
-    setNameBeingAdded("");
-    setIsAdding(false);
-    setIsAddingUser(false);
-    setIsEditing(false);
-    setIsPuttingPassword(false);
-    setSignedIn(false);
+  async function signOut(eraseUserName) {
+    if (eraseUserName === false) {
+      setNewEmail("");
+      setDataBeingChanged("");
+      setAdminPasswordBeingAdded("");
+      deleteCookie("authToken");
+      deleteCookie("user");
+      setEmailBeingAdded("");
+      setPasswordBeingAdded("");
+      setNewPassword("");
+      setOldPassword("");
+      setIsForgettingPassword(false);
+      setPasswordBeingReset("");
+      setPasswordBeingAdded("");
+      setIsResettingPassword(false);
+      setVerificationCode(makeRandomString(8));
+      setCodeBeingInputted("");
+      setIsChangingData(false);
+      setNameBeingAdded("");
+      setIsAdding(false);
+      setIsAddingUser(false);
+      setIsEditing(false);
+      setIsPuttingPassword(false);
+      setSignedIn(false);
+    } else {
+      setNewEmail("");
+      setDataBeingChanged("");
+      setAdminPasswordBeingAdded("");
+      deleteCookie("authToken");
+      deleteCookie("user");
+      setEmailBeingAdded("");
+      setPasswordBeingAdded("");
+      setNewPassword("");
+      setOldPassword("");
+      setUsername("");
+      setIsForgettingPassword(false);
+      setPasswordBeingReset("");
+      setPasswordBeingAdded("");
+      setIsResettingPassword(false);
+      setVerificationCode(makeRandomString(8));
+      setCodeBeingInputted("");
+      setIsChangingData(false);
+      setNameBeingAdded("");
+      setIsAdding(false);
+      setIsAddingUser(false);
+      setIsEditing(false);
+      setIsPuttingPassword(false);
+      setSignedIn(false);
+    }
   }
 
   async function deleteAccount() {
     await fetch(`api/Users/delete`, {
       method: "POST",
       headers: {
+        "Content-Type": "application/json",
         authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
@@ -697,7 +725,7 @@ function App() {
         setEmail(
           (
             await (
-              await fetch(`api/User/users`, {
+              await fetch(`api/Users/user`, {
                 method: "POST",
                 headers: {
                   authorization: `Bearer ${token}`,
@@ -726,14 +754,13 @@ function App() {
         <ToastContainer
           position="top-right"
           autoClose={5000}
-          limit={5}
           hideProgressBar={false}
           newestOnTop={false}
           closeOnClick
           rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
+          pauseOnFocusLoss={false}
+          draggable={false}
+          pauseOnHover={false}
           theme="dark"
         />
         {signedIn ? (
