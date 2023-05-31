@@ -290,9 +290,10 @@ function App() {
 
       if (res.ok) {
         const data = await res.json();
-        setUser(await data.name);
-        setSignedIn(true);
+        setUser(usernameCookie);
+        setToken(authToken)
         setTasks(data.tasks);
+        setSignedIn(true);
       } else if (res.status === 404) {
         deleteCookie("authToken");
         window.location.reload();
