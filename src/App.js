@@ -307,7 +307,6 @@ function App() {
     } else if (passwordBeingAdded === "") {
       error("Password required");
     } else {
-      adminPasswordBox.current.type = "password";
       addUserPassword.current.type = "password";
       addUserEmail.current.type = "password";
 

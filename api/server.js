@@ -131,7 +131,7 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.post("/api/users/email", authenticateJWTUGlobal, async (req, res) => {
+app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
   const user = await User.findOne({ name: req.body.username });
 
   const transporter = nodemailer.createTransport({
