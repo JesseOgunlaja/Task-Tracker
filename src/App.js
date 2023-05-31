@@ -128,7 +128,7 @@ function App() {
           .then((response) => {
             if (response.ok) {
               console.log("ok");
-      signIn(username);
+              signIn(username);
               resolve(response.json());
             } else {
               reject(new Error(`HTTP error: ${response.status}`));
@@ -402,8 +402,8 @@ function App() {
 
   async function submitPassword() {
     const res = await toast.promise(
-      new Promise( async(resolve, reject) => {
-        const res2 = await fetch("/api/users/loginPassword", {
+      new Promise(async (resolve, reject) => {
+        await fetch("/api/users/loginPassword", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -416,19 +416,19 @@ function App() {
           .then(async (response) => {
             if (response.ok) {
               console.log("ok");
-      const data = await res2.json();
-      const tokenGiven = data.token;
-      setToken(tokenGiven);
-      passwordBox.current.type = "password";
-      let currentDate = new Date();
-      let expirationDate = new Date(
-        currentDate.getTime() + 7 * 24 * 60 * 60 * 1000
-      ); // 7 days * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
-      let expires = expirationDate.toUTCString();
-      document.cookie = `authToken=${tokenGiven}; expires=${expires}; path=/`;
-      document.cookie = `user=${username}; expires=${expires}; path=/`;
-      setTasks(await fetchTasks(tokenGiven));
-      setSignedIn(true);
+              const data = await response.json();
+              const tokenGiven = data.token;
+              setToken(tokenGiven);
+              passwordBox.current.type = "password";
+              let currentDate = new Date();
+              let expirationDate = new Date(
+                currentDate.getTime() + 7 * 24 * 60 * 60 * 1000
+              ); // 7 days * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
+              let expires = expirationDate.toUTCString();
+              document.cookie = `authToken=${tokenGiven}; expires=${expires}; path=/`;
+              document.cookie = `user=${username}; expires=${expires}; path=/`;
+              setTasks(await fetchTasks(tokenGiven));
+              setSignedIn(true);
               resolve(response.json());
             } else {
               reject(new Error(`HTTP error: ${response.status}`));
@@ -441,7 +441,7 @@ function App() {
       {
         pending: "Loading",
         success: "Success",
-        error: "User not found",
+        error: "Incorrect Password",
       }
     );
   }
@@ -509,7 +509,7 @@ function App() {
       {
         pending: "Loading",
         success: "Success",
-        error: "User not found",
+        error: "Incorrect Password",
       }
     );
   }
