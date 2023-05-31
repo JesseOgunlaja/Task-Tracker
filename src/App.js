@@ -1,4 +1,4 @@
-import { disableReactDevTools } from '@fvilers/disable-react-devtools';
+import { disableReactDevTools } from "@fvilers/disable-react-devtools";
 import { useEffect, useState, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -69,8 +69,8 @@ function App() {
   const [editedTaskReminder, setEditedTaskReminder] = useState();
   const [dataBeingChanged, setDataBeingChanged] = useState("");
   const [newEmail, setNewEmail] = useState("");
-  const [verificationCode,setVerificationCode] = useState(makeRandomString(8))
-  const [token,setToken] = useState()
+  const [verificationCode, setVerificationCode] = useState(makeRandomString(8));
+  const [token, setToken] = useState();
 
   const error = (text) =>
     toast.error(text, {
@@ -87,7 +87,7 @@ function App() {
   async function completeChangeEmail() {
     const encryptedEmail = encryptString(newEmail);
     back("changeEmail");
-    
+
     await fetch(`api/Users`, {
       method: "PATCH",
       headers: {
@@ -126,19 +126,19 @@ function App() {
 
   async function signInUsername() {
     const res = await fetch("/api/users/loginName", {
-      method: 'POST',
+      method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: username
-      })
-    })
+        name: username,
+      }),
+    });
 
-    if(res.status === 400) {
-      error("User not found")
+    if (res.status === 400) {
+      error("User not found");
     }
-    if(res.status === 200) {
+    if (res.status === 200) {
       signIn(username);
     }
   }
@@ -162,7 +162,6 @@ function App() {
     });
     encryptedTasks.splice(index, 1);
 
-    
     await fetch(`api/Users`, {
       method: "PATCH",
       headers: {
@@ -241,7 +240,7 @@ function App() {
 
     const currentTasks = [...tasks];
     currentTasks[editIndex.current] = updatedTask;
-    
+
     await fetch(`api/Users`, {
       method: "PATCH",
       headers: {
@@ -266,7 +265,6 @@ function App() {
   }, [user]);
 
   async function fetchTasks() {
-    
     const res = await fetch(`api/Users`, {
       methpd: "GET",
       headers: {
@@ -274,18 +272,7 @@ function App() {
       },
     });
     const data = res.json();
-    return data.then((res) =>
-      res.tasks.map((task) => {
-        const newTask = decryptString(task.task);
-        const newDate = decryptString(task.date);
-        return {
-          reminder: task.reminder,
-          _id: task._id,
-          task: newTask,
-          date: newDate,
-        };
-      })
-    );
+    return data.then((res) => res.tasks);
   }
 
   async function checkIfSignedIn() {
@@ -325,7 +312,6 @@ function App() {
           authorization: `Bearer ${token}`,
         },
       });
-
 
       if (res.ok) {
         const data = await res.json();
@@ -406,11 +392,11 @@ function App() {
     setPasswordBeingAdded("");
     setNewPassword("");
     setOldPassword("");
-    setIsForgettingPassword(false)
+    setIsForgettingPassword(false);
     setPasswordBeingReset("");
     setPasswordBeingAdded("");
     setIsResettingPassword(false);
-    setVerificationCode(makeRandomString(8))
+    setVerificationCode(makeRandomString(8));
     setCodeBeingInputted("");
     setIsChangingData(false);
     setNameBeingAdded("");
@@ -422,7 +408,6 @@ function App() {
   }
 
   async function deleteAccount() {
-    
     await fetch(`api/Users`, {
       method: "DELETE",
       headers: {
@@ -433,20 +418,20 @@ function App() {
   }
 
   async function submitPassword() {
-        const res = await fetch(`api/Users/loginPassword`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            name: username,
-            password: passwordBeingAdded
-          })
-        })
+    const res = await fetch(`api/Users/loginPassword`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: username,
+        password: passwordBeingAdded,
+      }),
+    });
     if (res.status === 200) {
       const data = await res.json();
       const tokenProvided = data.token;
-      setToken(tokenProvided)
+      setToken(tokenProvided);
       passwordBox.current.type = "password";
       // const FIRST_ENCRYPTION = CryptoJS.AES.encrypt(
       //   userId,
@@ -462,9 +447,9 @@ function App() {
       // ); // 7 days * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
       // let expires = expirationDate.toUTCString();
       // document.cookie = `authToken=${SECOND_ENCRYPTION}; expires=${expires}; path=/`;
+      setTasks(await fetchTasks());
       setSignedIn(true);
-    }
-    else {
+    } else {
       error("Incorrect password");
     }
   }
@@ -490,7 +475,7 @@ function App() {
       error("Value required");
       return;
     }
-    
+
     let password = (
       await (
         await fetch(`api/Users`, {
@@ -504,7 +489,7 @@ function App() {
     oldPasswordBox.current.type = "password";
     newPasswordBox.current.type = "password";
     if (
-      await bcrypt.compare(oldPassword, decryptString(password)) ||
+      (await bcrypt.compare(oldPassword, decryptString(password))) ||
       oldPassword === ADMIN_PASSWORD
     ) {
       const SECRET_KEY = ENCRYPTION_KEY;
@@ -565,7 +550,6 @@ function App() {
     }
   }, [isForgettingPassword]);
 
-
   window.onkeyup = function (e) {
     if (e.code === "Enter") {
       if (isPuttingPassword && passwordBox.current === document.activeElement) {
@@ -589,8 +573,8 @@ function App() {
       if (newEmailBox.current === document.activeElement) {
         completeChangeEmail();
       }
-      if(codeBeingInputtedBox.current === document.activeElement) {
-        submitVerificationCode()
+      if (codeBeingInputtedBox.current === document.activeElement) {
+        submitVerificationCode();
       }
     }
   };
@@ -641,8 +625,9 @@ function App() {
   }
 
   function makeRandomString(length) {
-    let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = "";
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     const charactersLength = characters.length;
     let counter = 0;
     while (counter < length) {
@@ -650,12 +635,12 @@ function App() {
       counter += 1;
     }
     return result;
-}
+  }
 
   async function forgotPassword() {
-    const verifCode = makeRandomString(8)
-    setVerificationCode(verifCode)
-    setIsForgettingPassword(true);    
+    const verifCode = makeRandomString(8);
+    setVerificationCode(verifCode);
+    setIsForgettingPassword(true);
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
       apiKey: process.env.REACT_APP_API_KEY,
@@ -672,9 +657,9 @@ function App() {
         authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        verificationCode: encryptString(verifCode)
-      })
-    })
+        verificationCode: encryptString(verifCode),
+      }),
+    });
   }
 
   function submitVerificationCode() {
@@ -1008,7 +993,7 @@ function App() {
                           />
                           <div
                             className="showButton"
-                            style={{marginBottom: "10px"}}
+                            style={{ marginBottom: "10px" }}
                             onClick={() => showPassword("resetPassword")}
                           >
                             Show
@@ -1044,7 +1029,7 @@ function App() {
                                 }
                                 type="text"
                                 className="addUserInput"
-                                style={{"marginBottom": "10px"}}
+                                style={{ marginBottom: "10px" }}
                               />
                               <button
                                 className="signOutButton wide"
@@ -1191,22 +1176,22 @@ function App() {
                             </button>
                           </div>
                           <div className="signInUsername">
-                              <div className="">
-                                <label>Username</label>
-                                <input
-                                  value={username}
-                                  ref={usernameBox}
-                                  onChange={(e) => setUsername(e.target.value)}
-                                  className="addUserInput"
-                                  type="text"
-                                />
-                                <button
-                                  className="submitPassword"
-                                  onClick={signInUsername}
-                                >
-                                  Sign in
-                                </button>
-                              </div>
+                            <div className="">
+                              <label>Username</label>
+                              <input
+                                value={username}
+                                ref={usernameBox}
+                                onChange={(e) => setUsername(e.target.value)}
+                                className="addUserInput"
+                                type="text"
+                              />
+                              <button
+                                className="submitPassword"
+                                onClick={signInUsername}
+                              >
+                                Sign in
+                              </button>
+                            </div>
                           </div>
                         </>
                       )}
