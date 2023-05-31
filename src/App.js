@@ -338,52 +338,30 @@ function App() {
   }
 
   async function signOut(eraseUserName) {
-    if (eraseUserName === false) {
-      setNewEmail("");
-      setDataBeingChanged("");
-      deleteCookie("authToken");
-      deleteCookie("user");
-      setEmailBeingAdded("");
-      setPasswordBeingAdded("");
-      setNewPassword("");
-      setOldPassword("");
-      setIsForgettingPassword(false);
-      setPasswordBeingReset("");
-      setPasswordBeingAdded("");
-      setIsResettingPassword(false);
-      setVerificationCode(makeRandomString(8));
-      setCodeBeingInputted("");
-      setIsChangingData(false);
-      setNameBeingAdded("");
-      setIsAdding(false);
-      setIsAddingUser(false);
-      setIsEditing(false);
-      setIsPuttingPassword(false);
-      setSignedIn(false);
-    } else {
-      setNewEmail("");
-      setDataBeingChanged("");
-      deleteCookie("authToken");
-      deleteCookie("user");
-      setEmailBeingAdded("");
-      setPasswordBeingAdded("");
-      setNewPassword("");
-      setOldPassword("");
+    setNewEmail("");
+    setDataBeingChanged("");
+    deleteCookie("authToken");
+    deleteCookie("user");
+    setEmailBeingAdded("");
+    setPasswordBeingAdded("");
+    setNewPassword("");
+    setOldPassword("");
+    if(eraseUserName === false) {
       setUsername("");
-      setIsForgettingPassword(false);
-      setPasswordBeingReset("");
-      setPasswordBeingAdded("");
-      setIsResettingPassword(false);
-      setVerificationCode(makeRandomString(8));
-      setCodeBeingInputted("");
-      setIsChangingData(false);
-      setNameBeingAdded("");
-      setIsAdding(false);
-      setIsAddingUser(false);
-      setIsEditing(false);
-      setIsPuttingPassword(false);
-      setSignedIn(false);
     }
+    setIsForgettingPassword(false);
+    setPasswordBeingReset("");
+    setPasswordBeingAdded("");
+    setIsResettingPassword(false);
+    setVerificationCode(makeRandomString(8));
+    setCodeBeingInputted("");
+    setIsChangingData(false);
+    setNameBeingAdded("");
+    setIsAdding(false);
+    setIsAddingUser(false);
+    setIsEditing(false);
+    setIsPuttingPassword(false);
+    setSignedIn(false);
   }
 
   async function deleteAccount() {
@@ -429,7 +407,7 @@ function App() {
               document.cookie = `user=${username}; expires=${expires}; path=/`;
               setTasks(await fetchTasks(tokenGiven));
               setSignedIn(true);
-              resolve(response.json());
+              resolve(data);
             } else {
               reject(new Error(`HTTP error: ${response.status}`));
             }
@@ -496,7 +474,7 @@ function App() {
                   password: newPassword,
                 }),
               });
-              signOut();
+              signOut(false);
               resolve(response.json());
             } else {
               reject(new Error(`HTTP error: ${response.status}`));
