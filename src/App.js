@@ -230,15 +230,6 @@ function App() {
     setIsEditing(false);
   }
 
-  useEffect(() => {
-    async function getTasks() {
-      if (user !== "") {
-        setTasks(await fetchTasks());
-      }
-    }
-    getTasks();
-  }, [user]);
-
   async function fetchTasks(tokenPassed) {
     const res = await fetch(`api/users/user`, {
       method: "POST",
