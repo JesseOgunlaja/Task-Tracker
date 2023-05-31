@@ -95,13 +95,13 @@ const authenticateJWTUser = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    if ((await User.findById(decoded.id)).name === req.name) {
+    if ((await User.findById(decoded.id)).name === req.body.name) {
       next();
     } else {
-      return res.status(401).json({ message: "Invalid token", token: (await User.findById(decoded.id)).name });
+      return res.status(401).json({ message: "Invalid token"});
     }
   } catch (error) {
-    return res.status(401).json({ message: "Invalid token", token: (await User.findById((jwt.verify(token, SECRET_KEY)).id)).name});
+    return res.status(401).json({ message: "Invalid token"});
   }
 };
 
