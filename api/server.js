@@ -194,7 +194,7 @@ app.post("/api/users/loginName", async (req, res) => {
 });
 
 // Update a user
-app.patch("/api/users/", async (req, res) => {
+app.patch("/api/users",authenticateJWTUser, async (req, res) => {
   const user = await User.findOne({ name: req.body.name });
   if (req.body.name != null) {
     user.name = req.body.name;

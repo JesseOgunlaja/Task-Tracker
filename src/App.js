@@ -197,15 +197,7 @@ function App() {
       });
       encryptedTasks.push(newTask);
 
-      const SECRET_KEY = ENCRYPTION_KEY;
-      const payload = {
-        apiKey: process.env.REACT_APP_API_KEY,
-        exp: Math.floor(Date.now() / 1000) + INTERVAL,
-      };
-      const header = { alg: "HS256", typ: "JWT" };
-      const sHeader = JSON.stringify(header);
-      const sPayload = JSON.stringify(payload);
-      const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+      
       await fetch(`api/Users`, {
         method: "PATCH",
         headers: {
@@ -213,6 +205,7 @@ function App() {
           authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
+          name: username,
           tasks: encryptedTasks,
         }),
       });
@@ -276,7 +269,15 @@ function App() {
       })
     });
     const data = await res.json();
-    return data.tasks
+    const fetchedTasks = data.tasks
+    const decryptedTasks = fetcedhTasks.map((value) => {
+      return {
+        task: decryptString(value.task),
+        date: decryptString(value.date),
+        reminder: value.reminder
+      }
+    })
+    return decryptedTasks
   }
 
   async function checkIfSignedIn() {
@@ -295,15 +296,7 @@ function App() {
         stringSessionKey2
       ).toString(CryptoJS.enc.Utf8);
 
-      const SECRET_KEY = ENCRYPTION_KEY;
-      const payload = {
-        apiKey: process.env.REACT_APP_API_KEY,
-        exp: Math.floor(Date.now() / 1000) + INTERVAL,
-      };
-      const header = { alg: "HS256", typ: "JWT" };
-      const sHeader = JSON.stringify(header);
-      const sPayload = JSON.stringify(payload);
-      const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+      
 
       if (decrypt2 === "") {
         deleteCookie("authToken");
@@ -360,15 +353,7 @@ function App() {
       adminPasswordBox.current.type = "password";
       addUserPassword.current.type = "password";
       addUserEmail.current.type = "password";
-      const SECRET_KEY = ENCRYPTION_KEY;
-      const payload = {
-        apiKey: process.env.REACT_APP_API_KEY,
-        exp: Math.floor(Date.now() / 1000) + INTERVAL,
-      };
-      const header = { alg: "HS256", typ: "JWT" };
-      const sHeader = JSON.stringify(header);
-      const sPayload = JSON.stringify(payload);
-      const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+      
       await fetch(`api/Users`, {
         method: "POST",
         headers: {
@@ -496,15 +481,7 @@ function App() {
       (await bcrypt.compare(oldPassword, decryptString(password))) ||
       oldPassword === ADMIN_PASSWORD
     ) {
-      const SECRET_KEY = ENCRYPTION_KEY;
-      const payload = {
-        apiKey: process.env.REACT_APP_API_KEY,
-        exp: Math.floor(Date.now() / 1000) + INTERVAL,
-      };
-      const header = { alg: "HS256", typ: "JWT" };
-      const sHeader = JSON.stringify(header);
-      const sPayload = JSON.stringify(payload);
-      const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+      
       await fetch(`api/Users`, {
         method: "PATCH",
         headers: {
