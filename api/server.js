@@ -94,7 +94,7 @@ const authenticateJWTGlobal = (req, res, next) => {
 const authenticateJWTUser = async (req, res, next) => {
   const token = req.cookies.authToken;
 
-  if (!req.headers.authorization) {
+  if (!token) {
     return res
       .status(401)
       .json({ message: "Access denied. No token provided." });
