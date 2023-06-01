@@ -138,7 +138,7 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.get("/api/users/checkJWT",cache('2 minutes')("/api/users/checkJWT"), async (req,res) => {
+app.get("/api/users/checkJWT",cache('2 minutes'), async (req,res) => {
   const token = req.cookies.authToken
 
   if(token) {
@@ -255,7 +255,7 @@ app.patch("/api/users/user/resetPassword", authenticateJWTGlobal, async (req,res
 
 // Update a user
 app.patch("/api/users/user",authenticateJWTUser, async (req, res) => {
-  cache.clear("/api/users/checkJWT");
+  cache.clear(`/api/users/checkJWT/${req.cookies.authToken}`);
   const user = await User.findOne({ name: req.body.username });
   if (req.body.name != null) {
     user.name = req.body.name;
