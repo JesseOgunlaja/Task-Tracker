@@ -269,6 +269,8 @@ function App() {
                   resolve(data);
                 }
                 else if(data.message === "Invalid cookie") {
+                  deleteCookie()
+                  window.location.reload()
                 reject(new Error(`Invalid cookie`));  
                 }
               } else {

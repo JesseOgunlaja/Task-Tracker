@@ -7,8 +7,8 @@ const jwt = require("jsonwebtoken");
 const CryptoJS = require("crypto-js");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
-const apicache = require("apicache")
 const cookieParser = require('cookie-parser');
+const apicache = require("apicache");
 
 const API_KEY = process.env.API_KEY;
 const GLOBAL_KEY = process.env.GLOBAL_KEY
@@ -16,7 +16,7 @@ const SECRET_KEY = process.env.ENCRYPTION_KEY;
 
 const app = express();
 app.use(cookieParser());
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 
 const DATA_ENCRYPTION_KEY1 = process.env.DATA_ENCRYPTION1;
 const parsedDataKey1 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY1);
@@ -47,9 +47,6 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", UserSchema);
 
-let cache = apicache.middleware
-
-
 const limiter = rateLimit({
   windowMs: 30 * 1000, // 30 seconds
   max: 100, // limit each IP to 100 requests per windowMs
@@ -59,6 +56,9 @@ const limiter = rateLimit({
 
 app.use(bodyParser.json());
 app.use(limiter);
+
+
+const cache = apicache.middleware;
 
 const authenticateJWTGlobal = (req, res, next) => {
   if (req.headers.authorization?.split(" ")[0] === "ThirdParty") {
@@ -138,14 +138,16 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.get("/api/users/checkJWT", async (req,res) => {
+app.get("/api/users/checkJWT",cache('2 minutes')("/api/users/checkJWT"), async (req,res) => {
   const token = req.cookies.authToken
 
   if(token) {
     const decoded = jwt.verify(token,SECRET_KEY)
   
     if(decoded != null && await User.findById(decoded.id) != null) {
-      return res.status(200).json({message: "Valid cookie", user: await User.findById(decoded.id), token: token})
+      const data = {message: "Valid cookie", user: await User.findById(decoded.id), token: token}
+      cache["/api/users/checkJWT"] = data;
+      return res.status(200).json(data)
     }
     else {
       res.clearCookie('authToken');
@@ -253,6 +255,7 @@ app.patch("/api/users/user/resetPassword", authenticateJWTGlobal, async (req,res
 
 // Update a user
 app.patch("/api/users/user",authenticateJWTUser, async (req, res) => {
+  cache.clear("/api/users/checkJWT");
   const user = await User.findOne({ name: req.body.username });
   if (req.body.name != null) {
     user.name = req.body.name;
