@@ -146,7 +146,6 @@ app.get("/api/users/checkJWT",cache('2 minutes'), async (req,res) => {
   
     if(decoded != null && await User.findById(decoded.id) != null) {
       const data = {message: "Valid cookie", user: await User.findById(decoded.id), token: token}
-      cache["/api/users/checkJWT"] = data;
       return res.status(200).json(data)
     }
     else {
