@@ -276,7 +276,7 @@ function App() {
                 }
                 resolve(data);
               } else {
-                reject(new Error(`HTTP error: ${response.status}`));
+                reject(new Error(`HTTP error: ${response.status}`));  
               }
             })
             .catch((error) => {
@@ -552,28 +552,28 @@ function App() {
       }
     }
     if (password === "oldPassword") {
-      if ((oldPasswordBox.current.type = "text")) {
+      if ((oldPasswordBox.current.type === "text")) {
         oldPasswordBox.current.type = "password";
       } else {
         oldPasswordBox.current.type = "text";
       }
     }
     if (password === "newPassword") {
-      if ((newPasswordBox.current.type = "text")) {
+      if ((newPasswordBox.current.type === "text")) {
         newPasswordBox.current.type = "password";
       } else {
         newPasswordBox.current.type = "text";
       }
     }
     if (password === "password") {
-      if ((passwordBox.current.type = "text")) {
+      if ((passwordBox.current.type === "text")) {
         passwordBox.current.type = "password";
       } else {
         passwordBox.current.type = "text";
       }
     }
     if (password === "resetPassword") {
-      if ((passwordBeingResetBox.current.type = "text")) {
+      if ((passwordBeingResetBox.current.type === "text")) {
         passwordBeingResetBox.current.type = "password";
       } else {
         passwordBeingResetBox.current.type = "text";
@@ -607,7 +607,7 @@ function App() {
     setIsForgettingPassword(true);
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
-      apiKey: process.env.REACT_APP_API_KEY,
+      KEY: process.env.REACT_APP_GLOBAL_KEY,
       exp: Math.floor(Date.now() / 1000) + 5,
     };
     const header = { alg: "HS256", typ: "JWT" };
@@ -644,7 +644,7 @@ function App() {
   async function submitNewPassword() {
     const SECRET_KEY = ENCRYPTION_KEY;
     const payload = {
-      apiKey: process.env.REACT_APP_API_KEY,
+      KEY: process.env.REACT_APP_GLOBAL_KEY,
       exp: Math.floor(Date.now() / 1000) + 5,
     };
     const header = { alg: "HS256", typ: "JWT" };

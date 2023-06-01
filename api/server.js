@@ -75,7 +75,7 @@ const authenticateJWTGlobal = (req, res, next) => {
 
     try {
       const decoded = jwt.verify(token, SECRET_KEY);
-      if (decoded.apiKey === API_KEY) {
+      if (decoded.KEY === GLOBAL_KEY) {
         next();
       } else {
         return res.status(401).json({ message: "Invalid token" , token: token});
@@ -220,7 +220,7 @@ app.post("/api/users/loginName", async (req, res) => {
 
 app.patch("/api/users/user/resetPassword", authenticateJWTGlobal, async (req,res) => {
   const user = await User.findOne({ name: req.body.username });
-  user.password = req.body.password
+  user.password = await bcrypt.hash(req.body.password, 10)
   try {
     const updatedUser = await user.save();
     res.json(updatedUser);
@@ -231,7 +231,7 @@ app.patch("/api/users/user/resetPassword", authenticateJWTGlobal, async (req,res
 
 // Update a user
 app.patch("/api/users/user",authenticateJWTUser, async (req, res) => {
-  apicache.clear("/api/users/checkJWT");
+  cache.clear("/api/users/checkJWT");
   const user = await User.findOne({ name: req.body.username });
   if (req.body.name != null) {
     user.name = req.body.name;
