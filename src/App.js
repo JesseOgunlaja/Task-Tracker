@@ -253,7 +253,7 @@ function App() {
             headers: {
               "Content-Type": "application/json",
             },
-            credentials: true,
+            credentials: 'include',
           })
             .then(async (response) => {
               if (response.ok) {
