@@ -10,6 +10,7 @@ const rateLimit = require("express-rate-limit");
 const apicache = require("apicache")
 
 const API_KEY = process.env.API_KEY;
+const GLOBAL_KEY = process.env.GLOBAL_KEY
 const SECRET_KEY = process.env.ENCRYPTION_KEY;
 
 const app = express();

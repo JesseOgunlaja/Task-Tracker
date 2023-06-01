@@ -684,6 +684,7 @@ function App() {
     if (page === "forgetPassword") {
       setIsForgettingPassword(false);
       setIsPuttingPassword(false);
+      setPasswordBeingAdded("")
     }
     if (page === "changeEmail") {
       setIsChangingData(false);
