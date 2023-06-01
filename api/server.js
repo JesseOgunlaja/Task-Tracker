@@ -138,7 +138,7 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.get("/api/users/checkJWT",cache('2 minutes'), async (req,res) => {
+app.get("/api/users/checkJWT",cache('10 seconds'), async (req,res) => {
   const token = req.cookies.authToken
 
   if(token) {
