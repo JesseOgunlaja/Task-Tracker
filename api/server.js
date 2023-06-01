@@ -205,6 +205,11 @@ app.post("/api/users", async (req, res) => {
   }
 });
 
+app.post("/api/users/deleteCookie", async (req,res) => {
+  res.clearCookie('authToken');
+  res.status(200).json({message: "Cookie deleted"})
+})
+
 app.post("/api/users/loginPassword", async (req, res) => {
   const user = await User.findOne({ name: req.body.username });
   const passwordInputted = req.body.password;
@@ -213,7 +218,7 @@ app.post("/api/users/loginPassword", async (req, res) => {
     const token = jwt.sign({id: user._id}, SECRET_KEY, {
       "expiresIn": "7d",
     });
-    res.cookie('authToken', 'token', {
+    res.cookie('authToken', token, {
       httpOnly: true,  // Ensures the cookie is accessible only through HTTP requests
       secure: true,    // Ensures the cookie is only sent over HTTPS connections
       sameSite: 'strict', // Ensures the cookie is only sent for same-site requests

@@ -324,12 +324,11 @@ function App() {
   async function signOut(eraseUserName) {
     setNewEmail("");
     setDataBeingChanged("");
-    deleteCookie("authToken");
-    deleteCookie("user");
     setEmailBeingAdded("");
     setPasswordBeingAdded("");
     setNewPassword("");
     setOldPassword("");
+    deleteCookie()
     if (eraseUserName === false) {
       setUsername("");
     }
@@ -684,9 +683,14 @@ function App() {
     }
   }
 
-  function deleteCookie(cookieName) {
-    document.cookie =
-      cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  async function deleteCookie() {
+    await fetch("/api/users/deleteCookie", {
+      method: 'POST',
+      headers: {
+        "Content-Type": 'application/json'
+      },
+      credentials: 'include'
+    })
   }
 
   return (
