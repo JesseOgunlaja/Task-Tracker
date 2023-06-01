@@ -246,35 +246,31 @@ function App() {
   }
 
   async function checkIfSignedIn() {
-    const authToken = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("authToken="))
-      ?.split("=")[1];
-
-    if (authToken) {
       const res = await toast.promise(
         new Promise((resolve, reject) => {
           fetch("/api/users/checkJWT", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              authorization: `Bearer ${authToken}`,
             },
+            credentials: true,
           })
             .then(async (response) => {
               if (response.ok) {
                 const data = await response.json();
 
-                if (data.valid) {
+                if (data.message === "Valid cookie") {
                   setUsername(data.user.name);
-                  setToken(authToken);
+                  setToken(data.token);
                   setTasks(data.user.tasks);
                   setSignedIn(true);
-                } else {
-                  deleteCookie("authToken");
-                  window.location.reload();
+                  resolve(data);
+                } else if(data.message === "No cookie") {
+                  resolve(data);
                 }
-                resolve(data);
+                else if(data.message === "Invalid cookie") {
+                reject(new Error(`Invalid cookie`));  
+                }
               } else {
                 reject(new Error(`HTTP error: ${response.status}`));  
               }
@@ -289,7 +285,6 @@ function App() {
           error: "User not found",
         }
       );
-    }
   }
 
   useEffect(() => {
@@ -386,12 +381,6 @@ function App() {
               const tokenGiven = data.token;
               setToken(tokenGiven);
               passwordBox.current.type = "password";
-              let currentDate = new Date();
-              let expirationDate = new Date(
-                currentDate.getTime() + 7 * 24 * 60 * 60 * 1000
-              ); // 7 days * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
-              let expires = expirationDate.toUTCString();
-              document.cookie = `authToken=${tokenGiven}; expires=${expires}; path=/`;
               setTasks(await fetchTasks(tokenGiven));
               setSignedIn(true);
               resolve(data);

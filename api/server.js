@@ -8,12 +8,14 @@ const CryptoJS = require("crypto-js");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
 const apicache = require("apicache")
+const cookieParser = require('cookie-parser');
 
 const API_KEY = process.env.API_KEY;
 const GLOBAL_KEY = process.env.GLOBAL_KEY
 const SECRET_KEY = process.env.ENCRYPTION_KEY;
 
 const app = express();
+app.use(cookieParser());
 const port = process.env.PORT || 3000;
 
 const DATA_ENCRYPTION_KEY1 = process.env.DATA_ENCRYPTION1;
@@ -46,8 +48,6 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.model("User", UserSchema);
 
 let cache = apicache.middleware
-const cacheDuration = '2 minutes';
-const cacheKey = (req) => req.originalUrl;
 
 
 const limiter = rateLimit({
@@ -138,17 +138,24 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.get("/api/users/checkJWT",cache(cacheDuration, cacheKey), async (req,res) => {
-  const token = req.headers.authorization?.split(" ")[1]
+app.get("/api/users/checkJWT",cache("2 minutes"), async (req,res) => {
+  const token = req.cookies.authToken
 
-  const decoded = jwt.verify(token,SECRET_KEY)
-
-  if(decoded != null && await User.findById(decoded.id) != null) {
-    return res.status(200).json({valid: true, user: await User.findById(decoded.id)})
+  if(token) {
+    const decoded = jwt.verify(token,SECRET_KEY)
+  
+    if(decoded != null && await User.findById(decoded.id) != null) {
+      return res.status(200).json({message: "Valid cookie", user: await User.findById(decoded.id), token: token})
+    }
+    else {
+      res.clearCookie('authToken');
+      return res.status(200).json({message: "Invalid cookie"})
+    }
   }
   else {
-    return res.status(400).json({valid: false})
+    return res.status(200).json({message: "No cookie"})
   }
+
 })
 
 app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
@@ -206,6 +213,12 @@ app.post("/api/users/loginPassword", async (req, res) => {
     const token = jwt.sign({id: user._id}, SECRET_KEY, {
       "expiresIn": "7d",
     });
+    res.cookie('authToken', 'token', {
+      httpOnly: true,  // Ensures the cookie is accessible only through HTTP requests
+      secure: true,    // Ensures the cookie is only sent over HTTPS connections
+      sameSite: 'strict', // Ensures the cookie is only sent for same-site requests
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
     res.status(200).json({ token: token });
   } else {
     res.status(401).json({ message: "Invalid Credentials" });
@@ -235,7 +248,7 @@ app.patch("/api/users/user/resetPassword", authenticateJWTGlobal, async (req,res
 
 // Update a user
 app.patch("/api/users/user",authenticateJWTUser, async (req, res) => {
-  apicache.clear('/api/users/checkJWT')
+  apicache.clear()
   const user = await User.findOne({ name: req.body.username });
   if (req.body.name != null) {
     user.name = req.body.name;
