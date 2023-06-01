@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const CryptoJS = require("crypto-js");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
-var apicache = require("apicache")
+const apicache = require("apicache")
 
 const API_KEY = process.env.API_KEY;
 const GLOBAL_KEY = process.env.GLOBAL_KEY
@@ -45,7 +45,10 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", UserSchema);
 
-var cache = apicache.middleware
+let cache = apicache.middleware
+const cacheDuration = '2 minutes';
+const cacheKey = (req) => req.originalUrl;
+
 
 const limiter = rateLimit({
   windowMs: 30 * 1000, // 30 seconds
@@ -135,7 +138,7 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.get("/api/users/checkJWT",cache('2 minutes'), async (req,res) => {
+app.get("/api/users/checkJWT",cache(cacheDuration, cacheKey), async (req,res) => {
   const token = req.headers.authorization?.split(" ")[1]
 
   const decoded = jwt.verify(token,SECRET_KEY)
@@ -232,7 +235,7 @@ app.patch("/api/users/user/resetPassword", authenticateJWTGlobal, async (req,res
 
 // Update a user
 app.patch("/api/users/user",authenticateJWTUser, async (req, res) => {
-  apicache.clear('https://tasktracker4313.online/api/users/checkJWT')
+  apicache.clear('/api/users/checkJWT')
   const user = await User.findOne({ name: req.body.username });
   if (req.body.name != null) {
     user.name = req.body.name;
