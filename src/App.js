@@ -79,8 +79,8 @@ function App() {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
-        authorization: `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify({
         username: username,
         email: newEmail,
@@ -147,8 +147,8 @@ function App() {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
-        authorization: `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify({
         username: username,
         tasks: currentTasks,
@@ -183,8 +183,8 @@ function App() {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
-          authorization: `Bearer ${token}`,
         },
+        credentials: 'include',
         body: JSON.stringify({
           username: username,
           tasks: encryptedTasks,
@@ -219,8 +219,8 @@ function App() {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
-        authorization: `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify({
         username: username,
         tasks: currentTasks,
@@ -234,9 +234,9 @@ function App() {
     const res = await fetch(`api/users/user`, {
       method: "POST",
       headers: {
-        authorization: `Bearer ${tokenPassed || token}`,
         "Content-Type": "application/json",
       },
+      credentials: 'include',
       body: JSON.stringify({
         username: username,
       }),
@@ -352,8 +352,8 @@ function App() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        authorization: `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify({
         username: username,
       }),
@@ -441,8 +441,9 @@ function App() {
                 method: "PATCH",
                 headers: {
                   "Content-type": "application/json",
-                  authorization: `Bearer ${token}`,
                 },
+      credentials: 'include',
+
                 body: JSON.stringify({
                   username: username,
                   password: newPassword,
@@ -638,12 +639,12 @@ function App() {
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
-    const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+    const globalToken = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
     await fetch(`api/Users/user/resetPassword`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
-        authorization: `Bearer ${token}`,
+        authorization: `Bearer ${globalToken}`,
       },
       body: JSON.stringify({
         username: username,

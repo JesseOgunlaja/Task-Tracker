@@ -92,7 +92,7 @@ const authenticateJWTGlobal = (req, res, next) => {
 };
 
 const authenticateJWTUser = async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const token = req.cookies.authToken;
 
   if (!req.headers.authorization) {
     return res
@@ -138,7 +138,7 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.get("/api/users/checkJWT",cache("2 minutes"), async (req,res) => {
+app.get("/api/users/checkJWT", async (req,res) => {
   const token = req.cookies.authToken
 
   if(token) {
@@ -253,7 +253,6 @@ app.patch("/api/users/user/resetPassword", authenticateJWTGlobal, async (req,res
 
 // Update a user
 app.patch("/api/users/user",authenticateJWTUser, async (req, res) => {
-  apicache.clear()
   const user = await User.findOne({ name: req.body.username });
   if (req.body.name != null) {
     user.name = req.body.name;
