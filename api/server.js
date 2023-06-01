@@ -232,7 +232,7 @@ app.patch("/api/users/user/resetPassword", authenticateJWTGlobal, async (req,res
 
 // Update a user
 app.patch("/api/users/user",authenticateJWTUser, async (req, res) => {
-  apicache.clear();
+  apicache.clear('https://tasktracker4313.online/api/users/checkJWT')
   const user = await User.findOne({ name: req.body.username });
   if (req.body.name != null) {
     user.name = req.body.name;
