@@ -46,7 +46,7 @@ const User = mongoose.model("User", UserSchema);
 
 let cache = apicache.middleware
 
-app.use(cache('1 minute'))
+// app.use(cache('1 minute'))
 
 const limiter = rateLimit({
   windowMs: 30 * 1000, // 30 seconds
@@ -220,8 +220,19 @@ app.post("/api/users/loginName", async (req, res) => {
   }
 });
 
+app.patch("/api/users/user/resetPassword", authenticateJWTGlobal, async (req,res) => {
+  const user = await User.findOne({ name: req.body.username });
+  user.password = req.user.password
+  try {
+    const updatedUser = await user.save();
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+})
+
 // Update a user
-app.patch("/api/users",authenticateJWTUser, async (req, res) => {
+app.patch("/api/users/user",authenticateJWTUser, async (req, res) => {
   const user = await User.findOne({ name: req.body.username });
   if (req.body.name != null) {
     user.name = req.body.name;
@@ -244,7 +255,7 @@ app.patch("/api/users",authenticateJWTUser, async (req, res) => {
 });
 
 // Delete a user
-app.post("/api/users/delete",authenticateJWTUser, async (req, res) => {
+app.post("/api/users/user/delete",authenticateJWTUser, async (req, res) => {
   const user = await User.findOne({ name: req.body.username });
   try {
     const deletedUser = await User.findOneAndDelete({ name: user.name });

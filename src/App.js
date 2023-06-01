@@ -75,7 +75,7 @@ function App() {
   };
 
   async function completeChangeEmail() {
-    await fetch(`api/Users`, {
+    await fetch(`api/Users/user`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -143,7 +143,7 @@ function App() {
     const currentTasks = [...tasks];
     currentTasks.splice(index, 1);
 
-    await fetch(`api/Users`, {
+    await fetch(`api/Users/user`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -179,7 +179,7 @@ function App() {
       });
       encryptedTasks.push(newTask);
 
-      await fetch(`api/Users`, {
+      await fetch(`api/Users/user`, {
         method: "PATCH",
         headers: {
           "Content-type": "application/json",
@@ -215,7 +215,7 @@ function App() {
     const currentTasks = [...tasks];
     currentTasks[editIndex.current] = updatedTask;
 
-    await fetch(`api/Users`, {
+    await fetch(`api/Users/user`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
@@ -354,7 +354,7 @@ function App() {
   }
 
   async function deleteAccount() {
-    await fetch(`api/Users/delete`, {
+    await fetch(`api/Users//user/delete`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -449,7 +449,7 @@ function App() {
         })
           .then(async (response) => {
             if (response.ok) {
-              await fetch(`api/Users`, {
+              await fetch(`api/Users/user`, {
                 method: "PATCH",
                 headers: {
                   "Content-type": "application/json",
@@ -651,7 +651,7 @@ function App() {
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
     const token = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
-    await fetch(`api/Users`, {
+    await fetch(`api/Users/user/resetPassword`, {
       method: "PATCH",
       headers: {
         "Content-type": "application/json",
