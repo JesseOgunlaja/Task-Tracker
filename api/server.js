@@ -46,8 +46,6 @@ const User = mongoose.model("User", UserSchema);
 
 let cache = apicache.middleware
 
-// app.use(cache('1 minute'))
-
 const limiter = rateLimit({
   windowMs: 30 * 1000, // 30 seconds
   max: 100, // limit each IP to 100 requests per windowMs
@@ -136,7 +134,7 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.get("/api/users/checkJWT", async (req,res) => {
+app.get("/api/users/checkJWT",cache('2 minutes'), async (req,res) => {
   const token = req.headers.authorization?.split(" ")[1]
 
   const decoded = jwt.verify(token,SECRET_KEY)
@@ -222,7 +220,7 @@ app.post("/api/users/loginName", async (req, res) => {
 
 app.patch("/api/users/user/resetPassword", authenticateJWTGlobal, async (req,res) => {
   const user = await User.findOne({ name: req.body.username });
-  user.password = req.user.password
+  user.password = req.body.password
   try {
     const updatedUser = await user.save();
     res.json(updatedUser);
@@ -233,6 +231,7 @@ app.patch("/api/users/user/resetPassword", authenticateJWTGlobal, async (req,res
 
 // Update a user
 app.patch("/api/users/user",authenticateJWTUser, async (req, res) => {
+  apicache.clear("/api/users/checkJWT");
   const user = await User.findOne({ name: req.body.username });
   if (req.body.name != null) {
     user.name = req.body.name;
