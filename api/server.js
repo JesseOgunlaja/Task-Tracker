@@ -8,7 +8,6 @@ const CryptoJS = require("crypto-js");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
 const cookieParser = require('cookie-parser');
-const apicache = require("apicache");
 
 const API_KEY = process.env.API_KEY;
 const GLOBAL_KEY = process.env.GLOBAL_KEY
@@ -58,7 +57,6 @@ app.use(bodyParser.json());
 app.use(limiter);
 
 
-const cache = apicache.middleware;
 
 const authenticateJWTGlobal = (req, res, next) => {
   if (req.headers.authorization?.split(" ")[0] === "ThirdParty") {
@@ -138,7 +136,7 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.get("/api/users/checkJWT",cache('10 seconds'), async (req,res) => {
+app.get("/api/users/checkJWT", async (req,res) => {
   const token = req.cookies.authToken
 
   if(token) {
@@ -254,7 +252,6 @@ app.patch("/api/users/user/resetPassword", authenticateJWTGlobal, async (req,res
 
 // Update a user
 app.patch("/api/users/user",authenticateJWTUser, async (req, res) => {
-  apicache.clear(`/api/users/checkJWT/${req.cookies.authToken}`);
   const user = await User.findOne({ name: req.body.username });
   if (req.body.name != null) {
     user.name = req.body.name;
