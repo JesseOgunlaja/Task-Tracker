@@ -8,7 +8,7 @@ const CryptoJS = require("crypto-js");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
 const cookieParser = require('cookie-parser');
-const apicache = require("apicache")
+const apicache = require("apicache-plus")
 
 const API_KEY = process.env.API_KEY;
 const GLOBAL_KEY = process.env.GLOBAL_KEY
@@ -137,9 +137,9 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.get("/api/users/checkJWT",apicache.middleware("2 minutes"), async (req,res) => {
+app.get("/api/users/checkJWT",apicache("15 seconds"), async (req,res) => {
+  req.apicacheGroup = "checkJWT";
   const token = req.cookies.authToken
-  req.apicacheGroup = "/checkJWT";
 
   if(token) {
     const decoded = jwt.verify(token,SECRET_KEY)
@@ -254,7 +254,6 @@ app.patch("/api/users/user/resetPassword", authenticateJWTGlobal, async (req,res
 
 // Update a user
 app.patch("/api/users/user",authenticateJWTUser, async (req, res) => {
-  apicache.clear("/checkJWT");
   const user = await User.findOne({ name: req.body.username });
   if (req.body.name != null) {
     user.name = req.body.name;
@@ -270,6 +269,7 @@ app.patch("/api/users/user",authenticateJWTUser, async (req, res) => {
   }
   try {
     const updatedUser = await user.save();
+    apicache.clear("checkJWT");
     res.json(updatedUser);
   } catch (error) {
     res.status(400).json({ message: error.message });
