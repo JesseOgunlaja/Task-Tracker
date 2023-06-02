@@ -8,7 +8,7 @@ const CryptoJS = require("crypto-js");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
 const cookieParser = require('cookie-parser');
-const apicache = require("apicache-plus")
+var apicachePlus = require("apicache-plus")
 
 const API_KEY = process.env.API_KEY;
 const GLOBAL_KEY = process.env.GLOBAL_KEY
@@ -137,8 +137,8 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.get("/api/users/checkJWT",apicache("15 seconds"), async (req,res) => {
-  req.apicacheGroup = "checkJWT";
+app.get("/api/users/checkJWT",apicache('2 minutes'), async (req,res) => {
+  req.apicacheGroup = 'checkJWT'
   const token = req.cookies.authToken
 
   if(token) {
