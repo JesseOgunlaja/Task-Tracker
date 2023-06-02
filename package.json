@@ -15,7 +15,6 @@
     "@vercel/ncc": "^0.36.1",
     "@vercel/node": "^2.14.0",
     "@vercel/static-build": "^1.3.27",
-    "apicache": "^1.6.3",
     "apicache-plus": "^2.3.1",
     "babel-jest": "^27.4.2",
     "babel-loader": "^8.2.3",
