@@ -143,7 +143,14 @@ app.post(
     const token = req.cookies.authToken;
 
     if (token) {
-      const decoded = jwt.verify(token, SECRET_KEY);
+      try {
+
+        const decoded = jwt.verify(token, SECRET_KEY);
+      }
+      catch {
+        res.clearCookie('authToken')
+        return res.status(400).json({ message: "Invalid cookie" });
+      }
 
       if (decoded != null && (await User.findById(decoded.id)) != null) {
         const data = {
