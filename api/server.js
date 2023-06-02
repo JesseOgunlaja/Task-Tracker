@@ -8,7 +8,7 @@ const CryptoJS = require("crypto-js");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
 const cookieParser = require('cookie-parser');
-const apicache = require("apicache-plus")
+const apicache = require("apicache")
 
 const API_KEY = process.env.API_KEY;
 const GLOBAL_KEY = process.env.GLOBAL_KEY
