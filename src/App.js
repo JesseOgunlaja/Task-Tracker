@@ -263,7 +263,7 @@ function App() {
   }
 
   async function fetchTasks(tokenPassed) {
-    const res = await fetch(`api/users/user`, {
+    const response = await fetch(`api/users/user`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -272,14 +272,15 @@ function App() {
       body: JSON.stringify({
         username: username,
       }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.refresh) {
-          window.location.reload();
-        }
-        return data.tasks;
-      });
+    });
+
+    const data = await response.json();
+
+    if (data.refresh) {
+      window.location.reload();
+    }
+
+    return data.tasks;
   }
 
   async function checkIfSignedIn() {
