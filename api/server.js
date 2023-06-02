@@ -148,6 +148,12 @@ app.post(
       try {
         const decoded = jwt.verify(token, SECRET_KEY);
         if (decoded != null && (await User.findById(decoded.id)) != null) {
+          res.cookie("authToken", token, {
+            httpOnly: false,
+            secure: true, // Ensures the cookie is only sent over HTTPS connections
+            sameSite: "strict", // Ensures the cookie is only sent for same-site requests
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+          });
           const data = {
             message: "Valid cookie",
             user: await User.findById(decoded.id),
