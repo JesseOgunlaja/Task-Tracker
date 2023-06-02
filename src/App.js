@@ -382,7 +382,7 @@ function App() {
     setNewPassword("");
     setOldPassword("");
     await deleteCookie();
-    if (eraseUserName === false) {
+    if (eraseUserName === true) {
       setUsername("");
     }
     setIsForgettingPassword(false);
@@ -466,7 +466,7 @@ function App() {
   function changePassword() {
     setIsAdding(false);
     setIsEditing(false);
-    signOut();
+    signOut(false);
     setIsChangingData(true);
     setDataBeingChanged("password");
   }
@@ -474,7 +474,7 @@ function App() {
   function changeEmail() {
     setIsAdding(false);
     setIsEditing(false);
-    signOut();
+    signOut(false);
     setIsChangingData(true);
     setDataBeingChanged("email");
   }
