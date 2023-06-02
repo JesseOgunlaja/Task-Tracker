@@ -249,7 +249,7 @@ function App() {
       const res = await toast.promise(
         new Promise((resolve, reject) => {
           fetch("/api/users/checkJWT", {
-            method: "GET",
+            method: "POST",
             headers: {
               "Content-Type": "application/json",
             },

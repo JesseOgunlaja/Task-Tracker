@@ -135,7 +135,7 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.get(
+app.post(
   "/api/users/checkJWT",
   apicache.middleware("5 minutes"),
   async (req, res) => {
