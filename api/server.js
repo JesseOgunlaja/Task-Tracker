@@ -106,6 +106,7 @@ const authenticateJWTUser = async (req, res, next) => {
     }
   } catch (error) {
     res.clearCookie('authToken')
+    res.redirect("/")
     return res.status(401).json({ message: "Invalid token" });
   }
 };
