@@ -102,11 +102,12 @@ const authenticateJWTUser = async (req, res, next) => {
     if ((await User.findById(decoded.id)).name === req.body.username) {
       next();
     } else {
-      return res.status(401).json({ message: "Invalid token" });
+      res.clearCookie('authToken')
+      return res.status(401).json({ message: "Invalid token" , refresh: true});
     }
   } catch (error) {
     res.clearCookie('authToken')
-    return res.status(401).json({ message: "Invalid token" });
+    return res.status(401).json({ message: "Invalid token", refresh: true });
   }
 };
 

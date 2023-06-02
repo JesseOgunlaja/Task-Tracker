@@ -75,6 +75,7 @@ function App() {
   };
 
   async function completeChangeEmail() {
+    newEmailBox.current.disabled = true
     await fetch(`api/Users/user`, {
       method: "PATCH",
       headers: {
@@ -85,7 +86,14 @@ function App() {
         username: username,
         email: newEmail,
       }),
-    });
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.refresh) {
+          window.location.reload();
+        }
+      });
+    newEmailBox.current.disabled = true
     back("changeEmail");
     setSignedIn(true);
   }
@@ -103,6 +111,7 @@ function App() {
   }
 
   async function signInUsername() {
+    usernameBox.current.disabled = true;
     const res = await toast.promise(
       new Promise((resolve, reject) => {
         fetch("/api/users/loginName", {
@@ -115,9 +124,14 @@ function App() {
           }),
         })
           .then((response) => {
+            usernameBox.current.disabled = false;
+            const data = response.json();
+            if (data.refres && response.status === 401) {
+              window.location.reload();
+            }
             if (response.ok) {
               signIn(username);
-              resolve(response.json());
+              resolve(data);
             } else {
               reject(new Error(`HTTP error: ${response.status}`));
             }
@@ -153,7 +167,13 @@ function App() {
         username: username,
         tasks: currentTasks,
       }),
-    });
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.refresh) {
+          window.location.reload();
+        }
+      });
 
     setTasks(await fetchTasks());
   }
@@ -189,7 +209,13 @@ function App() {
           username: username,
           tasks: encryptedTasks,
         }),
-      });
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.refresh) {
+            window.location.reload();
+          }
+        });
     }
     setIsAdding(false);
     setTasks(await fetchTasks());
@@ -225,7 +251,13 @@ function App() {
         username: username,
         tasks: currentTasks,
       }),
-    });
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.refresh) {
+          window.location.reload();
+        }
+      });
     setTasks(await fetchTasks());
     setIsEditing(false);
   }
@@ -240,7 +272,13 @@ function App() {
       body: JSON.stringify({
         username: username,
       }),
-    });
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.refresh) {
+          window.location.reload();
+        }
+      });
     const data = await res.json();
     return data.tasks;
   }
@@ -262,8 +300,10 @@ function App() {
             credentials: "include",
           })
             .then(async (response) => {
-              console.log(response)
               const data = await response.json();
+              if (data.refres && response.status === 401) {
+                window.location.reload();
+              }
               if (response.status === 500) {
                 await deleteCookie();
                 window.location.reload();
@@ -323,7 +363,13 @@ function App() {
           password: passwordBeingAdded,
           email: emailBeingAdded,
         }),
-      });
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.refresh) {
+            window.location.reload();
+          }
+        });
       signOut();
     }
   }
@@ -364,11 +410,18 @@ function App() {
       body: JSON.stringify({
         username: username,
       }),
-    });
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.refresh) {
+          window.location.reload();
+        }
+      });
     signOut();
   }
 
   async function submitPassword() {
+    passwordBox.current.disabled = true;
     const res = await toast.promise(
       new Promise(async (resolve, reject) => {
         await fetch("/api/users/loginPassword", {
@@ -382,8 +435,12 @@ function App() {
           }),
         })
           .then(async (response) => {
+            passwordBox.current.disabled = false;
+            const data = await response.json();
+            if (data.refres && response.status === 401) {
+              window.location.reload();
+            }
             if (response.ok) {
-              const data = await response.json();
               const tokenGiven = data.token;
               setToken(tokenGiven);
               passwordBox.current.type = "password";
@@ -423,7 +480,11 @@ function App() {
   }
 
   async function completeChangePassword() {
+    oldPasswordBox.current.disabled = true;
+    newPasswordBox.current.disabled = true;  
     if (oldPassword === "" || newPassword === "") {
+      oldPasswordBox.current.disabled = true;
+    newPasswordBox.current.disabled = true;
       error("Value required");
       return;
     }
@@ -455,7 +516,13 @@ function App() {
                   username: username,
                   password: newPassword,
                 }),
-              });
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.refresh) {
+                    window.location.reload();
+                  }
+                });
               signOut(false);
               resolve(response.json());
             } else {
@@ -472,6 +539,8 @@ function App() {
         error: "Incorrect Password",
       }
     );
+    oldPasswordBox.current.disabled = true;
+    newPasswordBox.current.disabled = true;
   }
 
   useEffect(() => {
