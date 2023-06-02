@@ -305,7 +305,7 @@ function App() {
                 window.location.reload();
               }
               if (response.status === 500) {
-                await deleteCookie();
+                deleteCookie('authToken');
                 window.location.reload();
               } else {
                 if (data.message === "Valid cookie") {
@@ -315,7 +315,7 @@ function App() {
                   setSignedIn(true);
                   resolve(data);
                 } else if (data.message === "Invalid cookie") {
-                  await deleteCookie();
+                  deleteCookie('authToken');
                   window.location.reload();
                   reject(new Error(`Invalid cookie`));
                 }
@@ -370,7 +370,7 @@ function App() {
             window.location.reload();
           }
         });
-      signOut();
+      signOut(false);
     }
   }
 
@@ -381,7 +381,7 @@ function App() {
     setPasswordBeingAdded("");
     setNewPassword("");
     setOldPassword("");
-    await deleteCookie();
+    deleteCookie('authToken');
     if (eraseUserName === true) {
       setUsername("");
     }
@@ -417,7 +417,7 @@ function App() {
           window.location.reload();
         }
       });
-    signOut();
+    signOut(true);
   }
 
   async function submitPassword() {
@@ -732,7 +732,7 @@ function App() {
         password: passwordBeingReset,
       }),
     });
-    signOut();
+    signOut(false);
   }
 
   function back(page) {
@@ -766,13 +766,7 @@ function App() {
   }
 
   async function deleteCookie() {
-    await fetch("/api/users/deleteCookie", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   }
 
   return (
