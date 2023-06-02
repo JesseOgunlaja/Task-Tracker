@@ -1,5 +1,4 @@
 const express = require("express");
-require("dotenv").config();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
@@ -8,7 +7,7 @@ const CryptoJS = require("crypto-js");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
 const cookieParser = require("cookie-parser");
-const apicache = require("apicache-plus");
+const apicache = require("apicache");
 
 const API_KEY = process.env.API_KEY;
 const GLOBAL_KEY = process.env.GLOBAL_KEY;
@@ -83,6 +82,7 @@ const authenticateJWTGlobal = (req, res, next) => {
       }
     } catch (error) {
       // Invalid token
+      res.clearCookie('authToken')
       return res.status(401).json({ message: "Invalid token", token: token });
     }
   }
@@ -105,6 +105,7 @@ const authenticateJWTUser = async (req, res, next) => {
       return res.status(401).json({ message: "Invalid token" });
     }
   } catch (error) {
+    res.clearCookie('authToken')
     return res.status(401).json({ message: "Invalid token" });
   }
 };
