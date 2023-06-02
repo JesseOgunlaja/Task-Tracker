@@ -137,7 +137,7 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.get("/api/users/checkJWT",apicache('5 minutes'), async (req,res) => {
+app.get("/api/users/checkJWT",apicache.middleware("5 minutes"), async (req,res) => {
   req.apicacheGroup = 'checkJWT'
   const token = req.cookies.authToken
 
