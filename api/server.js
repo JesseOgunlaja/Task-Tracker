@@ -82,7 +82,7 @@ const authenticateJWTGlobal = (req, res, next) => {
       }
     } catch (error) {
       // Invalid token
-      res.clearCookie("authToken");
+      res.clearCookie('authToken')
       return res.status(401).json({ message: "Invalid token", token: token });
     }
   }
@@ -102,12 +102,11 @@ const authenticateJWTUser = async (req, res, next) => {
     if ((await User.findById(decoded.id)).name === req.body.username) {
       next();
     } else {
-      res.clearCookie("authToken");
-      return res.redirect("/");
+      return res.status(401).json({ message: "Invalid token" });
     }
   } catch (error) {
-    res.clearCookie("authToken");
-    return res.redirect("/");
+    res.clearCookie('authToken')
+    return res.status(401).json({ message: "Invalid token" });
   }
 };
 
