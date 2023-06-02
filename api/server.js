@@ -154,7 +154,7 @@ app.post(
         return res.status(200).json(data);
       } else {
         res.clearCookie("authToken");
-        return res.status(200).json({ message: "Invalid cookie" });
+        return res.status(400).json({ message: "Invalid cookie" });
       }
     } else {
       return res.status(200).json({ message: "No cookie" });
@@ -223,11 +223,12 @@ app.post("/api/users/loginPassword", async (req, res) => {
       expiresIn: "7d",
     });
     res.cookie("authToken", token, {
-      httpOnly: true, // Ensures the cookie is accessible only through HTTP requests
+      httpOnly: false,
       secure: true, // Ensures the cookie is only sent over HTTPS connections
       sameSite: "strict", // Ensures the cookie is only sent for same-site requests
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+    apicache.clear("checkJWT");
     res.status(200).json({ token: token });
   } else {
     res.status(401).json({ message: "Invalid Credentials" });
@@ -287,6 +288,7 @@ app.post("/api/users/user/delete", authenticateJWTUser, async (req, res) => {
   const user = await User.findOne({ name: req.body.username });
   try {
     const deletedUser = await User.findOneAndDelete({ name: user.name });
+    apicache.clear("checkJWT");
     if (deletedUser == null) {
       return res.status(404).json({ message: "Resource not found" });
     }

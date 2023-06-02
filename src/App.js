@@ -80,7 +80,7 @@ function App() {
       headers: {
         "Content-type": "application/json",
       },
-      credentials: 'include',
+      credentials: "include",
       body: JSON.stringify({
         username: username,
         email: newEmail,
@@ -148,7 +148,7 @@ function App() {
       headers: {
         "Content-type": "application/json",
       },
-      credentials: 'include',
+      credentials: "include",
       body: JSON.stringify({
         username: username,
         tasks: currentTasks,
@@ -184,7 +184,7 @@ function App() {
         headers: {
           "Content-type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify({
           username: username,
           tasks: encryptedTasks,
@@ -220,7 +220,7 @@ function App() {
       headers: {
         "Content-type": "application/json",
       },
-      credentials: 'include',
+      credentials: "include",
       body: JSON.stringify({
         username: username,
         tasks: currentTasks,
@@ -236,7 +236,7 @@ function App() {
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: 'include',
+      credentials: "include",
       body: JSON.stringify({
         username: username,
       }),
@@ -246,6 +246,12 @@ function App() {
   }
 
   async function checkIfSignedIn() {
+    if (
+      document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("authToken="))
+        ?.split("=")[1]
+    ) {
       const res = await toast.promise(
         new Promise((resolve, reject) => {
           fetch("/api/users/checkJWT", {
@@ -253,28 +259,25 @@ function App() {
             headers: {
               "Content-Type": "application/json",
             },
-            credentials: 'include',
+            credentials: "include",
           })
             .then(async (response) => {
-              if (response.ok) {
-                const data = await response.json();
-
+              const data = await response.json();
+              if (response.status === 500) {
+                await deleteCookie();
+                window.location.reload();
+              } else {
                 if (data.message === "Valid cookie") {
                   setUsername(data.user.name);
                   setToken(data.token);
                   setTasks(data.user.tasks);
                   setSignedIn(true);
                   resolve(data);
-                } else if(data.message === "No cookie") {
-                  resolve(data);
+                } else if (data.message === "Invalid cookie") {
+                  await deleteCookie();
+                  window.location.reload();
+                  reject(new Error(`Invalid cookie`));
                 }
-                else if(data.message === "Invalid cookie") {
-                  deleteCookie()
-                  window.location.reload()
-                reject(new Error(`Invalid cookie`));  
-                }
-              } else {
-                reject(new Error(`HTTP error: ${response.status}`));  
               }
             })
             .catch((error) => {
@@ -287,6 +290,7 @@ function App() {
           error: "User not found",
         }
       );
+    }
   }
 
   useEffect(() => {
@@ -330,7 +334,7 @@ function App() {
     setPasswordBeingAdded("");
     setNewPassword("");
     setOldPassword("");
-    deleteCookie()
+    await deleteCookie();
     if (eraseUserName === false) {
       setUsername("");
     }
@@ -355,7 +359,7 @@ function App() {
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: 'include',
+      credentials: "include",
       body: JSON.stringify({
         username: username,
       }),
@@ -444,7 +448,7 @@ function App() {
                 headers: {
                   "Content-type": "application/json",
                 },
-      credentials: 'include',
+                credentials: "include",
 
                 body: JSON.stringify({
                   username: username,
@@ -543,28 +547,28 @@ function App() {
       }
     }
     if (password === "oldPassword") {
-      if ((oldPasswordBox.current.type === "text")) {
+      if (oldPasswordBox.current.type === "text") {
         oldPasswordBox.current.type = "password";
       } else {
         oldPasswordBox.current.type = "text";
       }
     }
     if (password === "newPassword") {
-      if ((newPasswordBox.current.type === "text")) {
+      if (newPasswordBox.current.type === "text") {
         newPasswordBox.current.type = "password";
       } else {
         newPasswordBox.current.type = "text";
       }
     }
     if (password === "password") {
-      if ((passwordBox.current.type === "text")) {
+      if (passwordBox.current.type === "text") {
         passwordBox.current.type = "password";
       } else {
         passwordBox.current.type = "text";
       }
     }
     if (password === "resetPassword") {
-      if ((passwordBeingResetBox.current.type === "text")) {
+      if (passwordBeingResetBox.current.type === "text") {
         passwordBeingResetBox.current.type = "password";
       } else {
         passwordBeingResetBox.current.type = "text";
@@ -641,7 +645,12 @@ function App() {
     const header = { alg: "HS256", typ: "JWT" };
     const sHeader = JSON.stringify(header);
     const sPayload = JSON.stringify(payload);
-    const globalToken = jwt.jws.JWS.sign("HS256", sHeader, sPayload, SECRET_KEY);
+    const globalToken = jwt.jws.JWS.sign(
+      "HS256",
+      sHeader,
+      sPayload,
+      SECRET_KEY
+    );
     await fetch(`api/Users/user/resetPassword`, {
       method: "PATCH",
       headers: {
@@ -675,7 +684,7 @@ function App() {
     if (page === "forgetPassword") {
       setIsForgettingPassword(false);
       setIsPuttingPassword(false);
-      setPasswordBeingAdded("")
+      setPasswordBeingAdded("");
     }
     if (page === "changeEmail") {
       setIsChangingData(false);
@@ -688,12 +697,12 @@ function App() {
 
   async function deleteCookie() {
     await fetch("/api/users/deleteCookie", {
-      method: 'POST',
+      method: "POST",
       headers: {
-        "Content-Type": 'application/json'
+        "Content-Type": "application/json",
       },
-      credentials: 'include'
-    })
+      credentials: "include",
+    });
   }
 
   return (
@@ -711,10 +720,6 @@ function App() {
           pauseOnHover={false}
           theme="dark"
         />
-        {document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("authToken="))
-          ?.split("=")[1] != null && tasks == null}
         {signedIn ? (
           <>
             <div className="container">
