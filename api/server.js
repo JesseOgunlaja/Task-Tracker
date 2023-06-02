@@ -1,5 +1,5 @@
 const express = require("express");
-require('dotenv').config()
+require("dotenv").config();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
@@ -7,11 +7,11 @@ const jwt = require("jsonwebtoken");
 const CryptoJS = require("crypto-js");
 const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
-const cookieParser = require('cookie-parser');
-import apicache from 'apicache-plus'
+const cookieParser = require("cookie-parser");
+const apicache = require("apicache-plus");
 
 const API_KEY = process.env.API_KEY;
-const GLOBAL_KEY = process.env.GLOBAL_KEY
+const GLOBAL_KEY = process.env.GLOBAL_KEY;
 const SECRET_KEY = process.env.ENCRYPTION_KEY;
 
 const app = express();
@@ -57,8 +57,6 @@ const limiter = rateLimit({
 app.use(bodyParser.json());
 app.use(limiter);
 
-
-
 const authenticateJWTGlobal = (req, res, next) => {
   if (req.headers.authorization?.split(" ")[0] === "ThirdParty") {
     const apiKey = req.headers.authorization?.split(" ")[1];
@@ -81,7 +79,7 @@ const authenticateJWTGlobal = (req, res, next) => {
       if (decoded.KEY === GLOBAL_KEY) {
         next();
       } else {
-        return res.status(401).json({ message: "Invalid token" , token: token});
+        return res.status(401).json({ message: "Invalid token", token: token });
       }
     } catch (error) {
       // Invalid token
@@ -104,14 +102,14 @@ const authenticateJWTUser = async (req, res, next) => {
     if ((await User.findById(decoded.id)).name === req.body.username) {
       next();
     } else {
-      return res.status(401).json({ message: "Invalid token"});
+      return res.status(401).json({ message: "Invalid token" });
     }
   } catch (error) {
-    return res.status(401).json({ message: "Invalid token"});
+    return res.status(401).json({ message: "Invalid token" });
   }
 };
 
-app.get("/api/users",authenticateJWTGlobal, async (req, res) => {
+app.get("/api/users", authenticateJWTGlobal, async (req, res) => {
   try {
     const users = await User.find();
     res.status(200).json(users);
@@ -121,7 +119,7 @@ app.get("/api/users",authenticateJWTGlobal, async (req, res) => {
 });
 
 // Get one user
-app.post("/api/users/user",authenticateJWTUser, async (req, res) => {
+app.post("/api/users/user", authenticateJWTUser, async (req, res) => {
   const user = await User.findOne({ name: req.body.username });
 
   res.json(user);
@@ -137,27 +135,32 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.get("/api/users/checkJWT",apicache.middleware("5 minutes"), async (req,res) => {
-  req.apicacheGroup = 'checkJWT'
-  const token = req.cookies.authToken
+app.get(
+  "/api/users/checkJWT",
+  apicache.middleware("5 minutes"),
+  async (req, res) => {
+    req.apicacheGroup = "checkJWT";
+    const token = req.cookies.authToken;
 
-  if(token) {
-    const decoded = jwt.verify(token,SECRET_KEY)
-  
-    if(decoded != null && await User.findById(decoded.id) != null) {
-      const data = {message: "Valid cookie", user: await User.findById(decoded.id), token: token}
-      return res.status(200).json(data)
-    }
-    else {
-      res.clearCookie('authToken');
-      return res.status(200).json({message: "Invalid cookie"})
+    if (token) {
+      const decoded = jwt.verify(token, SECRET_KEY);
+
+      if (decoded != null && (await User.findById(decoded.id)) != null) {
+        const data = {
+          message: "Valid cookie",
+          user: await User.findById(decoded.id),
+          token: token,
+        };
+        return res.status(200).json(data);
+      } else {
+        res.clearCookie("authToken");
+        return res.status(200).json({ message: "Invalid cookie" });
+      }
+    } else {
+      return res.status(200).json({ message: "No cookie" });
     }
   }
-  else {
-    return res.status(200).json({message: "No cookie"})
-  }
-
-})
+);
 
 app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
   const user = await User.findOne({ name: req.body.username });
@@ -206,24 +209,24 @@ app.post("/api/users", async (req, res) => {
   }
 });
 
-app.post("/api/users/deleteCookie", async (req,res) => {
-  res.clearCookie('authToken');
-  res.status(200).json({message: "Cookie deleted"})
-})
+app.post("/api/users/deleteCookie", async (req, res) => {
+  res.clearCookie("authToken");
+  res.status(200).json({ message: "Cookie deleted" });
+});
 
 app.post("/api/users/loginPassword", async (req, res) => {
   const user = await User.findOne({ name: req.body.username });
   const passwordInputted = req.body.password;
 
   if (await bcrypt.compare(passwordInputted, user.password)) {
-    const token = jwt.sign({id: user._id}, SECRET_KEY, {
-      "expiresIn": "7d",
+    const token = jwt.sign({ id: user._id }, SECRET_KEY, {
+      expiresIn: "7d",
     });
-    res.cookie('authToken', token, {
-      httpOnly: true,  // Ensures the cookie is accessible only through HTTP requests
-      secure: true,    // Ensures the cookie is only sent over HTTPS connections
-      sameSite: 'strict', // Ensures the cookie is only sent for same-site requests
-      maxAge: 7 * 24 * 60 * 60 * 1000
+    res.cookie("authToken", token, {
+      httpOnly: true, // Ensures the cookie is accessible only through HTTP requests
+      secure: true, // Ensures the cookie is only sent over HTTPS connections
+      sameSite: "strict", // Ensures the cookie is only sent for same-site requests
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     res.status(200).json({ token: token });
   } else {
@@ -233,27 +236,30 @@ app.post("/api/users/loginPassword", async (req, res) => {
 
 app.post("/api/users/loginName", async (req, res) => {
   const user = await User.findOne({ name: req.body.username });
-  if(user == null) {
-    return res.status(400).json({message: "Resoure not found"})
-  }
-  else {
-    return res.status(200).json({message: "Resoure found"})
+  if (user == null) {
+    return res.status(400).json({ message: "Resoure not found" });
+  } else {
+    return res.status(200).json({ message: "Resoure found" });
   }
 });
 
-app.patch("/api/users/user/resetPassword", authenticateJWTGlobal, async (req,res) => {
-  const user = await User.findOne({ name: req.body.username });
-  user.password = await bcrypt.hash(req.body.password, 10)
-  try {
-    const updatedUser = await user.save();
-    res.json(updatedUser);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+app.patch(
+  "/api/users/user/resetPassword",
+  authenticateJWTGlobal,
+  async (req, res) => {
+    const user = await User.findOne({ name: req.body.username });
+    user.password = await bcrypt.hash(req.body.password, 10);
+    try {
+      const updatedUser = await user.save();
+      res.json(updatedUser);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
   }
-})
+);
 
 // Update a user
-app.patch("/api/users/user",authenticateJWTUser, async (req, res) => {
+app.patch("/api/users/user", authenticateJWTUser, async (req, res) => {
   const user = await User.findOne({ name: req.body.username });
   if (req.body.name != null) {
     user.name = req.body.name;
@@ -277,7 +283,7 @@ app.patch("/api/users/user",authenticateJWTUser, async (req, res) => {
 });
 
 // Delete a user
-app.post("/api/users/user/delete",authenticateJWTUser, async (req, res) => {
+app.post("/api/users/user/delete", authenticateJWTUser, async (req, res) => {
   const user = await User.findOne({ name: req.body.username });
   try {
     const deletedUser = await User.findOneAndDelete({ name: user.name });
