@@ -163,7 +163,7 @@ app.post(
         return res.status(400).json({ message: "Invalid cookie" });
       }
     } else {
-      return res.status(200).json({ message: "No cookie" });
+      return res.status(200).json({ message: "No cookie", refresh: false });
     }
   }
 );
@@ -194,7 +194,7 @@ app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
     } else {
       return res
         .status(200)
-        .json({ message: `Email sent`, info: info.response });
+        .json({ message: `Email sent`, info: info.response, refresh: false });
     }
   });
 });
@@ -235,7 +235,7 @@ app.post("/api/users/loginPassword", async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     apicache.clear("checkJWT");
-    res.status(200).json({ token: token });
+    res.status(200).json({ token: token, refresh: false });
   } else {
     res.status(401).json({ message: "Invalid Credentials" });
   }
@@ -246,7 +246,7 @@ app.post("/api/users/loginName", async (req, res) => {
   if (user == null) {
     return res.status(400).json({ message: "Resoure not found" });
   } else {
-    return res.status(200).json({ message: "Resoure found" });
+    return res.status(200).json({ message: "Resoure found", refresh: false });
   }
 });
 

@@ -126,7 +126,7 @@ function App() {
           .then((response) => {
             usernameBox.current.disabled = false;
             const data = response.json();
-            if (data.refres && response.status === 401) {
+            if (data.refresh && response.status === 401) {
               window.location.reload();
             }
             if (response.ok) {
@@ -301,7 +301,7 @@ function App() {
           })
             .then(async (response) => {
               const data = await response.json();
-              if (data.refres && response.status === 401) {
+              if (data.refresh && response.status === 401) {
                 window.location.reload();
               }
               if (response.status === 500) {
@@ -437,7 +437,7 @@ function App() {
           .then(async (response) => {
             passwordBox.current.disabled = false;
             const data = await response.json();
-            if (data.refres && response.status === 401) {
+            if (data.refresh && response.status === 401) {
               window.location.reload();
             }
             if (response.ok) {
