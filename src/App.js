@@ -75,7 +75,7 @@ function App() {
   };
 
   async function completeChangeEmail() {
-    newEmailBox.current.disabled = true
+    newEmailBox.current.disabled = true;
     await fetch(`api/Users/user`, {
       method: "PATCH",
       headers: {
@@ -93,7 +93,7 @@ function App() {
           window.location.reload();
         }
       });
-    newEmailBox.current.disabled = true
+    newEmailBox.current.disabled = true;
     back("changeEmail");
     setSignedIn(true);
   }
@@ -278,9 +278,8 @@ function App() {
         if (data.refresh) {
           window.location.reload();
         }
+        return data.tasks;
       });
-    const data = await res.json();
-    return data.tasks;
   }
 
   async function checkIfSignedIn() {
@@ -481,10 +480,10 @@ function App() {
 
   async function completeChangePassword() {
     oldPasswordBox.current.disabled = true;
-    newPasswordBox.current.disabled = true;  
+    newPasswordBox.current.disabled = true;
     if (oldPassword === "" || newPassword === "") {
       oldPasswordBox.current.disabled = true;
-    newPasswordBox.current.disabled = true;
+      newPasswordBox.current.disabled = true;
       error("Value required");
       return;
     }
