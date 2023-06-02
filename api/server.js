@@ -144,22 +144,19 @@ app.post(
 
     if (token) {
       try {
-
         const decoded = jwt.verify(token, SECRET_KEY);
-      }
-      catch {
-        res.clearCookie('authToken')
-        return res.status(400).json({ message: "Invalid cookie" });
-      }
-
-      if (decoded != null && (await User.findById(decoded.id)) != null) {
-        const data = {
-          message: "Valid cookie",
-          user: await User.findById(decoded.id),
-          token: token,
-        };
-        return res.status(200).json(data);
-      } else {
+        if (decoded != null && (await User.findById(decoded.id)) != null) {
+          const data = {
+            message: "Valid cookie",
+            user: await User.findById(decoded.id),
+            token: token,
+          };
+          return res.status(200).json(data);
+        } else {
+          res.clearCookie("authToken");
+          return res.status(400).json({ message: "Invalid cookie" });
+        }
+      } catch {
         res.clearCookie("authToken");
         return res.status(400).json({ message: "Invalid cookie" });
       }

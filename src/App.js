@@ -262,6 +262,7 @@ function App() {
             credentials: "include",
           })
             .then(async (response) => {
+              console.log(response)
               const data = await response.json();
               if (response.status === 500) {
                 await deleteCookie();
