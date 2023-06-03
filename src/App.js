@@ -377,9 +377,11 @@ function App() {
               if(data.message) {
                 if(data.message === "Duplicate email") {
                   reject("A user is already registered with this email")
+                  return
                 }
                 else if(data.message === "Duplicate name") {
-                  reject("A user is already registered with this name")
+                  reject(new Error("A user is already registered with this name"))
+                  return;
                 }
               }
               if (response.ok) {
