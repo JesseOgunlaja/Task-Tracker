@@ -375,16 +375,19 @@ function App() {
             .then((response) => {
               const data = response.json();
               if(data.message) {
+                console.log("duplicate")
                 if(data.message === "Duplicate email") {
-                  reject("A user is already registered with this email")
-                  return
+                  console.log("email")
+                  reject(new Error("A user is already registered with this name"))
+                  return;
                 }
                 else if(data.message === "Duplicate name") {
+                  console.log("name")
                   reject(new Error("A user is already registered with this name"))
                   return;
                 }
               }
-              if (response.ok) {
+              else if (response.ok) {
                 signOut(false);
                 resolve(data);
               } else {
