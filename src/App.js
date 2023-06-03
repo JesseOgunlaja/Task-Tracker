@@ -398,7 +398,7 @@ function App() {
           success: "Registered",
           error: {
             render({data}){
-              return data
+              return error(data.message)
             }
           }
         }
