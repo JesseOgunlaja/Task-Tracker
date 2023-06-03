@@ -350,13 +350,6 @@ function App() {
       error("Password required");
     } else {
       addUserPassword.current.type = "password";
-      addUserEmail.current.type = "password";
-
-
-
-
-
-
 
       const res = await toast.promise(
         new Promise((resolve, reject) => {
@@ -375,15 +368,13 @@ function App() {
             .then( async (response) => {
               const data = await response.json();
               if(data.message) {
-                console.log("duplicate")
                 if(data.message === "Duplicate email") {
                   console.log("email")
-                  reject(new Error("A user is already registered with this name"))
+                  reject(new Error("A user is already registered with that email"))
                   return;
                 }
                 else if(data.message === "Duplicate name") {
-                  console.log("name")
-                  reject(new Error("A user is already registered with this name"))
+                  reject(new Error("A user is already registered with that name"))
                   return;
                 }
               }
@@ -403,7 +394,7 @@ function App() {
           success: "Registered",
           error: {
             render({data}){
-              return error(data.message)
+              return;
             }
           }
         }
