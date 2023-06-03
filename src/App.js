@@ -373,7 +373,7 @@ function App() {
             }),
           })
             .then((response) => {
-              const data = response.json();
+              const data = await response.json();
               if(data.message) {
                 console.log("duplicate")
                 if(data.message === "Duplicate email") {
