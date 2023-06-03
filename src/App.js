@@ -372,7 +372,7 @@ function App() {
               email: emailBeingAdded,
             }),
           })
-            .then((response) => {
+            .then( async (response) => {
               const data = await response.json();
               if(data.message) {
                 console.log("duplicate")
