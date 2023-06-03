@@ -1,5 +1,4 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -8,6 +7,9 @@ const nodemailer = require("nodemailer");
 const rateLimit = require("express-rate-limit");
 const cookieParser = require("cookie-parser");
 const apicache = require("apicache");
+const compression = require("compression");
+
+const { Types } = mongoose.Schema;
 
 const API_KEY = process.env.API_KEY;
 const GLOBAL_KEY = process.env.GLOBAL_KEY;
@@ -15,6 +17,7 @@ const SECRET_KEY = process.env.ENCRYPTION_KEY;
 
 const app = express();
 app.use(cookieParser());
+app.use(compression());
 const port = process.env.PORT || 8000;
 
 const DATA_ENCRYPTION_KEY1 = process.env.DATA_ENCRYPTION1;
@@ -24,6 +27,7 @@ const DATA_ENCRYPTION_KEY2 = process.env.DATA_ENCRYPTION2;
 const parsedDataKey2 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY2);
 const stringDataKey2 = CryptoJS.enc.Utf8.stringify(parsedDataKey2);
 
+
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -31,7 +35,9 @@ mongoose.connect(process.env.MONGODB_URI, {
   socketTimeoutMS: 45000,
 });
 
+
 const UserSchema = new mongoose.Schema({
+  _id: { type: Types.ObjectId, auto: true },
   name: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
@@ -53,7 +59,8 @@ const limiter = rateLimit({
 });
 // Use the middleware globally for all requests
 
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(limiter);
 
 const authenticateJWTGlobal = (req, res, next) => {
