@@ -62,16 +62,18 @@ function App() {
   const [token, setToken] = useState();
 
   const error = (text) => {
-    toast.error(text, {
-      position: "top-right",
-      autoClose: 2500,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "dark",
-    });
+    if(text !== "") {
+      toast.error(text, {
+        position: "top-right",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
   };
 
   async function completeChangeEmail() {
@@ -394,7 +396,7 @@ function App() {
           success: "Registered",
           error: {
             render({data}){
-              return;
+              return error(data.message)
             }
           }
         }
