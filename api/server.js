@@ -106,7 +106,7 @@ const authenticateJWTUser = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    if ((await User.findById(decoded.id)).name === req.body.username) {
+    if ((await User.findById(decoded.id)).name === req.body.username.toUpperCase()) {
       next();
     } else {
       res.clearCookie('authToken')
@@ -129,7 +129,7 @@ app.get("/api/users", authenticateJWTGlobal, async (req, res) => {
 
 // Get one user
 app.post("/api/users/user", authenticateJWTUser, async (req, res) => {
-  const user = await User.findOne({ name: req.body.username });
+  const user = await User.findOne({ name: req.body.username.toUpperCase() });
 
   res.json(user);
 });
@@ -182,7 +182,7 @@ app.post(
 );
 
 app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
-  const user = await User.findOne({ name: req.body.username });
+  const user = await User.findOne({ name: req.body.username.toUpperCase() });
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -244,7 +244,7 @@ app.post("/api/users/deleteCookie", async (req, res) => {
 });
 
 app.post("/api/users/loginPassword", async (req, res) => {
-  const user = await User.findOne({ name: req.body.username });
+  const user = await User.findOne({ name: req.body.username.toUpperCase() });
   const passwordInputted = req.body.password;
 
   if (await bcrypt.compare(passwordInputted, user.password)) {
@@ -277,7 +277,7 @@ app.patch(
   "/api/users/user/resetPassword",
   authenticateJWTGlobal,
   async (req, res) => {
-    const user = await User.findOne({ name: req.body.username });
+    const user = await User.findOne({ name: req.body.username.toUpperCase() });
     user.password = await bcrypt.hash(req.body.password, 10);
     try {
       const updatedUser = await user.save();
@@ -290,7 +290,7 @@ app.patch(
 
 // Update a user
 app.patch("/api/users/user", authenticateJWTUser, async (req, res) => {
-  const user = await User.findOne({ name: req.body.username });
+  const user = await User.findOne({ name: req.body.username.toUpperCase() });
   if (req.body.name != null) {
     user.name = req.body.name.toUpperCase();
   }
@@ -314,7 +314,7 @@ app.patch("/api/users/user", authenticateJWTUser, async (req, res) => {
 
 // Delete a user
 app.post("/api/users/user/delete", authenticateJWTUser, async (req, res) => {
-  const user = await User.findOne({ name: req.body.username });
+  const user = await User.findOne({ name: req.body.username.toUpperCase() });
   try {
     const deletedUser = await User.findOneAndDelete({ name: user.name });
     apicache.clear("checkJWT");
