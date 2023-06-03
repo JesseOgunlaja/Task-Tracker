@@ -215,8 +215,8 @@ app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
 // Create a user
 app.post("/api/users", async (req, res) => {
   const user = new User({
-    name: req.body.name,
-    email: req.body.email,
+    name: req.body.name.toUpperCase(),
+    email: req.body.email.toLowerCase(),
     password: await bcrypt.hash(req.body.password, 10),
     tasks: req.body.tasks,
   });
@@ -224,7 +224,17 @@ app.post("/api/users", async (req, res) => {
     const newUser = await user.save();
     res.status(201).json(newUser);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    if(error.message.includes("duplicate")) {
+      if(error.message.includes("email")) {
+        return res.status(400).json({ message: "Duplicate email" });
+      }
+      else if(error.message.includes("name")) {
+        return res.status(400).json({ message: "Duplicate name" });
+      }
+    }
+    else {
+      res.status(400).json({ message: error.message });
+    }
   }
 });
 
@@ -255,7 +265,7 @@ app.post("/api/users/loginPassword", async (req, res) => {
 });
 
 app.post("/api/users/loginName", async (req, res) => {
-  const user = await User.findOne({ name: req.body.username });
+  const user = await User.findOne({ name: req.body.username.toUpperCase() });
   if (user == null) {
     return res.status(400).json({ message: "Resoure not found" });
   } else {
@@ -282,10 +292,10 @@ app.patch(
 app.patch("/api/users/user", authenticateJWTUser, async (req, res) => {
   const user = await User.findOne({ name: req.body.username });
   if (req.body.name != null) {
-    user.name = req.body.name;
+    user.name = req.body.name.toUpperCase();
   }
   if (req.body.email != null) {
-    user.email = req.body.email;
+    user.email = req.body.email.toLowerCase();
   }
   if (req.body.password != null) {
     user.password = await bcrypt.hash(req.body.password, 10);

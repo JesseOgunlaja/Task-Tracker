@@ -352,6 +352,68 @@ function App() {
       addUserPassword.current.type = "password";
       addUserEmail.current.type = "password";
 
+
+
+
+
+
+
+      const res = await toast.promise(
+        new Promise((resolve, reject) => {
+          fetch(`api/Users`, {
+            method: "POST",
+            headers: {
+              "Content-type": "application/json",
+            },
+            body: JSON.stringify({
+              name: nameBeingAdded,
+              tasks: [],
+              password: passwordBeingAdded,
+              email: emailBeingAdded,
+            }),
+          })
+            .then((response) => {
+              const data = response.json();
+              if(data.message) {
+                if(data.message === "Duplicate email") {
+                  reject("A user is already registered with this email")
+                }
+                else if(data.message === "Duplicate name") {
+                  reject("A user is already registered with this name")
+                }
+              }
+              if (response.ok) {
+                signOut(false);
+                resolve(data);
+              } else {
+                reject(new Error(`HTTP error: ${response.status}`));
+              }
+            })
+            .catch(() => {
+              reject("error");
+            });
+        }),
+        {
+          pending: "Loading",
+          success: "Registered",
+          error: {
+            render({data}){
+              return data
+            }
+          }
+        }
+      );
+
+
+
+
+
+
+
+
+
+
+
       await fetch(`api/Users`, {
         method: "POST",
         headers: {
@@ -370,7 +432,6 @@ function App() {
             window.location.reload();
           }
         });
-      signOut(false);
     }
   }
 
