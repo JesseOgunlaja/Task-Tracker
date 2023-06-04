@@ -396,12 +396,11 @@ function App() {
           success: "Registered",
           error: {
             render({data}){
-              console.log(data)
               if(data.includes("user")) {
-                return error(data)
+                return data
               }
               else {
-                return error("Error")
+                return "Error"
               }
             }
           }
