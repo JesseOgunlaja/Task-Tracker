@@ -85,12 +85,12 @@ const authenticateJWTGlobal = (req, res, next) => {
       if (decoded.KEY === GLOBAL_KEY) {
         next();
       } else {
-        return res.status(401).json({ message: "Invalid token", token: token });
+        return res.status(401).json({ message: "Invalid token" });
       }
     } catch (error) {
       // Invalid token
       res.clearCookie('authToken')
-      return res.status(401).json({ message: "Invalid token", token: token });
+      return res.status(401).json({ message: "Invalid token" });
     }
   }
 };
@@ -164,7 +164,6 @@ app.post(
           const data = {
             message: "Valid cookie",
             user: await User.findById(decoded.id),
-            token: token,
           };
           return res.status(200).json(data);
         } else {
@@ -258,7 +257,7 @@ app.post("/api/users/loginPassword", async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     apicache.clear("checkJWT");
-    res.status(200).json({ token: token, refresh: false });
+    res.status(200).json({user: user, refresh: false });
   } else {
     res.status(401).json({ message: "Invalid Credentials" });
   }

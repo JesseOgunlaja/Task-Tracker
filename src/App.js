@@ -175,9 +175,11 @@ function App() {
         if (data.refresh) {
           window.location.reload();
         }
+        else {
+          setTasks(data.tasks);
+        }
       });
 
-    setTasks(await fetchTasks());
   }
 
   async function addTask() {
@@ -217,10 +219,12 @@ function App() {
           if (data.refresh) {
             window.location.reload();
           }
+          else {
+            setTasks(data.tasks);
+          }
         });
     }
     setIsAdding(false);
-    setTasks(await fetchTasks());
   }
 
   function edit(index) {
@@ -259,30 +263,11 @@ function App() {
         if (data.refresh) {
           window.location.reload();
         }
+        else {
+          setTasks(data.tasks);
+        }
       });
-    setTasks(await fetchTasks());
     setIsEditing(false);
-  }
-
-  async function fetchTasks(tokenPassed) {
-    const response = await fetch(`api/users/user`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        username: username,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (data.refresh) {
-      window.location.reload();
-    }
-
-    return data.tasks;
   }
 
   async function checkIfSignedIn() {
@@ -479,7 +464,7 @@ function App() {
               const tokenGiven = data.token;
               setToken(tokenGiven);
               passwordBox.current.type = "password";
-              setTasks(await fetchTasks(tokenGiven));
+              setTasks(data.user.tasks);
               setSignedIn(true);
               resolve(data);
             } else {
