@@ -62,7 +62,7 @@ function App() {
   const [token, setToken] = useState();
 
   const error = (text) => {
-    if(text !== "") {
+    if(text != undefined || text != null || text !== "") {
       toast.error(text, {
         position: "top-right",
         autoClose: 2500,
