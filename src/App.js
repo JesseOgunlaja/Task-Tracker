@@ -407,6 +407,8 @@ function App() {
           }
         }
       );
+  }
+}
 
   async function signOut(eraseUserName) {
     setNewEmail("");
