@@ -372,11 +372,11 @@ function App() {
               if(data.message) {
                 if(data.message === "Duplicate email") {
                   console.log("email")
-                  reject(new Error("A user is already registered with that email"))
+                  reject("A user is already registered with that email")
                   return;
                 }
                 else if(data.message === "Duplicate name") {
-                  reject(new Error("A user is already registered with that name"))
+                  reject("A user is already registered with that name")
                   return;
                 }
               }
@@ -397,7 +397,12 @@ function App() {
           error: {
             render({data}){
               console.log(data)
-              return error(data.message)
+              if(data.includes("user")) {
+                return error(data)
+              }
+              else {
+                return error("Error")
+              }
             }
           }
         }
