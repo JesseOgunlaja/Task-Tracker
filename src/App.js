@@ -408,37 +408,6 @@ function App() {
         }
       );
 
-
-
-
-
-
-
-
-
-
-
-      await fetch(`api/Users`, {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          name: nameBeingAdded,
-          tasks: [],
-          password: passwordBeingAdded,
-          email: emailBeingAdded,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.refresh) {
-            window.location.reload();
-          }
-        });
-    }
-  }
-
   async function signOut(eraseUserName) {
     setNewEmail("");
     setDataBeingChanged("");
