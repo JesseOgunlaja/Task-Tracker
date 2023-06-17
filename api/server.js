@@ -144,10 +144,10 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.post("/ap/resetCache", async (req,res) => {
+app.post("/ap/resetCache", async (req, res) => {
   apicache.clear("checkJWT");
-  return res.status(200)
-})
+  return res.status(200);
+});
 
 app.post(
   "/api/users/checkJWT",
@@ -199,7 +199,7 @@ app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
     from: "noreply4313@gmail.com",
     to: user.email,
     subject: "Task Tracker: Verification Code",
-    html: `<div style="width:100vw;height:100vh;display:flex;justify-content:center;><p>This is your verification code</p><br><h1 style="width:50vw;background:lightskyblue;padding:25px">${decryptString(req.body.verificationCode)}</h1></div>`
+    html: '<div style="width:100vw;height:100vh;display:flex;justify-content:center;"><p>This is your verification code</p><br/><h1 style="width:50vw;background:lightskyblue;padding:25px">${decryptString(req.body.verificationCode)}</h1> </div>',
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
