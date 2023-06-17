@@ -195,13 +195,37 @@ app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
     },
   });
 
+  const HTML = `
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>Email Template</title>
+      <style>
+      .code {
+        background: rgba(112,128,144,.75);
+        display:flex;
+        align-items: center;
+        justify-content: center;
+        padding: 25px;
+        font-size: 25px;
+      }
+      </style>
+    </head>
+    <body>
+      <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+      <p>This is your verification code</p>
+        <p class="code">${decryptString(req.body.verificationCode)}</p>
+      </div>
+    </body>
+  </html>
+`;
+
   const mailOptions = {
     from: "noreply4313@gmail.com",
     to: user.email,
     subject: "Task Tracker: Verification Code",
-    html: `<p style="text-align:center;">This is your verification code</p><br><p style="opacity:0.75;text-align:center;height:30px;width:200px;background:lightskyblue;padding:25px;">${decryptString(
-      req.body.verificationCode
-    )}</p>`,
+    html: HTML,
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
