@@ -202,6 +202,13 @@ app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
       <meta charset="UTF-8">
       <title>Email Template</title>
       <style>
+      div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
       .code {
         background: rgba(112,128,144,.75);
         display:flex;
@@ -209,13 +216,17 @@ app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
         justify-content: center;
         padding: 25px;
         font-size: 25px;
+        border-radius: 10px;
+      }
+      .verif {
+        text-align:center;
       }
       </style>
     </head>
     <body>
       <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-      <p>This is your verification code</p>
-        <p class="code">${decryptString(req.body.verificationCode)}</p>
+      <p class"verif">This is your verification code</p>
+        <h1 class="code">${decryptString(req.body.verificationCode)}</h1>
       </div>
     </body>
   </html>
