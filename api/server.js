@@ -332,7 +332,7 @@ app.patch("/api/users/user", authenticateJWTUser, async (req, res) => {
     }
 
     apicache.clear("checkJWT");
-    res.json({ message: "User updated successfully." });
+    res.json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
