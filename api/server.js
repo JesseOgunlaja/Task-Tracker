@@ -208,6 +208,7 @@ app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
         justify-content: center;
         align-items: center;
         height: 100vh;
+        flex-direction: column;
       }
       .code {
         background: rgba(112,128,144,.75);
@@ -224,7 +225,7 @@ app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
       </style>
     </head>
     <body>
-      <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+      <div>
       <p class="verif">This is your verification code</p>
         <h1 class="code">${decryptString(req.body.verificationCode)}</h1>
       </div>
