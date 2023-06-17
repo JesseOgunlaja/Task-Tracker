@@ -144,6 +144,11 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
+app.post("/ap/resetCache", async (req,res) => {
+  apicache.clear("checkJWT");
+  return res.status(200)
+})
+
 app.post(
   "/api/users/checkJWT",
   apicache.middleware("5 minutes"),
@@ -154,7 +159,7 @@ app.post(
     if (token) {
       try {
         const decoded = jwt.verify(token, SECRET_KEY);
-        const user = await User.findById({id: decoded.id});
+        const user = await User.findById(decoded.id);
 
         if (user) {
           res.cookie("authToken", token, {
