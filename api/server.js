@@ -35,9 +35,9 @@ mongoose.connect(process.env.MONGODB_URI, {
 });
 
 const UserSchema = new mongoose.Schema({
-  _id: { type: Types.ObjectId, auto: true },
+  _id: { type: Types.ObjectId, auto: true, index: true },
   name: { type: String, required: true, unique: true, index: true },
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true, index: true },
   password: { type: String, required: true },
   tasks: [
     {
@@ -154,7 +154,7 @@ app.post(
     if (token) {
       try {
         const decoded = jwt.verify(token, SECRET_KEY);
-        const user = await User.findById(decoded.id);
+        const user = await User.findById({id: decoded.id});
 
         if (user) {
           res.cookie("authToken", token, {
@@ -249,9 +249,6 @@ app.post("/api/users/loginPassword", async (req, res) => {
       expiresIn: "7d",
     });
     res.cookie("authToken", token, {
-      httpOnly: false,
-      secure: true, // Ensures the cookie is only sent over HTTPS connections
-      sameSite: "strict", // Ensures the cookie is only sent for same-site requests
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     apicache.clear("checkJWT");
