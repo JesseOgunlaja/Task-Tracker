@@ -154,26 +154,26 @@ app.post(
     if (token) {
       try {
         const decoded = jwt.verify(token, SECRET_KEY);
-        if (decoded != null && (await User.findById(decoded.id)) != null) {
+        const user = await User.findById(decoded.id).lean();
+
+        if (user) {
           res.cookie("authToken", token, {
-            httpOnly: false,
-            secure: true, // Ensures the cookie is only sent over HTTPS connections
-            sameSite: "strict", // Ensures the cookie is only sent for same-site requests
             maxAge: 7 * 24 * 60 * 60 * 1000,
           });
+
           const data = {
             message: "Valid cookie",
-            user: await User.findById(decoded.id),
+            user: user,
           };
           return res.status(200).json(data);
-        } else {
-          res.clearCookie("authToken");
-          return res.status(400).json({ message: "Invalid cookie" });
         }
-      } catch {
-        res.clearCookie("authToken");
-        return res.status(400).json({ message: "Invalid cookie" });
+      } catch (error) {
+        // Error handling for jwt.verify() method
+        console.error(error);
       }
+
+      res.clearCookie("authToken");
+      return res.status(400).json({ message: "Invalid cookie" });
     } else {
       return res.status(200).json({ message: "No cookie", refresh: false });
     }
@@ -264,11 +264,20 @@ app.post("/api/users/loginPassword", async (req, res) => {
 });
 
 app.post("/api/users/loginName", async (req, res) => {
-  const user = await User.findOne({ name: req.body.username.toUpperCase() });
-  if (user == null) {
-    return res.status(400).json({ message: "Resoure not found" });
-  } else {
-    return res.status(200).json({ message: "Resoure found", refresh: false });
+  try {
+    const { username } = req.body;
+
+    const user = await User.findOne({ name: username.toUpperCase() })
+      .select("_id")
+      .lean();
+
+    if (user == null) {
+      return res.status(400).json({ message: "Resource not found" });
+    } else {
+      return res.status(200).json({ message: "Resource found", refresh: false });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 
@@ -289,27 +298,46 @@ app.patch(
 
 // Update a user
 app.patch("/api/users/user", authenticateJWTUser, async (req, res) => {
-  const user = await User.findOne({ name: req.body.username.toUpperCase() });
-  if (req.body.name != null) {
-    user.name = req.body.name.toUpperCase();
+  const { username, name, email, password, tasks } = req.body;
+
+  // Perform basic validation on the request body
+  if (!username) {
+    return res.status(400).json({ message: "Username is required." });
   }
-  if (req.body.email != null) {
-    user.email = req.body.email.toLowerCase();
+
+  const updateFields = {};
+
+  if (name) {
+    updateFields.name = name.toUpperCase();
   }
-  if (req.body.password != null) {
-    user.password = await bcrypt.hash(req.body.password, 10);
+  if (email) {
+    updateFields.email = email.toLowerCase();
   }
-  if (req.body.tasks != null) {
-    user.tasks = req.body.tasks;
+  if (password) {
+    updateFields.password = await bcrypt.hash(password, 10);
   }
+  if (tasks) {
+    updateFields.tasks = tasks;
+  }
+
   try {
-    const updatedUser = await user.save();
+    // Use bulkWrite for updating multiple fields
+    const result = await User.updateOne(
+      { name: username.toUpperCase() },
+      { $set: updateFields }
+    );
+
+    if (result.nModified === 0) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
     apicache.clear("checkJWT");
-    res.json(updatedUser);
+    res.json({ message: "User updated successfully." });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
+
 
 // Delete a user
 app.post("/api/users/user/delete", authenticateJWTUser, async (req, res) => {
