@@ -144,41 +144,35 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.post(
-  "/api/users/checkJWT",
-  apicache.middleware("5 minutes"),
-  async (req, res) => {
-    req.apicacheGroup = "checkJWT";
-    const token = req.cookies.authToken;
+app.post("/api/users/checkJWT", apicache.middleware("5 minutes"), async (req, res) => {
+  req.apicacheGroup = "checkJWT";
+  const token = req.cookies.authToken;
 
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, SECRET_KEY);
-        const user = await User.findById(decoded.id).lean();
-
-        if (user) {
-          res.cookie("authToken", token, {
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-          });
-
-          const data = {
-            message: "Valid cookie",
-            user: user,
-          };
-          return res.status(200).json(data);
-        }
-      } catch (error) {
-        // Error handling for jwt.verify() method
-        console.error(error);
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, SECRET_KEY);
+      const userId = decoded.id;
+      
+      const user = await User.findById(userId).lean().cache();
+      
+      if (user) {
+        const data = {
+          message: "Valid cookie",
+          user: user,
+        };
+        return res.status(200).json(data);
       }
-
-      res.clearCookie("authToken");
-      return res.status(400).json({ message: "Invalid cookie" });
-    } else {
-      return res.status(200).json({ message: "No cookie", refresh: false });
+    } catch (error) {
+      console.error(error);
     }
+
+    res.clearCookie("authToken");
+    return res.status(400).json({ message: "Invalid cookie" });
+  } else {
+    return res.status(200).json({ message: "No cookie", refresh: false });
   }
-);
+});
+
 
 app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
   const user = await User.findOne({ name: req.body.username.toUpperCase() });
@@ -332,7 +326,7 @@ app.patch("/api/users/user", authenticateJWTUser, async (req, res) => {
     }
 
     apicache.clear("checkJWT");
-    res.json(result);
+    res.json(updateFields);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
