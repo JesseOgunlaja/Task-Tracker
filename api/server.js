@@ -27,14 +27,12 @@ const DATA_ENCRYPTION_KEY2 = process.env.DATA_ENCRYPTION2;
 const parsedDataKey2 = CryptoJS.enc.Utf8.parse(DATA_ENCRYPTION_KEY2);
 const stringDataKey2 = CryptoJS.enc.Utf8.stringify(parsedDataKey2);
 
-
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 5000,
   socketTimeoutMS: 45000,
 });
-
 
 const UserSchema = new mongoose.Schema({
   _id: { type: Types.ObjectId, auto: true },
@@ -89,7 +87,7 @@ const authenticateJWTGlobal = (req, res, next) => {
       }
     } catch (error) {
       // Invalid token
-      res.clearCookie('authToken')
+      res.clearCookie("authToken");
       return res.status(401).json({ message: "Invalid token" });
     }
   }
@@ -106,14 +104,16 @@ const authenticateJWTUser = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    if ((await User.findById(decoded.id)).name === req.body.username.toUpperCase()) {
+    if (
+      (await User.findById(decoded.id)).name === req.body.username.toUpperCase()
+    ) {
       next();
     } else {
-      res.clearCookie('authToken')
-      return res.status(401).json({ message: "Invalid token" , refresh: true});
+      res.clearCookie("authToken");
+      return res.status(401).json({ message: "Invalid token", refresh: true });
     }
   } catch (error) {
-    res.clearCookie('authToken')
+    res.clearCookie("authToken");
     return res.status(401).json({ message: "Invalid token", refresh: true });
   }
 };
@@ -144,35 +144,41 @@ function decryptString(nameGiven) {
   return decrypted2;
 }
 
-app.post("/api/users/checkJWT", apicache.middleware("5 minutes"), async (req, res) => {
-  req.apicacheGroup = "checkJWT";
-  const token = req.cookies.authToken;
+app.post(
+  "/api/users/checkJWT",
+  apicache.middleware("5 minutes"),
+  async (req, res) => {
+    req.apicacheGroup = "checkJWT";
+    const token = req.cookies.authToken;
 
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, SECRET_KEY);
-      const userId = decoded.id;
-      
-      const user = await User.findById(userId).lean().cache();
-      
-      if (user) {
-        const data = {
-          message: "Valid cookie",
-          user: user,
-        };
-        return res.status(200).json(data);
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, SECRET_KEY);
+        const user = await User.findById(decoded.id);
+
+        if (user) {
+          res.cookie("authToken", token, {
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+          });
+
+          const data = {
+            message: "Valid cookie",
+            user: user,
+          };
+          return res.status(200).json(data);
+        }
+      } catch (error) {
+        // Error handling for jwt.verify() method
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
+
+      res.clearCookie("authToken");
+      return res.status(400).json({ message: "Invalid cookie" });
+    } else {
+      return res.status(200).json({ message: "No cookie", refresh: false });
     }
-
-    res.clearCookie("authToken");
-    return res.status(400).json({ message: "Invalid cookie" });
-  } else {
-    return res.status(200).json({ message: "No cookie", refresh: false });
   }
-});
-
+);
 
 app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
   const user = await User.findOne({ name: req.body.username.toUpperCase() });
@@ -217,15 +223,13 @@ app.post("/api/users", async (req, res) => {
     const newUser = await user.save();
     res.status(201).json(newUser);
   } catch (error) {
-    if(error.message.includes("duplicate")) {
-      if(error.message.includes("email")) {
+    if (error.message.includes("duplicate")) {
+      if (error.message.includes("email")) {
         return res.status(400).json({ message: "Duplicate email" });
-      }
-      else if(error.message.includes("name")) {
+      } else if (error.message.includes("name")) {
         return res.status(400).json({ message: "Duplicate name" });
       }
-    }
-    else {
+    } else {
       res.status(400).json({ message: error.message });
     }
   }
@@ -251,7 +255,7 @@ app.post("/api/users/loginPassword", async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     apicache.clear("checkJWT");
-    res.status(200).json({user: user, refresh: false });
+    res.status(200).json({ user: user, refresh: false });
   } else {
     res.status(401).json({ message: "Invalid Credentials" });
   }
@@ -268,7 +272,9 @@ app.post("/api/users/loginName", async (req, res) => {
     if (user == null) {
       return res.status(400).json({ message: "Resource not found" });
     } else {
-      return res.status(200).json({ message: "Resource found", refresh: false });
+      return res
+        .status(200)
+        .json({ message: "Resource found", refresh: false });
     }
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
@@ -331,7 +337,6 @@ app.patch("/api/users/user", authenticateJWTUser, async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
-
 
 // Delete a user
 app.post("/api/users/user/delete", authenticateJWTUser, async (req, res) => {
