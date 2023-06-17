@@ -36,7 +36,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 const UserSchema = new mongoose.Schema({
   _id: { type: Types.ObjectId, auto: true },
-  name: { type: String, required: true, unique: true },
+  name: { type: String, required: true, unique: true, index: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   tasks: [
@@ -269,12 +269,12 @@ app.post("/api/users/loginName", async (req, res) => {
       .select("_id")
       .lean();
 
-    if (user == null) {
-      return res.status(400).json({ message: "Resource not found" });
-    } else {
+    if (user) {
       return res
         .status(200)
         .json({ message: "Resource found", refresh: false });
+    } else {
+      return res.status(400).json({ message: "Resource not found" });
     }
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
