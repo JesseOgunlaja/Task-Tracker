@@ -199,7 +199,7 @@ app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
     from: "noreply4313@gmail.com",
     to: user.email,
     subject: "Task Tracker: Verification Code",
-    html: `<p>This is your verification code</p><br><h1>${req.body.verificationCode}</h1>`
+    html: `<div style="width:100vw;height:100vh;display:flex;justify-content:center;><p>This is your verification code</p><br><h1 style="width:50vw;background:lightskyblue;padding:25px">${decryptString(req.body.verificationCode)}</h1></div>`
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
