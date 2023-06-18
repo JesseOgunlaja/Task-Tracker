@@ -159,7 +159,7 @@ app.post(
     if (token) {
       try {
         const decoded = jwt.verify(token, SECRET_KEY);
-        const user = await User.findById(decoded.id).lean();
+        const user = await User.findById(decoded.id,{ _id: 0, password: 0 });
 
         if (user) {
           res.cookie("authToken", token, {
@@ -173,7 +173,7 @@ app.post(
           return res.status(200).json(data);
         }
       } catch (error) {
-        console.error(error);
+        return res.status(200).json({ message: "Invalid cookie", refresh: false, error: error });
       }
 
       res.clearCookie("authToken");
