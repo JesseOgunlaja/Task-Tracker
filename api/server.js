@@ -35,8 +35,8 @@ mongoose.connect(process.env.MONGODB_URI, {
 });
 
 const UserSchema = new mongoose.Schema({
-  _id: { type: Types.ObjectId, auto: true, index: true },
-  name: { type: String, required: true, unique: true, index: true },
+  _id: { type: Types.ObjectId, auto: true },
+  name: { type: String, required: true, unique: true, index: { unique: true, collation: { locale: 'en', strength: 2 } } },
   email: { type: String, required: true, unique: true, index: true },
   password: { type: String, required: true },
   tasks: [
@@ -105,7 +105,7 @@ const authenticateJWTUser = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
     if (
-      (await User.findById(decoded.id)).name === req.body.username.toUpperCase()
+      (await User.findById(decoded.id)).name === req.body.username
     ) {
       next();
     } else {
@@ -129,7 +129,7 @@ app.get("/api/users", authenticateJWTGlobal, async (req, res) => {
 
 // Get one user
 app.post("/api/users/user", authenticateJWTUser, async (req, res) => {
-  const user = await User.findOne({ name: req.body.username.toUpperCase() });
+  const user = await User.findOne({ name: req.body.username });
 
   res.json(user);
 });
@@ -185,7 +185,7 @@ app.post(
 );
 
 app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
-  const user = await User.findOne({ name: req.body.username.toUpperCase() });
+  const user = await User.findOne({ name: req.body.username });
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -250,8 +250,8 @@ app.post("/api/users/email", authenticateJWTGlobal, async (req, res) => {
 // Create a user
 app.post("/api/users", async (req, res) => {
   const user = new User({
-    name: req.body.name.toUpperCase(),
-    email: req.body.email.toLowerCase(),
+    name: req.body.name,
+    email: req.body.email,
     password: await bcrypt.hash(req.body.password, 10),
     tasks: req.body.tasks,
   });
@@ -277,7 +277,7 @@ app.post("/api/users/deleteCookie", async (req, res) => {
 });
 
 app.post("/api/users/loginPassword", async (req, res) => {
-  const user = await User.findOne({ name: req.body.username.toUpperCase() });
+  const user = await User.findOne({ name: req.body.username });
   const passwordInputted = req.body.password;
 
   if (await bcrypt.compare(passwordInputted, user.password)) {
@@ -298,7 +298,7 @@ app.post("/api/users/loginName", async (req, res) => {
   try {
     const { username } = req.body;
 
-    const user = await User.findOne({ name: username.toUpperCase() })
+    const user = await User.findOne({ name: username })
       .select("_id")
       .lean();
 
@@ -318,7 +318,7 @@ app.patch(
   "/api/users/user/resetPassword",
   authenticateJWTGlobal,
   async (req, res) => {
-    const user = await User.findOne({ name: req.body.username.toUpperCase() });
+    const user = await User.findOne({ name: req.body.username });
     user.password = await bcrypt.hash(req.body.password, 10);
     try {
       const updatedUser = await user.save();
@@ -344,7 +344,7 @@ app.patch("/api/users/user", authenticateJWTUser, async (req, res) => {
     updateFields.name = name.toUpperCase();
   }
   if (email) {
-    updateFields.email = email.toLowerCase();
+    updateFields.email = email;
   }
   if (password) {
     updateFields.password = await bcrypt.hash(password, 10);
@@ -356,7 +356,7 @@ app.patch("/api/users/user", authenticateJWTUser, async (req, res) => {
   try {
     // Use bulkWrite for updating multiple fields
     const result = await User.updateOne(
-      { name: username.toUpperCase() },
+      { name: username },
       { $set: updateFields }
     );
 
@@ -373,7 +373,7 @@ app.patch("/api/users/user", authenticateJWTUser, async (req, res) => {
 
 // Delete a user
 app.post("/api/users/user/delete", authenticateJWTUser, async (req, res) => {
-  const user = await User.findOne({ name: req.body.username.toUpperCase() });
+  const user = await User.findOne({ name: req.body.username });
   try {
     const deletedUser = await User.findOneAndDelete({ name: user.name });
     apicache.clear("checkJWT");

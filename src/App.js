@@ -85,8 +85,8 @@ function App() {
       },
       credentials: "include",
       body: JSON.stringify({
-        username: username,
-        email: newEmail,
+        username: username.toUpperCase(),
+        email: newEmail.toLowerCase(),
       }),
     })
       .then((response) => response.json())
@@ -122,7 +122,7 @@ function App() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            username: username,
+            username: username.toUpperCase(),
           }),
         })
           .then((response) => {
@@ -166,7 +166,7 @@ function App() {
       },
       credentials: "include",
       body: JSON.stringify({
-        username: username,
+        username: username.toUpperCase(),
         tasks: currentTasks,
       }),
     })
@@ -210,7 +210,7 @@ function App() {
         },
         credentials: "include",
         body: JSON.stringify({
-          username: username,
+          username: username.toUpperCase(),
           tasks: encryptedTasks,
         }),
       })
@@ -254,7 +254,7 @@ function App() {
       },
       credentials: "include",
       body: JSON.stringify({
-        username: username,
+        username: username.toUpperCase(),
         tasks: currentTasks,
       }),
     })
@@ -346,10 +346,10 @@ function App() {
               "Content-type": "application/json",
             },
             body: JSON.stringify({
-              name: nameBeingAdded,
+              name: nameBeingAdded.toUpperCase(),
               tasks: [],
               password: passwordBeingAdded,
-              email: emailBeingAdded,
+              email: emailBeingAdded.toLowerCase(),
             }),
           })
             .then( async (response) => {
@@ -428,7 +428,7 @@ function App() {
       },
       credentials: "include",
       body: JSON.stringify({
-        username: username,
+        username: username.toUpperCase(),
       }),
     })
       .then((response) => response.json())
@@ -450,7 +450,7 @@ function App() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            username: username,
+            username: username.toUpperCase(),
             password: passwordBeingAdded,
           }),
         })
@@ -519,7 +519,7 @@ function App() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            username: username,
+            username: username.toUpperCase(),
             password: oldPassword,
           }),
         })
@@ -533,7 +533,7 @@ function App() {
                 credentials: "include",
 
                 body: JSON.stringify({
-                  username: username,
+                  username: username.toUpperCase(),
                   password: newPassword,
                 }),
               })
@@ -712,7 +712,7 @@ function App() {
       },
       body: JSON.stringify({
         verificationCode: encryptString(verifCode),
-        username: username,
+        username: username.toUpperCase(),
       }),
     });
   }
@@ -748,7 +748,7 @@ function App() {
         authorization: `Bearer ${globalToken}`,
       },
       body: JSON.stringify({
-        username: username,
+        username: username.toUpperCase(),
         password: passwordBeingReset,
       }),
     });
